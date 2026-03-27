@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import NotificationPopup from '../components/NotificationPopup'
 import { PATHS } from '../utils/routes'
 
 function LoginPage({ isAuthenticated = false, user = null, onLogin, navigate }) {
@@ -39,7 +40,7 @@ function LoginPage({ isAuthenticated = false, user = null, onLogin, navigate }) 
 
     try {
       await onLogin(form)
-      navigate(PATHS.profile)
+      navigate(PATHS.home)
     } catch (error) {
       setStatus({
         loading: false,
@@ -61,10 +62,22 @@ function LoginPage({ isAuthenticated = false, user = null, onLogin, navigate }) 
 
   return (
     <section className="auth-view">
+      <NotificationPopup
+        isOpen={Boolean(status.error)}
+        title="Đăng nhập thất bại"
+        message={status.error}
+        onClose={() =>
+          setStatus((currentStatus) => ({
+            ...currentStatus,
+            error: '',
+          }))
+        }
+      />
+
       <div className="auth-card auth-card-compact">
         <div className="auth-copy auth-copy-centered">
           <h1>Đăng nhập</h1>
-          <p>Chào mừng bạn trở lại với hệ thống ĐTN.</p>
+          <p>Chào mừng bạn quay lại với hệ thống ĐTN.</p>
         </div>
 
         <form className="login-form auth-form" onSubmit={handleSubmit}>
@@ -123,8 +136,6 @@ function LoginPage({ isAuthenticated = false, user = null, onLogin, navigate }) 
             </div>
           </label>
 
-          {status.error && <p className="form-error field-full">{status.error}</p>}
-
           <button
             type="submit"
             className="primary-button auth-submit"
@@ -149,14 +160,7 @@ function LoginPage({ isAuthenticated = false, user = null, onLogin, navigate }) 
       </div>
 
       <p className="auth-switch-copy">
-        Chưa có tài khoản?{' '}
-        <button
-          type="button"
-          className="text-link"
-          onClick={() => navigate(PATHS.register)}
-        >
-          Đăng ký ngay
-        </button>
+        Chỉ tài khoản đã được cấp quyền mới có thể đăng nhập vào hệ thống.
       </p>
     </section>
   )

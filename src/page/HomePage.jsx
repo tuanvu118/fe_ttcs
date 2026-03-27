@@ -1,9 +1,5 @@
 function HomePage() {
-  return (
-    <section className="page-card">
-      <h1>Home</h1>
-    </section>
-  )
+  return <section className="home-blank-surface" aria-label="Trang chủ" />
 }
 
 export default HomePage

@@ -6,6 +6,24 @@ import {
   logoutUser,
   subscribeAuthChange,
 } from '../service/authService'
+import {
+  USER_ROLES,
+  canManageUsers,
+  getDashboardPathForRole,
+  getRoleLabel,
+} from '../utils/routes'
+
+function normalizeRole(role) {
+  if (typeof role !== 'string') {
+    return USER_ROLES.user
+  }
+
+  const normalizedRole = role.trim().toLowerCase()
+
+  return Object.values(USER_ROLES).includes(normalizedRole)
+    ? normalizedRole
+    : USER_ROLES.user
+}
 
 export function useAuth() {
   const [authSession, setAuthSession] = useState(() => getStoredAuthSession())
@@ -30,10 +48,17 @@ export function useAuth() {
         const currentUser = await fetchCurrentUser(authSession)
 
         if (!isCancelled) {
-          setUser(currentUser)
+          setUser(
+            currentUser
+              ? {
+                  ...currentUser,
+                  role: normalizeRole(currentUser.role || authSession?.tokenRole),
+                }
+              : null,
+          )
         }
       } catch {
-        logoutUser()
+        await logoutUser({ skipServer: true })
 
         if (!isCancelled) {
           setUser(null)
@@ -59,18 +84,35 @@ export function useAuth() {
     return nextSession
   }, [])
 
-  const logout = useCallback(() => {
-    logoutUser()
+  const logout = useCallback(async (options = {}) => {
+    await logoutUser(options)
     setAuthSession(null)
     setUser(null)
   }, [])
 
+  const refreshUser = useCallback(() => {
+    setAuthSession((currentSession) =>
+      currentSession?.accessToken ? { ...currentSession } : currentSession,
+    )
+  }, [])
+
+  const role = normalizeRole(user?.role || authSession?.tokenRole)
+
   return {
     user,
+    role,
+    roleLabel: getRoleLabel(role),
+    dashboardPath: getDashboardPathForRole(role),
+    accessToken: authSession?.accessToken || '',
+    refreshToken: authSession?.refreshToken || '',
     isAuthenticated: Boolean(authSession?.accessToken),
-    isAdmin: user?.role === 'admin',
+    isAdmin: role === USER_ROLES.admin,
+    isManager: role === USER_ROLES.manager,
+    isStaff: role === USER_ROLES.staff,
+    canManageUsers: canManageUsers(role),
     isLoadingUser,
     login,
     logout,
+    refreshUser,
   }
 }

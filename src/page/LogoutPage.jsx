@@ -3,13 +3,17 @@ import { PATHS } from '../utils/routes'
 
 function LogoutPage({ onLogout, replace }) {
   useEffect(() => {
-    onLogout()
-    replace(PATHS.home)
+    async function runLogout() {
+      await onLogout()
+      replace(PATHS.home)
+    }
+
+    runLogout()
   }, [onLogout, replace])
 
   return (
     <section className="page-card">
-      <h1>Logout</h1>
+      <h1>Đăng xuất</h1>
     </section>
   )
 }
