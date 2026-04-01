@@ -2035,109 +2035,95 @@ select:disabled {
   border-right: 1px solid #dce5f2;
 }
 
-.admin-shell-brand,
-.admin-shell-menu-item {
-  display: flex;
-  align-items: center;
-  gap: 0.9rem;
-}
-
-.admin-shell-brand {
-  width: 100%;
-  padding: 0.4rem 0.25rem 1rem;
-  border: 0;
-  border-bottom: 1px solid #e6edf8;
-  background: transparent;
-  text-align: left;
-  cursor: pointer;
-}
-
-.admin-shell-brand-mark,
-.admin-shell-icon-box {
-  display: inline-grid;
-  place-items: center;
-  width: 46px;
-  height: 46px;
-  border-radius: 12px;
-  color: #ffffff;
-  background: linear-gradient(135deg, #0f4d93 0%, #2563eb 100%);
-}
-
-.admin-shell-brand strong,
-.admin-shell-menu-item strong {
-  display: block;
-  color: #11254a;
-}
-
-.admin-shell-brand p,
-.admin-shell-menu-item span {
-  margin: 0.2rem 0 0;
-  color: #5f6f8d;
-}
-
-.admin-shell-menu {
-  display: grid;
-  gap: 0.6rem;
-}
-
-.admin-shell-staff-panel {
-  display: grid;
-  gap: 0.7rem;
-  margin-top: 0.15rem;
-  padding-top: 0.9rem;
-  border-top: 1px solid #e6edf8;
-}
-
-.admin-shell-staff-panel h4 {
-  margin: 0;
-  color: #11254a;
-  font-size: 1rem;
-}
-
-.admin-shell-staff-panel p {
-  margin: 0;
-  color: #5f6f8d;
-  font-size: 0.9rem;
-}
-
-.admin-shell-staff-unit-list,
-.admin-shell-staff-action-list {
+.admin-shell-unit-selector {
   display: grid;
   gap: 0.45rem;
 }
 
-.admin-shell-staff-unit {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 0.65rem;
-  align-items: center;
+.admin-shell-unit-selector-button {
   width: 100%;
-  padding: 0.5rem 0.55rem;
-  border: 1px solid #d5dfef;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  padding: 0.75rem 0.85rem;
   border-radius: 12px;
-  background: #ffffff;
+  border: 1px solid #d5dfef;
+  background: #f8faff;
   text-align: left;
   cursor: pointer;
-  transition: all 0.16s ease;
 }
 
-.admin-shell-staff-unit strong {
+.admin-shell-unit-selector-button strong {
   display: block;
   color: #11254a;
 }
 
-.admin-shell-staff-unit span {
+.admin-shell-unit-selector-button span {
+  margin-top: 0.2rem;
+  display: block;
+  margin: 0;
   color: #5f6f8d;
   font-size: 0.84rem;
 }
 
-.admin-shell-staff-unit:hover,
-.admin-shell-staff-unit.active {
-  border-color: #b9d4ff;
-  background: linear-gradient(180deg, #ebf3ff 0%, #f6faff 100%);
+.admin-shell-dropdown-arrow {
+  font-size: 0.95rem;
+  color: #5f6f8d;
+  transition: transform 0.16s ease;
 }
 
-.admin-shell-staff-action {
+.admin-shell-dropdown-arrow.open {
+  transform: rotate(180deg);
+}
+
+.admin-shell-unit-dropdown {
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.4rem;
+  border: 1px solid #d5dfef;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.admin-shell-unit-dropdown p {
+  margin: 0;
+  color: #5f6f8d;
+  font-size: 0.9rem;
+  padding: 0.35rem;
+}
+
+.admin-shell-unit-option {
+  width: 100%;
+  text-align: left;
+  border: 1px solid #d5dfef;
+  border-radius: 10px;
+  background: #ffffff;
+  padding: 0.55rem 0.65rem;
+  cursor: pointer;
+}
+
+.admin-shell-unit-option strong {
+  display: block;
+  color: #11254a;
+}
+
+.admin-shell-unit-option span {
+  color: #5f6f8d;
+  font-size: 0.8rem;
+}
+
+.admin-shell-unit-option.active {
+  border-color: #b9d4ff;
+  background: #ebf3ff;
+}
+
+.admin-shell-action-list {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.admin-shell-action-button {
   width: 100%;
   border: 1px solid #d5dfef;
   border-radius: 10px;
@@ -2149,32 +2135,10 @@ select:disabled {
   cursor: pointer;
 }
 
-.admin-shell-staff-action.active {
+.admin-shell-action-button.active {
   border-color: #b9d4ff;
   background: #ebf3ff;
   color: #1d4ed8;
-}
-
-.admin-shell-menu-item {
-  width: 100%;
-  padding: 0.9rem 0.85rem;
-  border: 1px solid transparent;
-  border-radius: 14px;
-  background: transparent;
-  text-align: left;
-  cursor: pointer;
-  transition: all 0.16s ease;
-}
-
-.admin-shell-menu-item:hover {
-  border-color: #c8d8ef;
-  background: #f5f9ff;
-}
-
-.admin-shell-menu-item.active {
-  border-color: #b9d4ff;
-  background: linear-gradient(180deg, #ebf3ff 0%, #f6faff 100%);
-  box-shadow: inset 4px 0 0 #1d4ed8;
 }
 
 .admin-shell-content {

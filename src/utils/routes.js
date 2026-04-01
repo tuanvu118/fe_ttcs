@@ -6,11 +6,12 @@ export const PATHS = {
   login: '/login',
   register: '/register',
   profile: '/profile',
-  admin: '/admin',
-  manager: '/manager',
-  staff: '/staff',
-  units: '/units',
-  semesters: '/semesters',
+  manage: '/manage',
+  manageUnits: '/manage/units',
+  manageAdmin: '/manage/admin',
+  manageAdminUnits: '/manage/admin/units',
+  manageAdminUsers: '/manage/admin/user',
+  manageAdminSemesters: '/manage/admin/semester',
   logout: '/logout',
 }
 
@@ -29,9 +30,9 @@ export const ROLE_LABELS = {
 }
 
 export const ROLE_DASHBOARD_PATHS = {
-  [USER_ROLES.admin]: PATHS.admin,
-  [USER_ROLES.manager]: PATHS.manager,
-  [USER_ROLES.staff]: PATHS.units,
+  [USER_ROLES.admin]: PATHS.manage,
+  [USER_ROLES.manager]: PATHS.manage,
+  [USER_ROLES.staff]: PATHS.manage,
 }
 
 export const UNIT_TYPES = {
@@ -42,6 +43,14 @@ export const UNIT_TYPES = {
 
 const MANAGE_USER_ROLES = [USER_ROLES.admin, USER_ROLES.manager]
 const MANAGE_UNIT_ROLES = [USER_ROLES.admin, USER_ROLES.manager, USER_ROLES.staff]
+const MANAGE_PATHS = new Set([
+  PATHS.manage,
+  PATHS.manageUnits,
+  PATHS.manageAdmin,
+  PATHS.manageAdminUnits,
+  PATHS.manageAdminUsers,
+  PATHS.manageAdminSemesters,
+])
 const UNIT_DETAIL_PATTERN = /^\/units\/([^/]+)$/
 const CLUB_DETAIL_PATTERN = /^\/club\/([^/]+)$/
 
@@ -64,28 +73,28 @@ const routeMeta = {
     allowedRoles: MANAGE_USER_ROLES,
   },
   [PATHS.profile]: { title: 'Hồ sơ', requiresAuth: true },
-  [PATHS.admin]: {
-    title: 'Quản trị Admin',
+  [PATHS.manage]: {
+    title: 'Quản trị',
     requiresAuth: true,
-    allowedRoles: [USER_ROLES.admin],
   },
-  [PATHS.manager]: {
-    title: 'Quản trị Manager',
+  [PATHS.manageUnits]: {
+    title: 'Quản trị đơn vị',
     requiresAuth: true,
-    allowedRoles: [USER_ROLES.manager],
   },
-  [PATHS.staff]: {
-    title: 'Quản trị Staff',
+  [PATHS.manageAdmin]: {
+    title: 'Quản trị hệ thống',
     requiresAuth: true,
-    allowedRoles: [USER_ROLES.staff],
   },
-  [PATHS.units]: {
-    title: 'Đơn vị',
+  [PATHS.manageAdminUsers]: {
+    title: 'Quản lý người dùng',
     requiresAuth: true,
-    allowedRoles: MANAGE_UNIT_ROLES,
   },
-  [PATHS.semesters]: {
-    title: 'Học kỳ',
+  [PATHS.manageAdminUnits]: {
+    title: 'Quản lý đơn vị',
+    requiresAuth: true,
+  },
+  [PATHS.manageAdminSemesters]: {
+    title: 'Quản lý học kỳ',
     requiresAuth: true,
   },
   [PATHS.logout]: { title: 'Đăng xuất', requiresAuth: true },
@@ -137,6 +146,77 @@ export function getRouteMeta(pathname) {
   }
 
   return null
+}
+
+export function isManagePath(pathname) {
+  return MANAGE_PATHS.has(pathname)
+}
+
+export function parseManageQuery(search = '') {
+  const params = new URLSearchParams(search || '')
+  return {
+    unitId: params.get('unit') || '',
+    panel: params.get('panel') || 'members',
+  }
+}
+
+function normalizeScopedRole(roleName) {
+  if (typeof roleName !== 'string') {
+    return null
+  }
+
+  const normalizedRole = roleName.trim().toLowerCase()
+  return Object.values(USER_ROLES).includes(normalizedRole) ? normalizedRole : null
+}
+
+function getHighestManageRole(roleNames = []) {
+  const normalizedRoles = roleNames
+    .map((roleName) => normalizeScopedRole(roleName))
+    .filter(Boolean)
+
+  if (normalizedRoles.includes(USER_ROLES.admin)) {
+    return USER_ROLES.admin
+  }
+
+  if (normalizedRoles.includes(USER_ROLES.manager)) {
+    return USER_ROLES.manager
+  }
+
+  if (normalizedRoles.includes(USER_ROLES.staff)) {
+    return USER_ROLES.staff
+  }
+
+  return null
+}
+
+export function getManageRoleForUnit(user, unitId) {
+  if (!unitId) {
+    return null
+  }
+
+  const roleItem = (user?.roles || []).find((item) => item?.unit_id === unitId)
+  return getHighestManageRole(roleItem?.roles || [])
+}
+
+export function getManageOptionsFromUser(user) {
+  return (user?.roles || [])
+    .map((item) => {
+      if (!item?.unit_id || !Array.isArray(item?.roles)) {
+        return null
+      }
+
+      const manageRole = getHighestManageRole(item.roles)
+      if (!manageRole) {
+        return null
+      }
+
+      return { unitId: item.unit_id, role: manageRole }
+    })
+    .filter(Boolean)
+}
+
+export function hasManageAccess(user) {
+  return getManageOptionsFromUser(user).length > 0
 }
 
 export function getDashboardPathForRole(role) {

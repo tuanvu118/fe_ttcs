@@ -1,12 +1,37 @@
 import StaffUnitsWorkspace from '../components/units/StaffUnitsWorkspace'
 import UnitsManagementPage from '../components/units/UnitsManagementPage'
-import { USER_ROLES } from '../utils/routes'
 
-function UnitsPage({ accessToken, role, roleLabel, user, navigate, search, onSessionExpired }) {
-  if (role === USER_ROLES.staff) {
+function UnitsPage({
+  accessToken,
+  role,
+  roleLabel,
+  user,
+  navigate,
+  search,
+  onSessionExpired,
+  mode = 'admin-manage',
+  staffPanel = 'members',
+}) {
+  if (mode === 'staff-manage') {
     const params = new URLSearchParams(search || '')
     const selectedUnitId = params.get('unit') || ''
-    const activePanel = params.get('panel') === 'overview' ? 'overview' : 'members'
+    const activePanel = ['members', 'reports', 'events'].includes(staffPanel) ? staffPanel : 'members'
+
+    if (activePanel === 'reports') {
+      return (
+        <section className="page-card">
+          <h1>Quản lý báo cáo</h1>
+        </section>
+      )
+    }
+
+    if (activePanel === 'events') {
+      return (
+        <section className="page-card">
+          <h1>Quản lý sự kiện được giao</h1>
+        </section>
+      )
+    }
 
     return (
       <StaffUnitsWorkspace

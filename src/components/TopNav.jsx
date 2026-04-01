@@ -43,7 +43,8 @@ function TopNav({ currentPath, isAuthenticated, dashboardPath, user, navigate })
     const isActive =
       currentPath === path ||
       (path === PATHS.units && currentPath.startsWith(`${PATHS.units}/`)) ||
-      (path === PATHS.club && currentPath.startsWith(`${PATHS.club}/`))
+      (path === PATHS.club && currentPath.startsWith(`${PATHS.club}/`)) ||
+      (path === PATHS.manage && currentPath.startsWith(PATHS.manage))
 
     return (
       <button

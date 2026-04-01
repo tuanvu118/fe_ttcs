@@ -11,7 +11,6 @@ import ForbiddenPage from './page/ForbiddenPage'
 import HomePage from './page/HomePage'
 import LoginPage from './page/LoginPage'
 import LogoutPage from './page/LogoutPage'
-import ManagerPage from './page/ManagerPage'
 import NotFoundPage from './page/NotFoundPage'
 import ProfilePage from './page/ProfilePage'
 import RegisterPage from './page/RegisterPage'
@@ -19,14 +18,16 @@ import SemestersPage from './page/SemestersPage'
 import UnitDetailPage from './page/UnitDetailPage'
 import UnitsPage from './page/UnitsPage'
 import {
+  hasManageAccess,
   PATHS,
-  USER_ROLES,
   getClubUnitIdFromPath,
+  getManageRoleForUnit,
   getRoleLabel,
   getRouteMeta,
   getUnitIdFromPath,
   isRoleAllowed,
-  isUnitDetailPath,
+  isManagePath,
+  parseManageQuery,
 } from './utils/routes'
 
 function App() {
@@ -52,14 +53,7 @@ function App() {
   const routeMeta = getRouteMeta(pathname)
   const unitId = getUnitIdFromPath(pathname)
   const clubUnitId = getClubUnitIdFromPath(pathname)
-  const isUnitRoute = pathname === PATHS.units || isUnitDetailPath(pathname)
-  const isSemesterRoute = pathname === PATHS.semesters
-  const isAdminLayout =
-    isAuthenticated &&
-    role !== USER_ROLES.user &&
-    ([PATHS.admin, PATHS.manager, PATHS.staff, PATHS.register].includes(pathname) ||
-      isUnitRoute ||
-      isSemesterRoute)
+  const isAdminLayout = isAuthenticated && (pathname === PATHS.register || isManagePath(pathname))
 
   let page = <NotFoundPage />
 
@@ -110,59 +104,76 @@ function App() {
           navigate={navigate}
         />
       )
-    } else if (pathname === PATHS.admin) {
-      page = (
-        <AdminPage
-          accessToken={accessToken}
-          roleLabel={roleLabel}
-          role={role}
-          user={user}
-          onSessionExpired={handleSessionExpired}
-        />
-      )
-    } else if (pathname === PATHS.manager) {
-      page = (
-        <ManagerPage
-          accessToken={accessToken}
-          roleLabel={roleLabel}
-          role={role}
-          user={user}
-          onSessionExpired={handleSessionExpired}
-        />
-      )
-    } else if (pathname === PATHS.staff) {
-      page = (
-        <UnitsPage
-          accessToken={accessToken}
-          roleLabel={roleLabel}
-          role={role}
-          user={user}
-          navigate={navigate}
-          search={search}
-          onSessionExpired={handleSessionExpired}
-        />
-      )
-    } else if (pathname === PATHS.units) {
-      page = (
-        <UnitsPage
-          accessToken={accessToken}
-          role={role}
-          roleLabel={roleLabel}
-          user={user}
-          navigate={navigate}
-          search={search}
-          onSessionExpired={handleSessionExpired}
-        />
-      )
-    } else if (pathname === PATHS.semesters) {
-      page = (
-        <SemestersPage
-          accessToken={accessToken}
-          role={role}
-          roleLabel={roleLabel}
-          onSessionExpired={handleSessionExpired}
-        />
-      )
+    } else if (isManagePath(pathname)) {
+      const { unitId: selectedUnitId, panel } = parseManageQuery(search)
+      const scopedRole = getManageRoleForUnit(user, selectedUnitId)
+      const canAccessManage = hasManageAccess(user)
+
+      if (!canAccessManage) {
+        page = <ForbiddenPage requiredRoleLabel="Admin, Manager hoặc Staff" />
+      } else if (pathname === PATHS.manage || pathname === PATHS.manageAdmin) {
+        page = (
+          <section className="page-card">
+            <h1>Vui lòng chọn đơn vị để bắt đầu quản trị</h1>
+          </section>
+        )
+      } else if (pathname === PATHS.manageUnits) {
+        page = (
+          <UnitsPage
+            accessToken={accessToken}
+            role={scopedRole || role}
+            roleLabel={roleLabel}
+            user={user}
+            navigate={navigate}
+            search={search}
+            onSessionExpired={handleSessionExpired}
+            mode="staff-manage"
+            staffPanel={panel}
+          />
+        )
+      } else if (
+        [PATHS.manageAdminUsers, PATHS.manageAdminUnits, PATHS.manageAdminSemesters].includes(pathname)
+      ) {
+        const canAccessAdminManage = scopedRole === 'admin' || scopedRole === 'manager'
+
+        if (!canAccessAdminManage) {
+          page = <ForbiddenPage requiredRoleLabel="Admin hoặc Manager tại đơn vị đã chọn" />
+        } else if (pathname === PATHS.manageAdminUsers) {
+          page = (
+            <AdminPage
+              accessToken={accessToken}
+              roleLabel={roleLabel}
+              role={scopedRole}
+              user={user}
+              onSessionExpired={handleSessionExpired}
+            />
+          )
+        } else if (pathname === PATHS.manageAdminUnits) {
+          page = (
+            <UnitsPage
+              accessToken={accessToken}
+              role={scopedRole}
+              roleLabel={roleLabel}
+              user={user}
+              navigate={navigate}
+              search={search}
+              onSessionExpired={handleSessionExpired}
+              mode="admin-manage"
+            />
+          )
+        } else {
+          page = (
+            <SemestersPage
+              accessToken={accessToken}
+              role={scopedRole}
+              roleLabel={roleLabel}
+              onSessionExpired={handleSessionExpired}
+            />
+          )
+        }
+      } else {
+        page = <NotFoundPage />
+      }
     } else if (unitId) {
       page = (
         <UnitDetailPage
@@ -194,8 +205,6 @@ function App() {
       {isAdminLayout ? (
         <AdminShell
           currentPath={pathname}
-          roleLabel={roleLabel}
-          dashboardPath={dashboardPath}
           user={user}
           role={role}
           accessToken={accessToken}
