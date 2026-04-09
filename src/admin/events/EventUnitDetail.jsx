@@ -1,7 +1,6 @@
 import { 
   Buildings,
   Calendar,
-  Image as ImageIcon,
   Trophy
 } from '@phosphor-icons/react'
 import styles from './adminEventDetail.module.css'
@@ -14,16 +13,6 @@ export default function EventUnitDetail({ data, semester }) {
       {/* CỘT TRÁI - CHI TIẾT CHÍNH */}
       <div className={styles.mainColumn}>
         <div className={styles.card}>
-          <div className={styles.bannerArea}>
-            {data.image_url ? (
-              <img src={data.image_url} alt={data.title} className={styles.bannerImg} />
-            ) : (
-              <div className={styles.bannerPlaceholder}>
-                <ImageIcon size={48} weight="light" />
-                <p>Yêu cầu chưa có ảnh minh họa</p>
-              </div>
-            )}
-          </div>
 
           <div className={styles.cardBody}>
             <div className={styles.infoGrid} style={{ marginBottom: '2.5rem' }}>

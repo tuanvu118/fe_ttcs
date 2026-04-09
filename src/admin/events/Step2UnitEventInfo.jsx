@@ -1,9 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { 
-  Image as ImageIcon,
   ArrowLeft,
   ArrowRight,
-  Trash,
 } from '@phosphor-icons/react'
 import { Select, InputNumber, Badge } from 'antd'
 import { getUnits } from '../../service/unitService'
@@ -16,7 +14,6 @@ export default function Step2UnitEventInfo({ type, data, setData, isSubmitting, 
   const [isLoadingUnits, setIsLoadingUnits] = useState(false)
   const [semesters, setSemesters] = useState([])
   const [isLoadingSemesters, setIsLoadingSemesters] = useState(false)
-  const fileInputRef = useRef(null)
 
   useEffect(() => {
     loadUnits()
@@ -53,24 +50,6 @@ export default function Step2UnitEventInfo({ type, data, setData, isSubmitting, 
     }
   }
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setData(prev => ({ 
-          ...prev, 
-          imageFile: file, 
-          imagePreview: reader.result 
-        }))
-      }
-      reader.readAsDataURL(file)
-    }
-  }
-
-  const triggerFileInput = () => {
-    fileInputRef.current?.click()
-  }
 
   const isFormValid = data.title && data.description && data.listUnitId?.length > 0 && data.semesterId
 
@@ -81,7 +60,7 @@ export default function Step2UnitEventInfo({ type, data, setData, isSubmitting, 
         <div className={styles.sectionHeader}>
           <div className={styles.sectionTitleGroup}>
             <h3 className={styles.sectionTitle}>Thông tin cơ bản</h3>
-            <p className={styles.sectionDesc}>Nhập tên và hình ảnh mô tả cho yêu cầu hỗ trợ.</p>
+            <p className={styles.sectionDesc}>Nhập tên yêu cầu hỗ trợ.</p>
           </div>
         </div>
         
@@ -96,41 +75,6 @@ export default function Step2UnitEventInfo({ type, data, setData, isSubmitting, 
             />
           </div>
 
-          <div className={styles.fieldGroup}>
-            <label className={styles.label}>ẢNH MINH HỌA (NẾU CÓ)</label>
-            <div 
-              className={`${styles.uploadArea} ${data.imagePreview ? styles.hasPreview : ''}`}
-              onClick={triggerFileInput}
-            >
-              <input 
-                type="file" 
-                ref={fileInputRef} 
-                onChange={handleImageChange} 
-                className={styles.hiddenInput} 
-                accept="image/*"
-              />
-              {data.imagePreview ? (
-                <img src={data.imagePreview} alt="Preview" className={styles.previewImage} />
-              ) : (
-                <div className={styles.uploadPlaceholder}>
-                  <ImageIcon size={40} weight="light" color="#94a3b8" />
-                  <p>Tải ảnh lên</p>
-                  <span>Khuyên dùng: 16:9 (JPG, PNG)</span>
-                </div>
-              )}
-              {data.imagePreview && (
-                <button 
-                  className={styles.removeImgBtn} 
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    setData(prev => ({ ...prev, imageFile: null, imagePreview: null }))
-                  }}
-                >
-                  <Trash size={16} />
-                </button>
-              )}
-            </div>
-          </div>
         </div>
       </section>
 

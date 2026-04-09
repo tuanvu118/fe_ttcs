@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { 
   Image as ImageIcon, 
@@ -28,15 +28,23 @@ export default function EditPublicEventForm({ eventData, unitId }) {
   const [isLoadingSemesters, setIsLoadingSemesters] = useState(false)
 
   const [formData, setFormData] = useState({
-    title: eventData.title,
-    description: eventData.description,
-    point: eventData.point,
-    registrationPeriod: [dayjs(eventData.registration_start), dayjs(eventData.registration_end)],
-    eventPeriod: [dayjs(eventData.event_start), dayjs(eventData.event_end)],
+    title: eventData.title || '',
+    description: eventData.description || '',
+    point: eventData.point || 0,
+    imageFile: null,
+    imagePreview: eventData.image_url || null,
+    registrationPeriod: [
+      eventData.registration_start ? dayjs(eventData.registration_start) : null,
+      eventData.registration_end ? dayjs(eventData.registration_end) : null
+    ],
+    eventPeriod: [
+      eventData.event_start ? dayjs(eventData.event_start) : null,
+      eventData.event_end ? dayjs(eventData.event_end) : null
+    ],
     semester_id: eventData.semester_id || eventData.semesterId,
-    form_fields: eventData.form_fields.map(f => ({
+    form_fields: (eventData.form_fields || []).map(f => ({
       ...f,
-      type: f.field_type // Map field_type to type for consistency with creation UI
+      type: f.field_type || f.type // Map field_type to type for consistency with creation UI
     }))
   })
 

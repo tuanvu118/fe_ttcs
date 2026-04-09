@@ -1,8 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { 
-  Image as ImageIcon, 
-  Trash, 
   FloppyDiskBack,
   ArrowLeft,
   Trophy
@@ -16,7 +14,6 @@ import styles from './step2UnitEventInfo.module.css' // Reusing styles
 
 export default function EditUnitEventForm({ eventData, unitId }) {
   const navigate = useNavigate()
-  const fileInputRef = useRef(null)
   
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [availableUnits, setAvailableUnits] = useState([])
@@ -27,8 +24,6 @@ export default function EditUnitEventForm({ eventData, unitId }) {
     title: eventData.title,
     description: eventData.description,
     point: eventData.point,
-    imageFile: null,
-    imagePreview: eventData.image_url,
     listUnitId: eventData.assigned_units?.map(u => u.id) || [],
     semesterId: eventData.semesterId || eventData.semester_id,
   })
@@ -68,29 +63,6 @@ export default function EditUnitEventForm({ eventData, unitId }) {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setFormData(prev => ({
-          ...prev,
-          imageFile: file,
-          imagePreview: reader.result
-        }))
-      }
-      reader.readAsDataURL(file)
-    }
-  }
-
-  const removeImage = (e) => {
-    e.stopPropagation()
-    setFormData(prev => ({
-      ...prev,
-      imageFile: null,
-      imagePreview: null
-    }))
-  }
 
   const handleUpdate = async () => {
     if (!formData.title) {
@@ -109,9 +81,6 @@ export default function EditUnitEventForm({ eventData, unitId }) {
       fd.append('description', formData.description || '')
       fd.append('point', formData.point)
       
-      if (formData.imageFile) {
-        fd.append('image', formData.imageFile)
-      }
 
       if (formData.semesterId) {
         fd.append('semester_id', formData.semesterId)
@@ -135,7 +104,7 @@ export default function EditUnitEventForm({ eventData, unitId }) {
         <div className={styles.sectionHeader}>
           <div className={styles.sectionTitleGroup}>
             <h2 className={styles.sectionTitle}>Thông tin yêu cầu</h2>
-            <p className={styles.sectionDesc}>Cập nhật tiêu đề và ảnh minh họa cho yêu cầu hỗ trợ.</p>
+            <p className={styles.sectionDesc}>Cập nhật tiêu đề cho yêu cầu hỗ trợ.</p>
           </div>
         </div>
         <div className={styles.sectionContent}>
@@ -149,35 +118,6 @@ export default function EditUnitEventForm({ eventData, unitId }) {
             />
           </div>
 
-          <div className={styles.fieldGroup}>
-            <label className={styles.label}>Ảnh minh họa (Banner)</label>
-            <div 
-              className={`${styles.uploadArea} ${formData.imagePreview ? styles.hasPreview : ''}`}
-              onClick={() => fileInputRef.current.click()}
-            >
-              {formData.imagePreview ? (
-                <>
-                  <img src={formData.imagePreview} alt="Preview" className={styles.previewImage} />
-                  <button className={styles.removeImgBtn} onClick={removeImage}>
-                    <Trash size={16} weight="bold" />
-                  </button>
-                </>
-              ) : (
-                <div className={styles.uploadPlaceholder}>
-                  <ImageIcon size={32} weight="light" />
-                  <p>Thay đổi ảnh</p>
-                  <span>Khuyên dùng 16:9, tối đa 5MB</span>
-                </div>
-              )}
-            </div>
-            <input 
-              type="file" 
-              ref={fileInputRef} 
-              className={styles.hiddenInput} 
-              accept="image/*"
-              onChange={handleImageChange}
-            />
-          </div>
         </div>
       </section>
 
