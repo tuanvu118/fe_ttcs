@@ -145,12 +145,17 @@ export async function getAllEventBySemesterIdForAdmin(semesterId) {
   merged.sort((b, a) => parseCreatedTime(a.create_at) - parseCreatedTime(b.create_at))
 
   // Map thêm thông tin semester_id vào row để hiển thị ở bảng nếu cần
-  return merged.map(row => ({
-    ...row,
-    semester_id: row.type === 'SK' 
-      ? publicList.find(p => p.id === row.id)?.semester_id 
-      : unitList.find(u => u.id === row.id)?.semester_id
-  }))
+  return merged.map((row) => {
+    const originalItem =
+      row.type === 'SK'
+        ? publicList.find((p) => String(p.id) === row.id)
+        : unitList.find((u) => String(u.id) === row.id)
+
+    return {
+      ...row,
+      semester_id: originalItem?.semester_id ?? originalItem?.semesterId ?? '',
+    }
+  })
 }
 
 export async function createPublicEvent(formData) {

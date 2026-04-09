@@ -6,7 +6,7 @@ import {
 } from '@phosphor-icons/react'
 import styles from './adminEventDetail.module.css'
 
-export default function EventUnitDetail({ data }) {
+export default function EventUnitDetail({ data, semester }) {
   if (!data) return null
 
   return (
@@ -107,7 +107,7 @@ export default function EventUnitDetail({ data }) {
                 </div>
                 <div className={styles.timeContent}>
                   <span className={styles.timeTitle}>HỌC KỲ</span>
-                  <span className={styles.timeValue}>{data.semesterId || 'N/A'}</span>
+                  <span className={styles.timeValue}>{semester ? `${semester.name} - ${semester.academic_year}` : 'N/A'}</span>
                 </div>
               </div>
             </div>

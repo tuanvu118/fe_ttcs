@@ -49,7 +49,7 @@
   text-align: left;
 }
 
-.unitSelectorText > span {
+.unitSelectorText>span {
   margin: 0;
   display: block;
   color: #5f6f8d;
@@ -229,7 +229,7 @@
   transform: translateY(0);
 }
 
-.unitOptionText > span {
+.unitOptionText>span {
   color: #5f6f8d;
   font-size: 0.8rem;
   font-weight: 600;

@@ -174,41 +174,41 @@ export default function AdminSideNav({
         <nav className={styles.actionList} aria-label="Điều hướng quản trị">
           {isStaffSelected
             ? staffActions.map((actionItem) => {
-                const ActionIcon = actionItem.Icon
-                return (
-                  <button
-                    key={actionItem.key}
-                    type="button"
-                    className={
-                      selectedPanel === actionItem.key
-                        ? `${styles.actionButton} ${styles.actionButtonActive}`
-                        : styles.actionButton
-                    }
-                    onClick={() => navigate(buildStaffPath(selectedUnitId, actionItem.key))}
-                  >
-                    <ActionIcon size={actionIconSize} weight="regular" aria-hidden />
-                    <span>{actionItem.label}</span>
-                  </button>
-                )
-              })
+              const ActionIcon = actionItem.Icon
+              return (
+                <button
+                  key={actionItem.key}
+                  type="button"
+                  className={
+                    selectedPanel === actionItem.key
+                      ? `${styles.actionButton} ${styles.actionButtonActive}`
+                      : styles.actionButton
+                  }
+                  onClick={() => navigate(buildStaffPath(selectedUnitId, actionItem.key))}
+                >
+                  <ActionIcon size={actionIconSize} weight="regular" aria-hidden />
+                  <span>{actionItem.label}</span>
+                </button>
+              )
+            })
             : adminActions.map((actionItem) => {
-                const ActionIcon = actionItem.Icon
-                return (
-                  <button
-                    key={actionItem.panel}
-                    type="button"
-                    className={
-                      currentPath.startsWith(PATHS.admin) && selectedPanel === actionItem.panel
-                        ? `${styles.actionButton} ${styles.actionButtonActive}`
-                        : styles.actionButton
-                    }
-                    onClick={() => navigate(buildAdminPath(selectedUnitId, actionItem.panel))}
-                  >
-                    <ActionIcon size={actionIconSize} weight="regular" aria-hidden />
-                    <span>{actionItem.label}</span>
-                  </button>
-                )
-              })}
+              const ActionIcon = actionItem.Icon
+              return (
+                <button
+                  key={actionItem.panel}
+                  type="button"
+                  className={
+                    currentPath.startsWith(PATHS.admin) && selectedPanel === actionItem.panel
+                      ? `${styles.actionButton} ${styles.actionButtonActive}`
+                      : styles.actionButton
+                  }
+                  onClick={() => navigate(buildAdminPath(selectedUnitId, actionItem.panel))}
+                >
+                  <ActionIcon size={actionIconSize} weight="regular" aria-hidden />
+                  <span>{actionItem.label}</span>
+                </button>
+              )
+            })}
         </nav>
       )}
     </aside>

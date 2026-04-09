@@ -51,11 +51,11 @@ select:disabled {
   overflow: hidden;
 }
 
-.app-shell--admin > .topnav {
+.app-shell--admin>.topnav {
   flex-shrink: 0;
 }
 
-.app-shell--admin > section {
+.app-shell--admin>section {
   flex: 1 1 auto;
   min-height: 0;
   min-width: 0;

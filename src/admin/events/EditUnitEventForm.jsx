@@ -53,8 +53,9 @@ export default function EditUnitEventForm({ eventData, unitId }) {
 
   const fetchUnits = async () => {
     try {
-      const units = await getUnits()
-      setAvailableUnits(units.map(u => ({
+      const res = await getUnits({ limit: 100 })
+      const items = res.items || []
+      setAvailableUnits(items.map(u => ({
         label: u.name,
         value: u.id
       })))

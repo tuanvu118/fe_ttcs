@@ -171,7 +171,7 @@ export default function EventPage({ navigate, adminUnitId }) {
                   </td>
                   {selectedSemesterId === 'all' && (
                     <td style={{ fontSize: '12px', color: '#64748b' }}>
-                      {semesters.find(s => s.id === row.semester_id)?.name || 'N/A'}
+                      {semesters.find(s => s.id === (row.semester_id || row.semesterId))?.name || 'N/A'}
                     </td>
                   )}
                   <td>

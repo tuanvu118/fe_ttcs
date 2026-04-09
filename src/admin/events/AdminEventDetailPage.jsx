@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { ArrowLeft, PencilSimple, Trash, WarningCircle } from '@phosphor-icons/react'
 import { Spin } from 'antd'
 import { getPublicEventById, getUnitEventById } from '../../service/apiAdminEvent'
+import { getSemesters } from '../../service/semesterService'
+import { getStoredAuthSession } from '../../service/authSession'
 import EventPublicDetail from './EventPublicDetail'
 import EventUnitDetail from './EventUnitDetail'
 import styles from './adminEventDetail.module.css'
@@ -12,6 +14,7 @@ export default function AdminEventDetailPage() {
   const navigate = useNavigate()
   
   const [data, setData] = useState(null)
+  const [semesters, setSemesters] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
 
@@ -23,13 +26,14 @@ export default function AdminEventDetailPage() {
     setIsLoading(true)
     setError(null)
     try {
-      let response
-      if (eventScope === 'p') {
-        response = await getPublicEventById(eventId)
-      } else {
-        response = await getUnitEventById(eventId, unitId)
-      }
-      setData(response)
+      const token = getStoredAuthSession()?.accessToken
+      const [eventRes, semRes] = await Promise.all([
+        eventScope === 'p' ? getPublicEventById(eventId) : getUnitEventById(eventId, unitId),
+        getSemesters(token)
+      ])
+      
+      setData(eventRes)
+      setSemesters(semRes.items || [])
     } catch (err) {
       console.error('Fetch event detail failed', err)
       setError('Không thể tải thông tin sự kiện. Vui lòng thử lại sau.')
@@ -37,6 +41,8 @@ export default function AdminEventDetailPage() {
       setIsLoading(false)
     }
   }
+
+  const semesterObj = data ? semesters.find(s => s.id === (data.semester_id || data.semesterId)) : null
 
   const handleBack = () => navigate(`/admin/${unitId}/events`)
 
@@ -87,9 +93,9 @@ export default function AdminEventDetailPage() {
       </header>
 
       {eventScope === 'p' ? (
-        <EventPublicDetail data={data} />
+        <EventPublicDetail data={data} semester={semesterObj} />
       ) : (
-        <EventUnitDetail data={data} />
+        <EventUnitDetail data={data} semester={semesterObj} />
       )}
     </div>
   )

@@ -9,7 +9,7 @@ import {
 } from '@phosphor-icons/react'
 import styles from './adminEventDetail.module.css'
 
-export default function EventPublicDetail({ data }) {
+export default function EventPublicDetail({ data, semester }) {
   if (!data) return null
 
   return (
@@ -158,7 +158,7 @@ export default function EventPublicDetail({ data }) {
           <div className={styles.cardBody}>
              <div className={styles.infoItem}>
                 <span className={styles.infoLabel}>HỌC KỲ</span>
-                <span className={styles.infoValue}>{data.semesterId || 'N/A'}</span>
+                <span className={styles.infoValue}>{semester ? `${semester.name} - ${semester.academic_year}` : 'N/A'}</span>
               </div>
           </div>
         </div>
