@@ -11,8 +11,9 @@ import {
   getUnitMembers,
   updateUnit,
 } from '../../service/unitService'
-import { buildUnitDetailPath, UNIT_TYPES, USER_ROLES } from '../../utils/routes'
+import { UNIT_TYPES, USER_ROLES } from '../../utils/routes'
 import { getValidationMessage } from '../../utils/userUtils'
+import UnitDetailModal from './UnitDetailModal'
 import styles from './adminUnits.module.css'
 
 const DEFAULT_LIMIT = 10
@@ -67,7 +68,6 @@ function UnitsManagementPage({
   role,
   roleLabel,
   user,
-  navigate,
   onSessionExpired,
 }) {
   const [result, setResult] = useState({
@@ -93,6 +93,7 @@ function UnitsManagementPage({
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const [editingUnit, setEditingUnit] = useState(null)
   const [deletingUnit, setDeletingUnit] = useState(null)
+  const [viewingUnit, setViewingUnit] = useState(null)
 
   const isAdmin = role === USER_ROLES.admin
   const isStaff = role === USER_ROLES.staff
@@ -288,6 +289,26 @@ function UnitsManagementPage({
     }
   }
 
+  async function handleUnitDeleted(deletedUnitId) {
+    setViewingUnit(null)
+    setEditingUnit(null)
+    setDeletingUnit(null)
+    setMemberTotals((current) => {
+      const nextTotals = { ...current }
+      delete nextTotals[deletedUnitId]
+      return nextTotals
+    })
+
+    const fallbackSkip =
+      result.items.length <= 1 && query.skip > 0
+        ? Math.max(query.skip - query.limit, 0)
+        : query.skip
+
+    const nextQuery = { ...query, skip: fallbackSkip }
+    setQuery(nextQuery)
+    await loadUnits(nextQuery)
+  }
+
   function handleApiError(error, fallbackMessage) {
     if (error?.status === 401) {
       setNotice({
@@ -407,6 +428,19 @@ function UnitsManagementPage({
         onConfirm={handleDeleteUnit}
       />
 
+      {viewingUnit?.id && (
+        <UnitDetailModal
+          unitId={viewingUnit.id}
+          accessToken={accessToken}
+          role={role}
+          roleLabel={roleLabel}
+          user={user}
+          onClose={() => setViewingUnit(null)}
+          onSessionExpired={onSessionExpired}
+          onUnitDeleted={handleUnitDeleted}
+        />
+      )}
+
       <div className={`page-card ${styles.consoleHeader}`}>
         <div>
           <span className="dashboard-badge">{roleLabel}</span>
@@ -500,7 +534,7 @@ function UnitsManagementPage({
                       <button
                         type="button"
                         className={styles.nameLink}
-                        onClick={() => navigate(buildUnitDetailPath(unit.id))}
+                        onClick={() => setViewingUnit(unit)}
                       >
                         {unit.name || 'Chưa cập nhật'}
                       </button>
@@ -518,6 +552,13 @@ function UnitsManagementPage({
                     <div className={`${styles.tableActions} ${styles.tableActionsIcon}`}>
                       {isAdmin ? (
                         <>
+                          <button
+                            type="button"
+                            className="secondary-button unit-action-button"
+                            onClick={() => setViewingUnit(unit)}
+                          >
+                            Mở
+                          </button>
                           <IconButton
                             title="Sửa đơn vị"
                             onClick={() => setEditingUnit(unit)}
@@ -536,7 +577,7 @@ function UnitsManagementPage({
                         <button
                           type="button"
                           className="secondary-button unit-action-button"
-                          onClick={() => navigate(buildUnitDetailPath(unit.id))}
+                          onClick={() => setViewingUnit(unit)}
                         >
                           Mở
                         </button>

@@ -3,7 +3,7 @@ import NotificationPopup from '../components/NotificationPopup'
 import UnitLogo from '../components/units/UnitLogo'
 import UnitTypeBadge from '../components/units/UnitTypeBadge'
 import { getUnits } from '../service/unitService'
-import { buildClubDetailPath, UNIT_TYPES } from '../utils/routes'
+import { buildClubDetailPath, PATHS, UNIT_TYPES } from '../utils/routes'
 import { getUnitIntroduction } from '../utils/unitUtils'
 
 const DEFAULT_LIMIT = 12
@@ -96,7 +96,7 @@ function ClubPage({ navigate, search = '' }) {
     }
 
     const nextQuery = searchParams.toString()
-    navigate(nextQuery ? `/club?${nextQuery}` : '/club')
+    navigate(nextQuery ? `${PATHS.club}?${nextQuery}` : PATHS.club)
   }
 
   function handleSearchSubmit(event) {
