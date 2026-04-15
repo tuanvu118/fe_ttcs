@@ -1,18 +1,29 @@
 export const PATHS = {
   home: '/',
-  event: '/event',
+  event: '/events',
+  units: '/units',
+  qrScan: '/qr-scan',
   about: '/about',
-  club: '/club',
+  club: '/units',
   login: '/login',
-  register: '/register',
   profile: '/profile',
   admin: '/admin',
-  manager: '/manager',
-  staff: '/staff',
-  units: '/units',
-  semesters: '/semesters',
+  manage: '/admin',
+  manageUnits: '/admin',
+  manageAdmin: '/admin',
   logout: '/logout',
 }
+
+/** Panel query cho /manage/admin — thay cho các path /manage/admin/user|units|semester cũ */
+export const MANAGE_ADMIN_PANELS = {
+  users: 'users',
+  units: 'units',
+  semesters: 'semesters',
+  events: 'events',
+}
+
+const ADMIN_PANEL_IDS = new Set(Object.values(MANAGE_ADMIN_PANELS))
+const STAFF_UNIT_PANEL_IDS = new Set(['members', 'reports', 'events'])
 
 export const USER_ROLES = {
   admin: 'admin',
@@ -30,8 +41,8 @@ export const ROLE_LABELS = {
 
 export const ROLE_DASHBOARD_PATHS = {
   [USER_ROLES.admin]: PATHS.admin,
-  [USER_ROLES.manager]: PATHS.manager,
-  [USER_ROLES.staff]: PATHS.units,
+  [USER_ROLES.manager]: PATHS.admin,
+  [USER_ROLES.staff]: PATHS.admin,
 }
 
 export const UNIT_TYPES = {
@@ -41,76 +52,46 @@ export const UNIT_TYPES = {
 }
 
 const MANAGE_USER_ROLES = [USER_ROLES.admin, USER_ROLES.manager]
-const MANAGE_UNIT_ROLES = [USER_ROLES.admin, USER_ROLES.manager, USER_ROLES.staff]
-const UNIT_DETAIL_PATTERN = /^\/units\/([^/]+)$/
-const CLUB_DETAIL_PATTERN = /^\/club\/([^/]+)$/
+const MANAGE_PATHS = new Set([PATHS.manage, PATHS.manageUnits, PATHS.manageAdmin])
+const CLUB_DETAIL_PATTERN = /^\/units\/([^/]+)$/
 
 export const primaryNavigation = [
   { path: PATHS.home, label: 'Trang chủ' },
   { path: PATHS.event, label: 'Sự kiện' },
   { path: PATHS.about, label: 'Cổng thông tin' },
-  { path: PATHS.club, label: 'Câu lạc bộ' },
+  { path: PATHS.club, label: 'Đơn vị' },
 ]
 
 const routeMeta = {
   [PATHS.home]: { title: 'Trang chủ' },
   [PATHS.event]: { title: 'Sự kiện' },
+  [PATHS.qrScan]: { title: 'Quét QR', requiresAuth: true },
   [PATHS.about]: { title: 'Cổng thông tin' },
-  [PATHS.club]: { title: 'Câu lạc bộ' },
+  [PATHS.club]: { title: 'Đơn vị' },
   [PATHS.login]: { title: 'Đăng nhập' },
-  [PATHS.register]: {
-    title: 'Tạo người dùng',
-    requiresAuth: true,
-    allowedRoles: MANAGE_USER_ROLES,
-  },
   [PATHS.profile]: { title: 'Hồ sơ', requiresAuth: true },
-  [PATHS.admin]: {
-    title: 'Quản trị Admin',
+  [PATHS.manage]: {
+    title: 'Quản trị',
     requiresAuth: true,
-    allowedRoles: [USER_ROLES.admin],
   },
-  [PATHS.manager]: {
-    title: 'Quản trị Manager',
+  [PATHS.manageUnits]: {
+    title: 'Quản trị đơn vị',
     requiresAuth: true,
-    allowedRoles: [USER_ROLES.manager],
   },
-  [PATHS.staff]: {
-    title: 'Quản trị Staff',
-    requiresAuth: true,
-    allowedRoles: [USER_ROLES.staff],
-  },
-  [PATHS.units]: {
-    title: 'Đơn vị',
-    requiresAuth: true,
-    allowedRoles: MANAGE_UNIT_ROLES,
-  },
-  [PATHS.semesters]: {
-    title: 'Học kỳ',
+  [PATHS.manageAdmin]: {
+    title: 'Quản trị hệ thống',
     requiresAuth: true,
   },
   [PATHS.logout]: { title: 'Đăng xuất', requiresAuth: true },
-}
-
-export function buildUnitDetailPath(unitId) {
-  return `${PATHS.units}/${unitId}`
 }
 
 export function buildClubDetailPath(unitId) {
   return `${PATHS.club}/${unitId}`
 }
 
-export function getUnitIdFromPath(pathname) {
-  const matchedPath = pathname.match(UNIT_DETAIL_PATTERN)
-  return matchedPath?.[1] ?? null
-}
-
 export function getClubUnitIdFromPath(pathname) {
   const matchedPath = pathname.match(CLUB_DETAIL_PATTERN)
   return matchedPath?.[1] ?? null
-}
-
-export function isUnitDetailPath(pathname) {
-  return Boolean(getUnitIdFromPath(pathname))
 }
 
 export function isClubDetailPath(pathname) {
@@ -122,21 +103,98 @@ export function getRouteMeta(pathname) {
     return routeMeta[pathname]
   }
 
-  if (isUnitDetailPath(pathname)) {
-    return {
-      title: 'Chi tiết đơn vị',
-      requiresAuth: true,
-      allowedRoles: MANAGE_UNIT_ROLES,
-    }
-  }
-
   if (isClubDetailPath(pathname)) {
     return {
-      title: 'Chi tiết câu lạc bộ',
+      title: 'Chi tiết đơn vị',
     }
   }
 
   return null
+}
+
+export function isManagePath(pathname) {
+  return MANAGE_PATHS.has(pathname)
+}
+
+export function parseManageQuery(search = '', pathname = '') {
+  const params = new URLSearchParams(search || '')
+  const unitId = params.get('unit') || ''
+  const rawPanel = params.get('panel')
+
+  if (pathname === PATHS.manageAdmin) {
+    const panel =
+      rawPanel && ADMIN_PANEL_IDS.has(rawPanel) ? rawPanel : MANAGE_ADMIN_PANELS.users
+    return { unitId, panel }
+  }
+
+  if (pathname === PATHS.manageUnits) {
+    const panel = rawPanel && STAFF_UNIT_PANEL_IDS.has(rawPanel) ? rawPanel : 'members'
+    return { unitId, panel }
+  }
+
+  return {
+    unitId,
+    panel: rawPanel || 'members',
+  }
+}
+
+function normalizeScopedRole(roleName) {
+  if (typeof roleName !== 'string') {
+    return null
+  }
+
+  const normalizedRole = roleName.trim().toLowerCase()
+  return Object.values(USER_ROLES).includes(normalizedRole) ? normalizedRole : null
+}
+
+function getHighestManageRole(roleNames = []) {
+  const normalizedRoles = roleNames
+    .map((roleName) => normalizeScopedRole(roleName))
+    .filter(Boolean)
+
+  if (normalizedRoles.includes(USER_ROLES.admin)) {
+    return USER_ROLES.admin
+  }
+
+  if (normalizedRoles.includes(USER_ROLES.manager)) {
+    return USER_ROLES.manager
+  }
+
+  if (normalizedRoles.includes(USER_ROLES.staff)) {
+    return USER_ROLES.staff
+  }
+
+  return null
+}
+
+export function getManageRoleForUnit(user, unitId) {
+  if (!unitId) {
+    return null
+  }
+
+  const roleItem = (user?.roles || []).find((item) => item?.unit_id === unitId)
+  return getHighestManageRole(roleItem?.roles || [])
+}
+
+export function getManageOptionsFromUser(user) {
+  return (user?.roles || [])
+    .map((item) => {
+      if (!item?.unit_id || !Array.isArray(item?.roles)) {
+        return null
+      }
+
+      const manageRole = getHighestManageRole(item.roles)
+      if (!manageRole) {
+        return null
+      }
+
+      return { unitId: item.unit_id, role: manageRole }
+    })
+    .filter(Boolean)
+}
+
+export function hasManageAccess(user) {
+  return getManageOptionsFromUser(user).length > 0
 }
 
 export function getDashboardPathForRole(role) {

@@ -1,0 +1,285 @@
+.unitsPage {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.detailModalBackdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(1.5px);
+}
+
+.detailModal {
+  width: min(1200px, 96vw);
+  max-height: calc(100svh - 2rem);
+  border-radius: 20px;
+  background: #eef3ff;
+  border: 1px solid #d6e2ff;
+  box-shadow: 0 30px 60px rgba(15, 23, 42, 0.26);
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+}
+
+.detailModalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid #dbe6ff;
+  background: #ffffff;
+}
+
+.detailModalHeader h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.detailModalBody {
+  overflow: auto;
+  padding: 1rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.consoleHeader {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.85rem;
+  align-items: center;
+  padding: 1.25rem 1.35rem;
+}
+
+.consoleCreateButton {
+  min-width: 154px;
+  padding: 0.8rem 1rem;
+}
+
+.consoleHeader h1 {
+  margin: 0 0 0.45rem;
+  font-size: clamp(1.85rem, 2.6vw, 2.45rem);
+}
+
+.consoleHeader :global(.dashboard-badge) {
+  padding: 0.32rem 0.65rem;
+  font-size: 0.75rem;
+}
+
+.consoleHeader p {
+  margin: 0;
+  font-size: 1rem;
+  color: #4d5b73;
+}
+
+.consoleToolbar {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) repeat(2, minmax(0, 1fr)) auto;
+  gap: 0.8rem;
+  align-items: end;
+  padding: 1rem 1.2rem;
+}
+
+.consoleToolbarCompact {
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) auto;
+}
+
+.consoleSearch {
+  min-width: 240px;
+}
+
+.consoleToolbarActions {
+  display: flex;
+  gap: 0.55rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.consoleToolbar :global(.field) span {
+  font-size: 0.9rem;
+}
+
+.consoleToolbar :global(.field) input,
+.consoleToolbar :global(.field) select {
+  padding: 0.75rem 0.85rem;
+}
+
+.consoleToolbarActions :global(.secondary-button) {
+  padding: 0.68rem 0.95rem;
+}
+
+.consoleSummary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.65rem 1rem;
+  color: #5f6f8d;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.managementTableShell {
+  padding: 0;
+  overflow: hidden;
+}
+
+.managementTable {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+}
+
+.managementTable thead th {
+  padding: 1.05rem 1rem;
+  color: #f8fbff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-align: left;
+  background: linear-gradient(180deg, #44516a 0%, #3a4459 100%);
+}
+
+.managementTable thead th:first-child {
+  border-top-left-radius: 20px;
+}
+
+.managementTable thead th:last-child {
+  border-top-right-radius: 20px;
+}
+
+.managementTable tbody tr {
+  border-bottom: 1px solid #e6ebf5;
+  background: rgba(255, 255, 255, 0.82);
+}
+
+.managementTable td {
+  padding: 1.05rem 1rem;
+  color: #1f2937;
+  vertical-align: middle;
+  padding-top: 0.95rem;
+  padding-bottom: 0.95rem;
+}
+
+.managementTable th:first-child,
+.managementTable td:first-child {
+  width: 90px;
+}
+
+.tableName {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.tableName strong {
+  color: #0f172a;
+}
+
+.nameLink {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  text-align: left;
+  color: #0f172a;
+  font-size: 1.02rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.nameLink:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+.totalCell {
+  font-size: 1.25rem;
+  color: #1f2937;
+  font-weight: 700;
+}
+
+.tableActions {
+  display: flex;
+  gap: 0.85rem;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.tableActionsIcon {
+  gap: 0.5rem;
+}
+
+.iconButton {
+  width: 38px;
+  height: 38px;
+  border: 1px solid #d4dbe9;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #6b7280;
+  display: inline-grid;
+  place-items: center;
+  cursor: pointer;
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.iconButton svg {
+  width: 1.02rem;
+  height: 1.02rem;
+}
+
+.iconButton:hover {
+  transform: translateY(-1px);
+  border-color: #90a8d4;
+  color: #1d4ed8;
+  box-shadow: 0 10px 20px rgba(29, 78, 216, 0.12);
+}
+
+.iconButton:global(.danger):hover {
+  border-color: #f3b8b8;
+  color: #dc2626;
+  box-shadow: 0 10px 20px rgba(220, 38, 38, 0.12);
+}
+
+.staffMain {
+  min-width: 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.staffMemberFilterGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.85rem;
+  align-items: end;
+}
+
+.placeholderPanel :global(h1) {
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .consoleHeader,
+  .consoleToolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .consoleToolbarActions {
+    justify-content: flex-start;
+  }
+
+  .managementTableShell {
+    overflow-x: auto;
+  }
+
+  .staffMemberFilterGrid {
+    grid-template-columns: 1fr;
+  }
+}

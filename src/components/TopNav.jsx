@@ -1,5 +1,10 @@
-import UserAvatar from './users/UserAvatar'
+import { GearSix, UserCircle } from '@phosphor-icons/react'
 import { PATHS, primaryNavigation } from '../utils/routes'
+
+const navIconSize = 18
+
+const BRAND_LOGO_PTIT_SRC = '/LogoPTIT11.svg'
+const BRAND_LOGO_DOAN_SRC = '/HuyHieuDoan.png'
 
 function BellIcon() {
   return (
@@ -16,34 +21,13 @@ function BellIcon() {
   )
 }
 
-function GearIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path
-        d="m12 3 1.15 2.71 2.94.28-2.22 1.96.65 2.88L12 9.48 9.48 10.83l.65-2.88-2.22-1.96 2.94-.28L12 3Zm0 7.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3Z"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M4.5 12a7.5 7.5 0 0 1 0-.38M19.5 12a7.5 7.5 0 0 0 0-.38M6.22 17.78l.27-.27M17.51 6.49l.27-.27M6.22 6.22l.27.27M17.51 17.51l.27.27"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-      />
-    </svg>
-  )
-}
-
-function TopNav({ currentPath, isAuthenticated, dashboardPath, user, navigate }) {
+function TopNav({ currentPath, isAuthenticated, dashboardPath, navigate }) {
   function renderNavButton(path, label) {
     const isActive =
       currentPath === path ||
       (path === PATHS.units && currentPath.startsWith(`${PATHS.units}/`)) ||
-      (path === PATHS.club && currentPath.startsWith(`${PATHS.club}/`))
+      (path === PATHS.club && currentPath.startsWith(`${PATHS.club}/`)) ||
+      (path === PATHS.manage && currentPath.startsWith(PATHS.manage))
 
     return (
       <button
@@ -61,6 +45,24 @@ function TopNav({ currentPath, isAuthenticated, dashboardPath, user, navigate })
     <header className="topnav">
       <div className="topnav-side">
         <button type="button" className="brand" onClick={() => navigate(PATHS.home)}>
+          <span className="topnav-brand-logos" aria-hidden>
+            <img
+              src={BRAND_LOGO_PTIT_SRC}
+              alt=""
+              className="topnav-brand-logo topnav-brand-logo--ptit"
+              width={48}
+              height={48}
+              decoding="async"
+            />
+            <img
+              src={BRAND_LOGO_DOAN_SRC}
+              alt=""
+              className="topnav-brand-logo topnav-brand-logo--doan"
+              width={48}
+              height={48}
+              decoding="async"
+            />
+          </span>
           Đoàn Thanh Niên
         </button>
       </div>
@@ -82,6 +84,18 @@ function TopNav({ currentPath, isAuthenticated, dashboardPath, user, navigate })
 
         {isAuthenticated && (
           <>
+            <button
+              type="button"
+              className={
+                currentPath === PATHS.qrScan
+                  ? 'nav-action-button nav-action-button-light active'
+                  : 'nav-action-button nav-action-button-light'
+              }
+              onClick={() => navigate(PATHS.qrScan)}
+            >
+              Quet QR
+            </button>
+
             <button type="button" className="topnav-icon-button" aria-label="Thông báo">
               <BellIcon />
             </button>
@@ -93,21 +107,19 @@ function TopNav({ currentPath, isAuthenticated, dashboardPath, user, navigate })
                 aria-label="Khu vực quản trị"
                 onClick={() => navigate(dashboardPath)}
               >
-                <GearIcon />
+                <GearSix size={navIconSize} weight="regular" aria-hidden />
               </button>
             )}
 
             <button
               type="button"
-              className={currentPath === PATHS.profile ? 'topnav-avatar-button active' : 'topnav-avatar-button'}
+              className={
+                currentPath === PATHS.profile ? 'topnav-icon-button active' : 'topnav-icon-button'
+              }
               aria-label="Thông tin cá nhân"
               onClick={() => navigate(PATHS.profile)}
             >
-              <UserAvatar
-                avatarUrl={user?.avatarUrl || user?.avatar_url}
-                fullName={user?.fullName || user?.full_name}
-                size="small"
-              />
+              <UserCircle size={navIconSize} weight="regular" aria-hidden />
             </button>
           </>
         )}

@@ -5,7 +5,9 @@ import {
   subscribeAuthChange,
   writeAuthSession,
 } from './authSession'
+import { clearStoredCurrentSemester, writeStoredCurrentSemester } from '../utils/currentSemesterStorage'
 import { apiRequest } from './apiClient'
+import { getCurrentSemester } from './semesterService'
 
 function normalizeRole(role) {
   if (typeof role !== 'string') {
@@ -117,11 +119,24 @@ export async function loginUser({ studentId, password }) {
     skipAuthRefresh: true,
   })
 
-  return writeAuthSession({
+  const session = writeAuthSession({
     accessToken: token?.access_token || '',
     refreshToken: token?.refresh_token || '',
     tokenType: token?.token_type || 'bearer',
   })
+
+  if (session?.accessToken) {
+    try {
+      const semester = await getCurrentSemester(session.accessToken)
+      writeStoredCurrentSemester(semester)
+    } catch {
+      clearStoredCurrentSemester()
+    }
+  } else {
+    clearStoredCurrentSemester()
+  }
+
+  return session
 }
 
 export async function fetchCurrentUser(authSession) {

@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PTIT Admin - Quản lý sự kiện</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@100;300;400;500;600;700;800;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface": "#191c1d",
+                        "surface-container-high": "#e7e8e9",
+                        "surface-bright": "#f8f9fa",
+                        "on-error-container": "#93000a",
+                        "tertiary": "#5d2700",
+                        "background": "#f8f9fa",
+                        "on-tertiary-fixed-variant": "#753400",
+                        "on-tertiary-container": "#ffac7a",
+                        "on-tertiary": "#ffffff",
+                        "outline": "#737782",
+                        "error-container": "#ffdad6",
+                        "primary-fixed": "#d6e3ff",
+                        "secondary-fixed-dim": "#b6c7e9",
+                        "on-primary-fixed": "#001b3d",
+                        "on-secondary-container": "#4f607d",
+                        "tertiary-container": "#803900",
+                        "tertiary-fixed-dim": "#ffb68c",
+                        "primary": "#00366e",
+                        "surface-container-highest": "#e1e3e4",
+                        "on-error": "#ffffff",
+                        "on-secondary-fixed": "#091c35",
+                        "secondary-fixed": "#d6e3ff",
+                        "primary-container": "#0f4d93",
+                        "secondary-container": "#cadbfd",
+                        "on-primary": "#ffffff",
+                        "inverse-surface": "#2e3132",
+                        "on-tertiary-fixed": "#321200",
+                        "surface-variant": "#e1e3e4",
+                        "outline-variant": "#c2c6d2",
+                        "surface-dim": "#d9dadb",
+                        "surface": "#f8f9fa",
+                        "surface-container-low": "#f3f4f5",
+                        "error": "#ba1a1a",
+                        "on-primary-container": "#9cc0ff",
+                        "on-secondary-fixed-variant": "#374763",
+                        "surface-container": "#edeeef",
+                        "surface-container-lowest": "#ffffff",
+                        "primary-fixed-dim": "#a9c7ff",
+                        "surface-tint": "#2a5ea5",
+                        "on-primary-fixed-variant": "#00468b",
+                        "on-surface-variant": "#424751",
+                        "tertiary-fixed": "#ffdbc9",
+                        "on-background": "#191c1d",
+                        "on-secondary": "#ffffff",
+                        "inverse-primary": "#a9c7ff",
+                        "secondary": "#4f5f7c",
+                        "inverse-on-surface": "#f0f1f2"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Be Vietnam Pro"],
+                        "body": ["Be Vietnam Pro"],
+                        "label": ["Be Vietnam Pro"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { font-family: 'Be Vietnam Pro', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .tonal-layering {
+            background: linear-gradient(180deg, rgba(243, 244, 245, 0.5) 0%, rgba(231, 232, 233, 0.5) 100%);
+        }
+        .signature-gradient {
+            background: linear-gradient(135deg, #00366e 0%, #0f4d93 100%);
+        }
+    </style>
+</head>
+<body class="bg-surface selection:bg-primary-container selection:text-white">
+<!-- SideNavBar -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-slate-50 dark:bg-slate-950 flex flex-col py-6 px-4 gap-2 z-50 transition-all duration-200 ease-in-out font-['Be_Vietnam_Pro'] text-sm font-medium">
+<div class="flex items-center gap-3 px-4 mb-8">
+<img alt="University Crest" class="w-10 h-10 object-contain" data-alt="Official logo of PTIT University with crest and academic symbolism in red and gold" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCJWBqKPlJxgIma0Qh78qcQ2aTt7FKiWl3c3nVnEoNPrpdOinJ44EGHc4ig_2sGLXB68Y-Yo9xyyMUKiBvsGSob5SjVhPMAdykMeEAcdI9bctn7T5zhctwlqS6uRNMvp6d9EzxIRItdMs0By_6pKc0bqj_6w3_tORETbN7JsaGYKMfJ28TlTVk1ttF8EULe9UHJL70LeBoN2gG7y8xqj5jLfMB5jwoZwz2DVi3vAIYUiQKCAJAl1seiOIZ2m7u4DcPzY0xW8jkatL4"/>
+<div>
+<h1 class="text-lg font-black text-blue-900 dark:text-blue-50 leading-tight">PTIT Portal</h1>
+<p class="text-[10px] uppercase tracking-widest text-slate-400">Academic Curator</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-all duration-200 ease-in-out hover:pl-2 rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 bg-blue-100/50 dark:bg-blue-900/30 text-blue-900 dark:text-blue-200 rounded-xl font-bold transition-all duration-200 ease-in-out hover:pl-2" href="#">
+<span class="material-symbols-outlined" data-icon="event_available">event_available</span>
+<span>Event Management</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-all duration-200 ease-in-out hover:pl-2 rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span>Student Records</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-all duration-200 ease-in-out hover:pl-2 rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_month">calendar_month</span>
+<span>Academic Calendar</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 transition-all duration-200 ease-in-out hover:pl-2 rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+<div class="mt-auto border-t border-slate-200/50 pt-4 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 transition-all duration-200 rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span>Help Center</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-error hover:bg-error/10 transition-all duration-200 rounded-xl" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span>Logout</span>
+</a>
+</div>
+</aside>
+<!-- TopNavBar -->
+<header class="fixed top-0 w-[calc(100%-16rem)] ml-64 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl shadow-sm dark:shadow-none font-['Be_Vietnam_Pro'] tracking-tight">
+<div class="flex justify-between items-center px-8 h-16 w-full">
+<div class="flex items-center gap-6">
+<div class="relative">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 material-symbols-outlined text-xl">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-full w-64 text-sm focus:ring-2 focus:ring-primary/20 transition-all" placeholder="Tìm kiếm hệ thống..." type="text"/>
+</div>
+<div class="hidden md:flex items-center gap-8 text-sm">
+<a class="text-slate-500 hover:text-blue-600 transition-colors" href="#">Dashboard</a>
+<a class="text-blue-700 dark:text-blue-400 border-b-2 border-blue-700 pb-1 font-semibold" href="#">Analytics</a>
+<a class="text-slate-500 hover:text-blue-600 transition-colors" href="#">Reports</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-slate-50 rounded-full transition-colors relative">
+<span class="material-symbols-outlined text-slate-600" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<div class="h-8 w-[1px] bg-slate-200 mx-2"></div>
+<div class="flex items-center gap-3">
+<div class="text-right">
+<p class="text-sm font-bold text-blue-900">Admin PTIT</p>
+<p class="text-[10px] text-slate-500">Super Administrator</p>
+</div>
+<img alt="Administrator Profile" class="w-10 h-10 rounded-full border-2 border-primary/10 p-0.5" data-alt="Close-up professional portrait of a male administrator in a light grey suit against a neutral background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD2koAvQpSAxduyQqZOT46E3DzLNFlEwgax7QgGHZsDTkzn_ayUhYNL7tzpoPb8VrOEVp-3tQDjRl_Z0bgino1yIhezXXIpau_1GONicp_UvcG82wKjwji2ViugSmThmCGBXz9t10zwD2o96wftQgjHGohfdFWw0YL8dgji3846WSfNq9yt7JsRo0kWRdGjrzi476_f4hjAUYgnClBMZkc1cWH7txMCerK1a-MYUA17IDs-Tox0tTeDJzhLKvWirKfG7yHIEDgMWYE"/>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content Stage -->
+<main class="ml-64 mt-16 p-8 min-h-screen">
+<div class="max-w-7xl mx-auto space-y-8">
+<!-- Hero Header Section -->
+<section class="flex flex-col md:flex-row justify-between items-end gap-6">
+<div class="space-y-2">
+<nav class="flex items-center gap-2 text-label-sm text-on-surface-variant tracking-wider uppercase">
+<span>Management</span>
+<span class="material-symbols-outlined text-xs">chevron_right</span>
+<span class="text-primary font-bold">Events</span>
+</nav>
+<h2 class="text-4xl font-black text-primary tracking-tight">Sự kiện</h2>
+<p class="text-on-surface-variant max-w-lg">Quản lý và điều phối các hoạt động ngoại khóa, sự kiện học thuật và truyền thông của học viện.</p>
+</div>
+<button class="signature-gradient text-white px-8 py-4 rounded-xl flex items-center gap-3 font-bold shadow-lg shadow-primary/20 hover:scale-[1.02] active:scale-95 transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">add_circle</span>
+                    Tạo sự kiện mới
+                </button>
+</section>
+<!-- Bento Filter & Quick Stats -->
+<div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+<!-- Dropdown Card -->
+<div class="lg:col-span-1 bg-surface-container-lowest p-6 rounded-lg shadow-sm flex flex-col justify-between group hover:shadow-md transition-all duration-300">
+<div>
+<label class="block text-xs font-black uppercase tracking-widest text-on-surface-variant mb-4">Lọc theo học kỳ</label>
+<div class="relative">
+<select class="w-full bg-surface-container-highest border-none rounded-xl py-3 pl-4 pr-10 text-on-surface font-semibold focus:ring-2 focus:ring-primary transition-all appearance-none">
+<option>Học kỳ 1 - 2023-2024</option>
+<option>Học kỳ 2 - 2023-2024</option>
+<option>Học kỳ Hè - 2024</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">keyboard_arrow_down</span>
+</div>
+</div>
+</div>
+<!-- Stats Cards -->
+<div class="bg-surface-container-lowest p-6 rounded-lg shadow-sm flex items-center gap-4">
+<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">event</span>
+</div>
+<div>
+<p class="text-xs text-on-surface-variant font-medium">Tổng sự kiện</p>
+<p class="text-2xl font-black text-primary">24</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-lg shadow-sm flex items-center gap-4">
+<div class="w-12 h-12 bg-secondary-container/30 rounded-full flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">group_add</span>
+</div>
+<div>
+<p class="text-xs text-on-surface-variant font-medium">Lượt đăng ký</p>
+<p class="text-2xl font-black text-primary">1.2k</p>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-lg shadow-sm flex items-center gap-4 border-l-4 border-primary">
+<div class="w-12 h-12 bg-tertiary-fixed/30 rounded-full flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<div>
+<p class="text-xs text-on-surface-variant font-medium">Điểm rèn luyện TB</p>
+<p class="text-2xl font-black text-primary">1.5</p>
+</div>
+</div>
+</div>
+<!-- Curated Data Table -->
+<div class="bg-surface-container-lowest rounded-lg shadow-sm overflow-hidden">
+<div class="px-8 py-6 flex justify-between items-center border-b border-surface-container">
+<h3 class="text-xl font-bold text-primary">Danh sách sự kiện</h3>
+<div class="flex gap-2">
+<button class="p-2 hover:bg-surface-container-low rounded-lg transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">filter_list</span>
+</button>
+<button class="p-2 hover:bg-surface-container-low rounded-lg transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">download</span>
+</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low">
+<th class="px-8 py-4 text-xs font-black uppercase tracking-widest text-on-surface-variant">Tên Sự Kiện</th>
+<th class="px-8 py-4 text-xs font-black uppercase tracking-widest text-on-surface-variant">Loại</th>
+<th class="px-8 py-4 text-xs font-black uppercase tracking-widest text-on-surface-variant">Điểm Cộng</th>
+<th class="px-8 py-4 text-xs font-black uppercase tracking-widest text-on-surface-variant text-right">Thao Tác</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-surface-container/50">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="px-8 py-6">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center text-blue-700">
+<span class="material-symbols-outlined">campaign</span>
+</div>
+<div>
+<p class="font-bold text-on-surface">Sự kiện public 1</p>
+<p class="text-xs text-on-surface-variant">Cập nhật 2 giờ trước</p>
+</div>
+</div>
+</td>
+<td class="px-8 py-6">
+<span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-secondary-container text-on-secondary-container">Sự kiện (public)</span>
+</td>
+<td class="px-8 py-6">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-outline"></span>
+<span class="font-bold text-primary">0</span>
+</div>
+</td>
+<td class="px-8 py-6 text-right">
+<button class="text-primary font-bold text-sm hover:underline underline-offset-4">Xem chi tiết</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="px-8 py-6">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center text-blue-700">
+<span class="material-symbols-outlined">campaign</span>
+</div>
+<div>
+<p class="font-bold text-on-surface">Sự kiện public 2</p>
+<p class="text-xs text-on-surface-variant">Cập nhật 5 giờ trước</p>
+</div>
+</div>
+</td>
+<td class="px-8 py-6">
+<span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-secondary-container text-on-secondary-container">Sự kiện (public)</span>
+</td>
+<td class="px-8 py-6">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-bold text-primary">0.5</span>
+</div>
+</td>
+<td class="px-8 py-6 text-right">
+<button class="text-primary font-bold text-sm hover:underline underline-offset-4">Xem chi tiết</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="px-8 py-6">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-tertiary-fixed flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined">support_agent</span>
+</div>
+<div>
+<p class="font-bold text-on-surface">Hỗ trợ P Ino</p>
+<p class="text-xs text-on-surface-variant">Cập nhật hôm qua</p>
+</div>
+</div>
+</td>
+<td class="px-8 py-6">
+<span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-tertiary-fixed text-tertiary">Hỗ trợ sự kiện</span>
+</td>
+<td class="px-8 py-6">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+<span class="font-bold text-primary">1.5</span>
+</div>
+</td>
+<td class="px-8 py-6 text-right">
+<button class="text-primary font-bold text-sm hover:underline underline-offset-4">Xem chi tiết</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-low/50 transition-colors group">
+<td class="px-8 py-6">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-lg bg-secondary-fixed flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">share</span>
+</div>
+<div>
+<p class="font-bold text-on-surface">Hỗ trợ truyền thông ngày Gia đình Việt Nam</p>
+<p class="text-xs text-on-surface-variant">Cập nhật 2 ngày trước</p>
+</div>
+</div>
+</td>
+<td class="px-8 py-6">
+<span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-secondary-fixed text-on-secondary-fixed-variant">Hỗ trợ truyền thông</span>
+</td>
+<td class="px-8 py-6">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-bold text-primary">0.5</span>
+</div>
+</td>
+<td class="px-8 py-6 text-right">
+<button class="text-primary font-bold text-sm hover:underline underline-offset-4">Xem chi tiết</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Simple Pagination -->
+<div class="px-8 py-4 bg-surface-container-low flex justify-between items-center">
+<p class="text-xs text-on-surface-variant">Hiển thị 4 trên tổng số 24 sự kiện</p>
+<div class="flex gap-2">
+<button class="w-8 h-8 rounded-lg flex items-center justify-center border border-outline-variant text-on-surface-variant opacity-50 cursor-not-allowed">
+<span class="material-symbols-outlined text-sm">chevron_left</span>
+</button>
+<button class="w-8 h-8 rounded-lg flex items-center justify-center bg-primary text-white font-bold text-xs">1</button>
+<button class="w-8 h-8 rounded-lg flex items-center justify-center border border-outline-variant text-on-surface-variant hover:bg-surface-container-high transition-colors font-bold text-xs">2</button>
+<button class="w-8 h-8 rounded-lg flex items-center justify-center border border-outline-variant text-on-surface-variant hover:bg-surface-container-high transition-colors font-bold text-xs">3</button>
+<button class="w-8 h-8 rounded-lg flex items-center justify-center border border-outline-variant text-on-surface-variant hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Promotion / Announcement Area -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
+<div class="relative h-64 rounded-lg overflow-hidden group shadow-lg">
+<div class="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/20 to-transparent z-10"></div>
+<img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" data-alt="Crowded academic auditorium during a tech seminar with vibrant stage lighting and focused audience" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBsavXvsrEd5fT8XZF2PZ3pQhshIQSN63DpqlMzCqPUq94GvU6gf2WRNFhNdi10IwT8yNKK1vEgohUdu_skv8_YV7ZEPgt4Mg6N4WgsF9Tr9WA4yNlaTfuN81omSbqgADZPnlrmUN1XU2USpT0R53vAPCwpck_KANlHlcKm3RdfrPso_ogU36Kf2ISOkXH8aO2gGmVhjclY74EU6UjMNrgXdNxYQR5Xbest6b1xr-bWdNZCsRu0OwYeGMwgBLVqfyPoDElU6T6O0GA"/>
+<div class="absolute bottom-6 left-6 z-20 text-white">
+<span class="bg-tertiary-container/80 text-on-tertiary-container px-3 py-1 rounded-full text-[10px] font-black tracking-widest uppercase mb-2 inline-block">Mới nhất</span>
+<h4 class="text-2xl font-bold">Cuộc thi lập trình PTIT Code 2024</h4>
+<p class="text-white/80 text-sm mt-1">Đăng ký tham gia ngay để nhận 2.0 điểm rèn luyện.</p>
+</div>
+</div>
+<div class="bg-primary-container p-8 rounded-lg flex flex-col justify-center text-white relative overflow-hidden">
+<div class="absolute -right-16 -top-16 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+<div class="relative z-10">
+<h4 class="text-3xl font-black mb-4">Tự động hóa báo cáo?</h4>
+<p class="text-white/80 mb-8 max-w-md">Hệ thống AI mới hỗ trợ tổng hợp điểm rèn luyện và danh sách sinh viên chỉ với một lần nhấp chuột.</p>
+<button class="bg-white text-primary px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-surface-bright transition-colors">
+<span>Khám phá ngay</span>
+<span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</div>
+</div>
+</section>
+</div>
+</main>
+<!-- Bottom Margin for Shell Polish -->
+<footer class="h-24 ml-64 flex items-center px-12 text-on-surface-variant/40 text-[10px] font-medium tracking-widest uppercase">
+        © 2024 PTIT Academic Curator | Powered by Student Affairs Division
+    </footer>
+</body></html>

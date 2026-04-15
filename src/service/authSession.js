@@ -1,4 +1,5 @@
 import { USER_ROLES } from '../utils/routes'
+import { clearStoredCurrentSemester } from '../utils/currentSemesterStorage'
 import { readStorage, removeStorage, writeStorage } from '../utils/storage'
 
 const AUTH_STORAGE_KEY = 'dtn_auth_session'
@@ -146,6 +147,7 @@ export function writeAuthSession(session) {
 
 export function clearAuthSession() {
   removeStorage(AUTH_STORAGE_KEY)
+  clearStoredCurrentSemester()
   notifyAuthChanged()
 }
 
