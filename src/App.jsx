@@ -9,15 +9,13 @@ import ClubDetailPage from './page/ClubDetailPage'
 import ClubPage from './page/ClubPage'
 import EventDetailPage from './page/EventDetailPage'
 import EventsPage from './page/EventsPage'
-import ForbiddenPage from './page/ForbiddenPage'
 import HomePage from './page/HomePage'
 import LoginPage from './page/LoginPage'
 import LogoutPage from './page/LogoutPage'
 import NotFoundPage from './page/NotFoundPage'
 import ProfilePage from './page/ProfilePage'
 import QrScanPage from './page/QrScanPage'
-import UnitDetailPage from './page/UnitDetailPage'
-import { PATHS, getClubUnitIdFromPath, USER_ROLES } from './utils/routes'
+import { PATHS, getClubUnitIdFromPath } from './utils/routes'
 
 function App() {
   const { pathname, search, navigate, replace } = useRouter()
@@ -42,8 +40,6 @@ function App() {
   const clubUnitId = getClubUnitIdFromPath(pathname)
   const eventIdMatched = pathname.match(/^\/events\/([^/]+)$/)
   const eventId = eventIdMatched?.[1] || ''
-  const unitIdMatched = pathname.match(/^\/units\/([^/]+)$/)
-  const unitId = unitIdMatched?.[1] || ''
   const isAdminArea = isAdminPath(pathname)
   const isAdminLayout = isAuthenticated && isAdminArea
 
@@ -61,9 +57,7 @@ function App() {
   const mustCheckAuth =
     requiresAuthPaths.has(pathname) ||
     isAdminArea ||
-    Boolean(unitId) ||
-    pathname.startsWith('/club/') ||
-    pathname.startsWith('/units/')
+    pathname.startsWith(`${PATHS.club}/`)
 
 
   if (mustCheckAuth && !isAuthenticated) {
@@ -114,22 +108,6 @@ function App() {
         onSessionExpired={handleSessionExpired}
       />
     )
-  } else if (unitId) {
-    if (role !== USER_ROLES.admin && role !== USER_ROLES.manager && role !== USER_ROLES.staff) {
-      page = <ForbiddenPage requiredRoleLabel="Admin, Manager hoặc Staff" />
-    } else {
-      page = (
-        <UnitDetailPage
-          unitId={unitId}
-          accessToken={accessToken}
-          role={role}
-          roleLabel={roleLabel}
-          user={user}
-          navigate={navigate}
-          onSessionExpired={handleSessionExpired}
-        />
-      )
-    }
   } else if (pathname === PATHS.logout) {
     page = <LogoutPage onLogout={logout} replace={replace} />
   } else {

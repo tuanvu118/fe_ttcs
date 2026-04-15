@@ -1,9 +1,10 @@
 export const PATHS = {
   home: '/',
   event: '/events',
+  units: '/units',
   qrScan: '/qr-scan',
   about: '/about',
-  club: '/club',
+  club: '/units',
   login: '/login',
   profile: '/profile',
   admin: '/admin',
@@ -51,16 +52,14 @@ export const UNIT_TYPES = {
 }
 
 const MANAGE_USER_ROLES = [USER_ROLES.admin, USER_ROLES.manager]
-const MANAGE_UNIT_ROLES = [USER_ROLES.admin, USER_ROLES.manager, USER_ROLES.staff]
 const MANAGE_PATHS = new Set([PATHS.manage, PATHS.manageUnits, PATHS.manageAdmin])
-const UNIT_DETAIL_PATTERN = /^\/units\/([^/]+)$/
-const CLUB_DETAIL_PATTERN = /^\/club\/([^/]+)$/
+const CLUB_DETAIL_PATTERN = /^\/units\/([^/]+)$/
 
 export const primaryNavigation = [
   { path: PATHS.home, label: 'Trang chủ' },
   { path: PATHS.event, label: 'Sự kiện' },
   { path: PATHS.about, label: 'Cổng thông tin' },
-  { path: PATHS.club, label: 'Câu lạc bộ' },
+  { path: PATHS.club, label: 'Đơn vị' },
 ]
 
 const routeMeta = {
@@ -68,7 +67,7 @@ const routeMeta = {
   [PATHS.event]: { title: 'Sự kiện' },
   [PATHS.qrScan]: { title: 'Quét QR', requiresAuth: true },
   [PATHS.about]: { title: 'Cổng thông tin' },
-  [PATHS.club]: { title: 'Câu lạc bộ' },
+  [PATHS.club]: { title: 'Đơn vị' },
   [PATHS.login]: { title: 'Đăng nhập' },
   [PATHS.profile]: { title: 'Hồ sơ', requiresAuth: true },
   [PATHS.manage]: {
@@ -86,26 +85,13 @@ const routeMeta = {
   [PATHS.logout]: { title: 'Đăng xuất', requiresAuth: true },
 }
 
-export function buildUnitDetailPath(unitId) {
-  return `${PATHS.units}/${unitId}`
-}
-
 export function buildClubDetailPath(unitId) {
   return `${PATHS.club}/${unitId}`
-}
-
-export function getUnitIdFromPath(pathname) {
-  const matchedPath = pathname.match(UNIT_DETAIL_PATTERN)
-  return matchedPath?.[1] ?? null
 }
 
 export function getClubUnitIdFromPath(pathname) {
   const matchedPath = pathname.match(CLUB_DETAIL_PATTERN)
   return matchedPath?.[1] ?? null
-}
-
-export function isUnitDetailPath(pathname) {
-  return Boolean(getUnitIdFromPath(pathname))
 }
 
 export function isClubDetailPath(pathname) {
@@ -117,17 +103,9 @@ export function getRouteMeta(pathname) {
     return routeMeta[pathname]
   }
 
-  if (isUnitDetailPath(pathname)) {
-    return {
-      title: 'Chi tiết đơn vị',
-      requiresAuth: true,
-      allowedRoles: MANAGE_UNIT_ROLES,
-    }
-  }
-
   if (isClubDetailPath(pathname)) {
     return {
-      title: 'Chi tiết câu lạc bộ',
+      title: 'Chi tiết đơn vị',
     }
   }
 
