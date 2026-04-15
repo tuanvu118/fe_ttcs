@@ -52,6 +52,7 @@ const adminActions = [
   { panel: MANAGE_ADMIN_PANELS.units, label: 'Quản lý đơn vị', Icon: Buildings },
   { panel: MANAGE_ADMIN_PANELS.semesters, label: 'Quản lý học kì', Icon: CalendarDots },
   { panel: MANAGE_ADMIN_PANELS.events, label: 'Quản lý sự kiện', Icon: CalendarBlank },
+  { panel: MANAGE_ADMIN_PANELS.reports, label: 'Quản lý báo cáo', Icon: ChartBar },
 ]
 
 export default function AdminSideNav({
@@ -132,7 +133,7 @@ export default function AdminSideNav({
                     key={`${optionItem.unitId}-${optionItem.role}`}
                     type="button"
                     className={
-                      optionItem.unitId === selectedUnitId
+                      optionItem.unitId === selectedUnitId && optionItem.role === selectedUnitRole
                         ? `${styles.unitOption} ${styles.unitOptionActive}`
                         : styles.unitOption
                     }

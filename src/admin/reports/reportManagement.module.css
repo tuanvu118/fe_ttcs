@@ -1,0 +1,287 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0.25rem 2.5rem 1.5rem;
+  min-height: 100%;
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid rgba(226, 232, 240, 0.5);
+}
+
+.titleArea h1 {
+  margin: 0;
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: #0c1f45;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #0c1f45 0%, #2563eb 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.titleArea p {
+  margin: 0.5rem 0 0;
+  color: #64748b;
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+
+.exportBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1.75rem;
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 14px;
+  color: #0c1f45;
+  font-weight: 700;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.exportBtn:hover:not(:disabled) {
+  border-color: #2563eb;
+  color: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.08);
+}
+
+/** Stats Cards */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.statCard {
+  background: white;
+  padding: 1rem 1.5rem;
+  border-radius: 16px;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.statCard::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 6px; height: 100%;
+}
+
+.statCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+}
+
+.statIcon {
+  width: 54px;
+  height: 54px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+}
+
+.statInfo h3 {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.statInfo span {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+/* Stat Variants */
+.totalIcon { background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); color: #2563eb; }
+.statCard.total::before { background: #2563eb; }
+
+.pending .statIcon { background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%); color: #f97316; }
+.statCard.pending::before { background: #f97316; }
+
+.success .statIcon { background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); color: #10b981; }
+.statCard.success::before { background: #10b981; }
+
+.danger .statIcon { background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%); color: #ef4444; }
+.statCard.danger::before { background: #ef4444; }
+
+/** Filter Bar */
+.filterBar {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.filterGroup {
+  display: flex;
+  gap: 1rem;
+}
+
+.filterSelect {
+  padding: 0.75rem 1rem;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: #475569;
+  transition: all 0.2s;
+}
+
+.filterSelect:focus-within {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.06);
+}
+
+/** Table Area */
+.tableWrapper {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.02);
+  overflow: hidden;
+}
+
+.tableHeader {
+  padding: 1.25rem 2.5rem;
+  background: #f8fafc;
+  border-bottom: 1px solid #f1f5f9;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1.2fr 1fr 1fr;
+  align-items: center;
+  color: #64748b;
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.reportRow {
+  padding: 1.35rem 2.5rem;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1.2fr 1fr 1fr;
+  align-items: center;
+  border-bottom: 1px solid #f1f5f9;
+  transition: all 0.2s ease;
+}
+
+.reportRow:hover {
+  background: #f8fbff;
+}
+
+.reportIden {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+}
+
+.docIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #eff6ff;
+  color: #2563eb;
+  display: grid;
+  place-items: center;
+}
+
+.reportIden strong {
+  display: block;
+  color: #0f172a;
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.activityCount {
+  color: #475569;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.statusPill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.45rem 1rem;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.p_cho_duyet { background: #fff7ed; color: #f59e0b; border: 1px solid #ffedd5; }
+.p_da_duyet { background: #ecfdf5; color: #10b981; border: 1px solid #d1fae5; }
+.p_yeu_cau_nop_lai, .p_bi_tu_choi { background: #fff1f2; color: #f43f5e; border: 1px solid #ffe4e6; }
+.p_chua_nop { background: #f8fafc; color: #64748b; border: 1px solid #f1f5f9; }
+
+.updatedAt {
+  color: #64748b;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.actionBtn {
+  border: 0;
+  padding: 0.65rem 1rem;
+  background: #f1f5f9;
+  color: #475569;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: fit-content;
+}
+
+.actionBtn:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+.emptyState {
+  padding: 6rem 2rem;
+  text-align: center;
+  color: #64748b;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+@media (max-width: 1024px) {
+  .tableHeader, .reportRow {
+    grid-template-columns: 2fr 1fr 1.2fr 1fr;
+  }
+  .tableHeader span:nth-child(4), .reportRow div:nth-child(4) {
+    display: none;
+  }
+}

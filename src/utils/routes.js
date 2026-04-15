@@ -20,6 +20,7 @@ export const MANAGE_ADMIN_PANELS = {
   units: 'units',
   semesters: 'semesters',
   events: 'events',
+  reports: 'reports',
 }
 
 const ADMIN_PANEL_IDS = new Set(Object.values(MANAGE_ADMIN_PANELS))
@@ -177,20 +178,27 @@ export function getManageRoleForUnit(user, unitId) {
 }
 
 export function getManageOptionsFromUser(user) {
-  return (user?.roles || [])
-    .map((item) => {
-      if (!item?.unit_id || !Array.isArray(item?.roles)) {
-        return null
-      }
+  const options = []
+  ;(user?.roles || []).forEach((item) => {
+    if (!item?.unit_id || !Array.isArray(item?.roles)) {
+      return
+    }
 
-      const manageRole = getHighestManageRole(item.roles)
-      if (!manageRole) {
-        return null
-      }
+    const roles = item.roles.map((r) => normalizeScopedRole(r)).filter(Boolean)
 
-      return { unitId: item.unit_id, role: manageRole }
-    })
-    .filter(Boolean)
+    // Nếu có Admin hoặc Manager -> cấp quyền Admin context
+    if (roles.includes(USER_ROLES.admin)) {
+      options.push({ unitId: item.unit_id, role: USER_ROLES.admin })
+    } else if (roles.includes(USER_ROLES.manager)) {
+      options.push({ unitId: item.unit_id, role: USER_ROLES.manager })
+    }
+
+    // Nếu có Staff -> cấp quyền Unit context
+    if (roles.includes(USER_ROLES.staff)) {
+      options.push({ unitId: item.unit_id, role: USER_ROLES.staff })
+    }
+  })
+  return options
 }
 
 export function hasManageAccess(user) {

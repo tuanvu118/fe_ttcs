@@ -4,24 +4,32 @@ import { MANAGE_ADMIN_PANELS, PATHS } from '../utils/routes'
 export const ADMIN_PATH_REGEX = /^\/admin(?:\/([^/]+)(?:\/([^/]+))?)?$/
 
 function adminPathSegments(pathname) {
-  if (!pathname.startsWith('/admin')) {
-    return null
+  if (pathname.startsWith('/admin')) {
+    const rest = pathname.replace(/^\/admin\/?/, '')
+    if (!rest) return []
+    return rest.split('/').filter(Boolean)
   }
-  const rest = pathname.replace(/^\/admin\/?/, '')
-  if (!rest) {
-    return []
+  if (pathname.startsWith('/unit')) {
+    const rest = pathname.replace(/^\/unit\/?/, '')
+    if (!rest) return []
+    return rest.split('/').filter(Boolean)
   }
-  return rest.split('/').filter(Boolean)
+  return null
 }
 
 export function isAdminPath(pathname) {
   if (!pathname || typeof pathname !== 'string') {
     return false
   }
-  if (pathname === '/admin' || pathname === '/admin/') {
+  if (
+    pathname === '/admin' ||
+    pathname === '/admin/' ||
+    pathname === '/unit' ||
+    pathname === '/unit/'
+  ) {
     return true
   }
-  if (!pathname.startsWith('/admin/')) {
+  if (!pathname.startsWith('/admin/') && !pathname.startsWith('/unit/')) {
     return false
   }
   const segments = adminPathSegments(pathname)
@@ -30,8 +38,7 @@ export function isAdminPath(pathname) {
   }
   if (
     segments.length === 3 &&
-    segments[1] === MANAGE_ADMIN_PANELS.events &&
-    segments[2] === 'create'
+    (segments[1] === MANAGE_ADMIN_PANELS.events || segments[1] === MANAGE_ADMIN_PANELS.reports)
   ) {
     return true
   }
@@ -73,6 +80,9 @@ export function parseAdminPath(pathname = '') {
       eventDetail: { scope: segments[2], eventId: segments[3] },
     }
   }
+  if (segments.length === 3 && segments[1] === MANAGE_ADMIN_PANELS.reports) {
+    return { unitId, panel: MANAGE_ADMIN_PANELS.reports, reportId: segments[2] }
+  }
   const panel = segments[1] || ''
   return { unitId, panel, eventDetail: null }
 }
@@ -88,9 +98,9 @@ export function buildAdminEventDetailPath(unitId, eventId, eventType) {
 
 export function buildStaffPath(unitId, panel = 'members') {
   if (!unitId) {
-    return PATHS.admin
+    return '/unit'
   }
-  return `${PATHS.admin}/${unitId}/${panel}`
+  return `/unit/${unitId}/${panel}`
 }
 
 export function buildAdminPath(unitId, panel = MANAGE_ADMIN_PANELS.users) {

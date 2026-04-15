@@ -11,6 +11,8 @@ import UnitsManagementPage from './units/UnitsManagementPage'
 
 import StaffUnitsWorkspace from './members/StaffUnitsWorkspace'
 import StaffReportsPanel from './reports/StaffReportsPanel'
+import ReportManagement from './reports/ReportManagement'
+import ReportDetailView from './reports/ReportDetailView'
 import StaffAssignedEventsPanel from './tasks/StaffAssignedEventsPanel'
 import { hasManageAccess, getManageRoleForUnit, USER_ROLES } from '../utils/routes'
 import routerStyles from './adminRouter.module.css'
@@ -56,15 +58,82 @@ function StaffUnitsPanelView({ accessToken, selectedUnitId, staffPanel, onSessio
   )
 }
 
-function AdminStaffRoute({ staffPanel, user, accessToken, onSessionExpired }) {
+function AdminStaffRoute({ staffPanel, user, accessToken, onSessionExpired, roleLabel }) {
   const { unitId } = useParams()
+  const isUnitContext = window.location.pathname.startsWith('/unit/')
   const scopedRole = getManageRoleForUnit(user, unitId)
-  if (scopedRole !== USER_ROLES.staff) {
-    if (!scopedRole) {
-      return <ForbiddenPage requiredRoleLabel={FORBIDDEN_UNIT} />
-    }
-    return <NotFoundPage />
+  
+  if (!scopedRole) {
+    return <ForbiddenPage requiredRoleLabel={FORBIDDEN_UNIT} />
   }
+
+  // Nếu là context /unit, ưu tiên giao diện Staff
+  if (isUnitContext) {
+    // Chỉ cần có bất kỳ quyền quản trị nào tại đơn vị (Staff/Manager/Admin) đều cho phép vào không gian đơn vị
+    if (staffPanel === 'reports') {
+      return (
+        <StaffReportsPanel
+          accessToken={accessToken}
+          unitId={unitId}
+          onSessionExpired={onSessionExpired}
+        />
+      )
+    }
+    if (staffPanel === 'report-detail') {
+      return (
+        <ReportDetailView
+          accessToken={accessToken}
+          unitId={unitId}
+          onSessionExpired={onSessionExpired}
+        />
+      )
+    }
+    return (
+      <StaffUnitsPanelView
+        accessToken={accessToken}
+        selectedUnitId={unitId}
+        staffPanel={staffPanel}
+        onSessionExpired={onSessionExpired}
+      />
+    )
+  }
+
+  // Nếu là context /admin, ưu tiên giao diện Quản lý
+  if (staffPanel === 'reports') {
+    if (scopedRole === USER_ROLES.admin || scopedRole === USER_ROLES.manager) {
+      return (
+        <ReportManagement
+          accessToken={accessToken}
+          roleLabel={roleLabel}
+          onSessionExpired={onSessionExpired}
+        />
+      )
+    }
+    // Admin context nhưng chỉ là staff -> redirect hoặc báo lỗi (hoặc cho xem StaffReportsPanel)
+    return <ForbiddenPage requiredRoleLabel="Quản lý hoặc Admin" />
+  }
+
+  if (staffPanel === 'report-detail') {
+    // Chỉ Admin/Manager/Staff của đơn vị mới được xem (đã check scopedRole ở trên)
+    return (
+      <ReportDetailView
+        accessToken={accessToken}
+        unitId={unitId}
+        onSessionExpired={onSessionExpired}
+        isManager={scopedRole === USER_ROLES.admin || scopedRole === USER_ROLES.manager}
+      />
+    )
+  }
+
+  if (scopedRole !== USER_ROLES.staff) {
+    if (scopedRole === USER_ROLES.admin || scopedRole === USER_ROLES.manager) {
+       // Allow admins to view members/tasks too if they want, or handle as needed
+       // For now, let's keep members/tasks route as is or redirect.
+    } else {
+       return <NotFoundPage />
+    }
+  }
+
   return (
     <StaffUnitsPanelView
       accessToken={accessToken}
@@ -219,13 +288,14 @@ export default function AdminRouter({
   return (
     <Routes>
       <Route path="/admin" element={<PickUnitCard />} />
+      <Route path="/unit" element={<PickUnitCard />} />
 
+      {/* Admin Context Routes */}
       <Route
         path="/admin/:unitId/events/:eventScope/:eventId"
         element={<AdminManagerEventDetailRoute {...shared} />}
       />
       <Route path="/admin/:unitId/events" element={<AdminManagerEventsRoute {...shared} />} />
-
       <Route
         path="/admin/:unitId/events/create"
         element={<CreateEventPage {...shared} />}
@@ -237,22 +307,33 @@ export default function AdminRouter({
       <Route path="/admin/:unitId/users" element={<AdminManagerUsersRoute {...shared} />} />
       <Route path="/admin/:unitId/units" element={<AdminManagerUnitsRoute {...shared} />} />
       <Route path="/admin/:unitId/semesters" element={<AdminManagerSemestersRoute {...shared} />} />
-
+      <Route path="/admin/:unitId/reports" element={<AdminStaffRoute {...shared} staffPanel="reports" />} />
+      <Route path="/admin/:unitId/reports/:reportId" element={<AdminStaffRoute {...shared} staffPanel="report-detail" />} />
+      
+      {/* Unit Context Routes (Staff) */}
       <Route
-        path="/admin/:unitId/members"
+        path="/unit/:unitId/members"
         element={<AdminStaffRoute {...shared} staffPanel="members" />}
       />
       <Route
-        path="/admin/:unitId/reports"
+        path="/unit/:unitId/reports"
         element={<AdminStaffRoute {...shared} staffPanel="reports" />}
       />
       <Route
-        path="/admin/:unitId/tasks"
+        path="/unit/:unitId/reports/:reportId"
+        element={<AdminStaffRoute {...shared} staffPanel="report-detail" />}
+      />
+      <Route
+        path="/unit/:unitId/tasks"
         element={<AdminStaffRoute {...shared} staffPanel="events" />}
       />
 
+      {/* Home Routes */}
       <Route path="/admin/:unitId" element={<AdminUnitHomeRoute {...shared} />} />
+      <Route path="/unit/:unitId" element={<AdminUnitHomeRoute {...shared} />} />
+      
       <Route path="/admin/:unitId/*" element={<NotFoundPage />} />
+      <Route path="/unit/:unitId/*" element={<NotFoundPage />} />
     </Routes>
   )
 }
