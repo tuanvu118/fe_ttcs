@@ -13,7 +13,7 @@ import {
   Export
 } from '@phosphor-icons/react'
 import { getAllReports, exportSummaryExcel } from '../../service/reportService'
-import { getUnitById } from '../../service/unitService'
+import { getUnitById, getManagedUnits } from '../../service/unitService'
 import styles from './reportManagement.module.css'
 import NotificationPopup from '../../components/NotificationPopup'
 import ReportDetailView from './ReportDetailView'
@@ -27,6 +27,9 @@ export default function ReportManagement({ accessToken, roleLabel, onSessionExpi
   
   const [filterStatus, setFilterStatus] = useState('all')
   const [filterYear, setFilterYear] = useState(new Date().getFullYear().toString())
+  const [filterMonth, setFilterMonth] = useState('all')
+  const [filterUnitId, setFilterUnitId] = useState('all')
+  const [allUnits, setAllUnits] = useState([])
 
   const stats = useMemo(() => ({
     total: reports.length,
@@ -37,12 +40,29 @@ export default function ReportManagement({ accessToken, roleLabel, onSessionExpi
 
   useEffect(() => {
     loadReports()
+  }, [accessToken, filterMonth, filterYear, filterUnitId, filterStatus])
+
+  useEffect(() => {
+    fetchUnits()
   }, [accessToken])
+
+  async function fetchUnits() {
+    try {
+      const resp = await getManagedUnits({ limit: 100 }, accessToken)
+      setAllUnits(resp.items || [])
+    } catch (error) {
+       console.error("Failed to load units", error)
+    }
+  }
 
   async function loadReports() {
     setIsLoading(true)
     try {
-      const data = await getAllReports(accessToken)
+      const monthParam = filterMonth === 'all' ? null : parseInt(filterMonth)
+      const yearParam = parseInt(filterYear)
+      const unitParam = filterUnitId === 'all' ? null : filterUnitId
+      
+      const data = await getAllReports(accessToken, monthParam, yearParam, unitParam, filterStatus)
       setReports(data)
       await loadUnitNames(data)
     } catch (error) {
@@ -86,11 +106,15 @@ export default function ReportManagement({ accessToken, roleLabel, onSessionExpi
 
   async function handleExportSummary() {
     try {
-      const blob = await exportSummaryExcel(accessToken)
+      const monthParam = filterMonth === 'all' ? null : parseInt(filterMonth)
+      const yearParam = parseInt(filterYear)
+      const unitParam = filterUnitId === 'all' ? null : filterUnitId
+
+      const blob = await exportSummaryExcel(accessToken, monthParam, yearParam, unitParam, filterStatus)
       const url = window.URL.createObjectURL(new Blob([blob]))
       const link = document.createElement('a')
       link.href = url
-      link.setAttribute('download', `bao_cao_tong_hop_${new Date().toLocaleDateString('vi-VN')}.xlsx`)
+      link.setAttribute('download', `bao_cao_tong_hop_${filterMonth}_${filterYear}.xlsx`)
       document.body.appendChild(link)
       link.click()
       link.parentNode.removeChild(link)
@@ -100,12 +124,10 @@ export default function ReportManagement({ accessToken, roleLabel, onSessionExpi
   }
 
   const filteredReports = useMemo(() => {
-    return reports.filter(r => {
-      const yearMatch = r.year.toString() === filterYear
-      const statusMatch = filterStatus === 'all' || r.status === filterStatus
-      return yearMatch && statusMatch
-    }).sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
-  }, [reports, filterYear, filterStatus])
+    // Current backend already does most of the filtering, 
+    // but we can sort them here if needed.
+    return [...reports].sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
+  }, [reports])
 
   const getStatusLabel = (status) => {
     switch (status) {
@@ -137,8 +159,7 @@ export default function ReportManagement({ accessToken, roleLabel, onSessionExpi
 
       <div className={styles.header}>
         <div className={styles.titleArea}>
-          <p style={{ fontSize: '0.8rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.5rem' }}>Quản trị &gt; Phê duyệt báo cáo</p>
-          <h1>Thẩm định Báo cáo </h1>
+          <h1>Quản lý báo cáo</h1>
         </div>
         <button
           type="button"
@@ -188,7 +209,6 @@ export default function ReportManagement({ accessToken, roleLabel, onSessionExpi
             <select 
               value={filterStatus} 
               onChange={(e) => setFilterStatus(e.target.value)}
-              style={{ border: 'none', background: 'transparent', fontWeight: 700, outline: 'none' }}
             >
               <option value="all">Tất cả trạng thái</option>
               <option value="CHO_DUYET">Đang chờ duyệt</option>
@@ -196,21 +216,48 @@ export default function ReportManagement({ accessToken, roleLabel, onSessionExpi
               <option value="YEU_CAU_NOP_LAI">Yêu cầu nộp lại</option>
             </select>
           </div>
+          
+          <div className={styles.filterSelect}>
+             <Calendar size={16} />
+             <select 
+               value={filterMonth} 
+               onChange={(e) => setFilterMonth(e.target.value)}
+             >
+               <option value="all">Tất cả các tháng</option>
+               {[...Array(12)].map((_, i) => (
+                 <option key={i+1} value={(i+1).toString()}>Tháng {i+1}</option>
+               ))}
+             </select>
+          </div>
+
           <div className={styles.filterSelect}>
             <Calendar size={16} />
             <select 
               value={filterYear} 
               onChange={(e) => setFilterYear(e.target.value)}
-              style={{ border: 'none', background: 'transparent', fontWeight: 700, outline: 'none' }}
             >
               {[2024, 2025, 2026].map(y => (
                 <option key={y} value={y.toString()}>Năm {y}</option>
               ))}
             </select>
           </div>
+
+          <div className={styles.filterSelect}>
+            <FileText size={16} />
+            <select 
+              value={filterUnitId} 
+              onChange={(e) => setFilterUnitId(e.target.value)}
+              style={{ maxWidth: '150px' }}
+            >
+              <option value="all">Tất cả đơn vị</option>
+              {allUnits.map(u => (
+                <option key={u.id} value={u.id}>{u.name}</option>
+              ))}
+            </select>
+          </div>
         </div>
         <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>
-          Hiển thị {filteredReports.length} của {reports.length} báo cáo
+          Hiển thị {filteredReports.length} báo cáo
         </span>
       </div>
 
@@ -246,7 +293,7 @@ export default function ReportManagement({ accessToken, roleLabel, onSessionExpi
               </div>
               <div>
                  <button className={styles.actionBtn} onClick={() => handleViewDetail(report)}>
-                   Thẩm định <Eye size={18} />
+                   Chi tiết <Eye size={18} />
                  </button>
               </div>
             </div>

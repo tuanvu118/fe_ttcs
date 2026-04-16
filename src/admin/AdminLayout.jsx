@@ -127,15 +127,12 @@ export default function AdminLayout({ currentPath, navigate, user, accessToken, 
       return
     }
 
+    // Nhận diện đơn vị hiện tại từ URL
     const selectedOption = manageOptions.find((optionItem) => optionItem.unitId === selectedUnitId)
-    if (!selectedOption) {
-      const defaultOption = manageOptions[0]
-      if (defaultOption.role === USER_ROLES.staff) {
-        navigate(buildStaffPath(defaultOption.unitId, 'members'))
-      } else {
-        navigate(buildAdminPath(defaultOption.unitId, MANAGE_ADMIN_PANELS.users))
-      }
-    }
+    
+    // Nếu không tìm thấy unitId trong danh sách quản lý, chúng ta KHÔNG tự động redirect 
+    // ở đây để tránh lỗi nhảy trang khi truy cập các đường dẫn chi tiết (reports/events).
+    // AdminRouter sẽ tự xử lý việc cho phép truy cập hay không thông qua ForbiddenPage.
   }, [currentPath, manageOptions, manageableUnits, navigate, selectedUnitId])
 
   useEffect(() => {

@@ -10,12 +10,19 @@ import {
   SealCheck,
   WarningOctagon,
   Article,
-  UserGear
+  UserGear,
+  DownloadSimple,
+  Globe,
+  UsersThree
 } from '@phosphor-icons/react'
 import styles from './reportDetail.module.css'
 import { apiRequest } from '../../service/apiClient'
+import { exportDetailExcel, submitReport } from '../../service/reportService'
+import { getUnitById } from '../../service/unitService'
 import InternalEventModal from './components/InternalEventModal'
 import StatusReviewModal from './components/StatusReviewModal'
+import ConfirmDialog from '../../components/ConfirmDialog'
+import NotificationPopup from '../../components/NotificationPopup'
 
 export default function ReportDetailView({ 
   accessToken, 
@@ -26,6 +33,7 @@ export default function ReportDetailView({
   const navigate = useNavigate()
   
   const [report, setReport] = useState(null)
+  const [unitInfo, setUnitInfo] = useState(null)
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
   const [showApproveModal, setShowApproveModal] = useState(false)
@@ -43,6 +51,14 @@ export default function ReportDetailView({
     evidence_url: '' 
   })
 
+  // State for popups
+  const [confirmModal, setConfirmModal] = useState({ 
+    isOpen: false, title: '', message: '', onConfirm: () => {}, danger: false 
+  })
+  const [noticeModal, setNoticeModal] = useState({ 
+    isOpen: false, title: '', message: '', tone: 'error' 
+  })
+
   const fetchDetail = async () => {
     try {
       setLoading(true)
@@ -50,12 +66,33 @@ export default function ReportDetailView({
         method: 'GET',
         authToken: accessToken,
       })
-      if (data) setReport(data)
+      if (data) {
+        setReport(data)
+        if (isManager) fetchUnitInfo(unitId)
+      }
     } catch (error) {
        if (error.status === 401) onSessionExpired()
+       else showError('Lỗi khi tải dữ liệu: ' + error.message)
     } finally {
       setLoading(false)
     }
+  }
+
+  const fetchUnitInfo = async (uId) => {
+    try {
+      const unitData = await getUnitById(uId, accessToken)
+      setUnitInfo(unitData)
+    } catch (err) {
+      console.error("Lỗi khi tải thông tin đơn vị", err)
+    }
+  }
+
+  const showError = (message) => {
+    setNoticeModal({ isOpen: true, title: 'Có lỗi xảy ra', message, tone: 'error' })
+  }
+
+  const showSuccess = (message) => {
+    setNoticeModal({ isOpen: true, title: 'Thành công', message, tone: 'success' })
   }
 
   useEffect(() => {
@@ -116,25 +153,35 @@ export default function ReportDetailView({
       })
       setShowModal(false)
       fetchDetail()
+      showSuccess('Lưu hoạt động thành công')
     } catch (error) {
-      alert(error.message || 'Lỗi khi lưu hoạt động')
+      showError(error.message || 'Lỗi khi lưu hoạt động')
     } finally {
       setIsSubmitting(false)
     }
   }
 
   const handleDelete = async (eventId) => {
-    if (!window.confirm('Bạn có chắc chắn muốn xóa hoạt động này?')) return
-    try {
-      await apiRequest(`/reports/${reportId}/internal-events/${eventId}`, {
-        method: 'DELETE',
-        headers: { 'X-Unit-Id': unitId },
-        authToken: accessToken
-      })
-      fetchDetail()
-    } catch (error) {
-      alert(error.message || 'Lỗi khi xóa')
-    }
+    setConfirmModal({
+      isOpen: true,
+      title: 'Xác nhận xóa',
+      message: 'Bạn có chắc chắn muốn xóa hoạt động này? Hành động này không thể hoàn tác.',
+      danger: true,
+      onConfirm: async () => {
+        try {
+          await apiRequest(`/reports/${reportId}/internal-events/${eventId}`, {
+            method: 'DELETE',
+            headers: { 'X-Unit-Id': unitId },
+            authToken: accessToken
+          })
+          setConfirmModal(prev => ({ ...prev, isOpen: false }))
+          fetchDetail()
+          showSuccess('Đã xóa hoạt động')
+        } catch (error) {
+          showError(error.message || 'Lỗi khi xóa')
+        }
+      }
+    })
   }
 
   const updateReportStatus = async (status) => {
@@ -149,26 +196,34 @@ export default function ReportDetailView({
       setShowApproveModal(false)
       setReviewNote('')
       fetchDetail()
+      showSuccess('Đã cập nhật trạng thái báo cáo')
     } catch (error) {
-      alert(error.message || 'Lỗi khi cập nhật trạng thái')
+      showError(error.message || 'Lỗi khi cập nhật trạng thái')
     } finally {
       setIsSubmitting(false)
     }
   }
 
   const handleFinalSubmit = async () => {
-    if (!window.confirm('Sau khi gửi, bạn sẽ không thể chỉnh sửa báo cáo này. Xác nhận gửi?')) return
-    try {
-      await apiRequest(`/reports/${reportId}/status`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        authToken: accessToken,
-        body: JSON.stringify({ status: 'CHO_DUYET' })
-      })
-      fetchDetail()
-    } catch (error) {
-      alert(error.message || 'Lỗi khi gửi báo cáo')
-    }
+    setConfirmModal({
+      isOpen: true,
+      title: 'Xác nhận nộp báo cáo',
+      message: 'Sau khi gửi, bạn sẽ không thể chỉnh sửa nội dung báo cáo này nữa. Bạn có chắc chắn muốn hoàn tất?',
+      danger: false,
+      onConfirm: async () => {
+         try {
+           setIsSubmitting(true)
+           await submitReport(reportId, unitId, accessToken)
+           setConfirmModal(prev => ({ ...prev, isOpen: false }))
+           fetchDetail()
+           showSuccess('Báo cáo đã được gửi đi thành công')
+         } catch (error) {
+           showError(error.message || 'Lỗi khi gửi báo cáo')
+         } finally {
+           setIsSubmitting(false)
+         }
+      }
+    })
   }
 
   const handleBack = () => {
@@ -177,13 +232,7 @@ export default function ReportDetailView({
 
   const handleExport = async () => {
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/reports/${reportId}/export/detail`, {
-        headers: {
-          'Authorization': `Bearer ${accessToken}`
-        }
-      })
-      if (!response.ok) throw new Error('Xuất file thất bại')
-      const blob = await response.blob()
+      const blob = await exportDetailExcel(reportId, accessToken)
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
@@ -191,8 +240,9 @@ export default function ReportDetailView({
       document.body.appendChild(a)
       a.click()
       a.remove()
+      window.URL.revokeObjectURL(url)
     } catch (error) {
-      alert(error.message)
+      showError('Xuất file thất bại: ' + error.message)
     }
   }
 
@@ -209,14 +259,20 @@ export default function ReportDetailView({
           <button className={styles.backBtn} onClick={handleBack}>
             <CaretLeft size={20} weight="bold" /> Quay lại
           </button>
-          <div className={styles.reportTitle}>
-            <h2 style={{ fontSize: '1.5rem', margin: 0 }}>Chi tiết Báo cáo Tháng {report.month}/{report.year}</h2>
-            <div className={styles.compactStats}>
-              <span>Tổng: <strong>{report.internal_events.length + (report.unit_events?.length || 0)}</strong></span>
-              <span className={styles.dot}>•</span>
-              <span>Được giao: <strong>{report.unit_events?.length || 0}</strong></span>
-              <span className={styles.dot}>•</span>
-              <span>Nội bộ: <strong>{report.internal_events.length}</strong></span>
+          
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            {isManager && unitInfo?.logo && (
+              <img 
+                src={unitInfo.logo.startsWith('http') ? unitInfo.logo : `${import.meta.env.VITE_API_BASE_URL}${unitInfo.logo}`} 
+                alt="Logo" 
+                className={styles.headerLogo} 
+              />
+            )}
+            <div className={styles.reportTitle}>
+              {isManager && <span className={styles.unitBadge}>{unitInfo?.name || 'Đang tải...'}</span>}
+              <h2 style={{ fontSize: '1.5rem', margin: 0, marginTop: isManager ? '0.2rem' : 0 }}>
+                Chi tiết Báo cáo Tháng {report.month}/{report.year}
+              </h2>
             </div>
           </div>
         </div>
@@ -226,7 +282,7 @@ export default function ReportDetailView({
              className={`${styles.actionBtn} ${styles.export}`}
              onClick={handleExport}
            >
-             <Article size={18} /> Xuất báo cáo
+             <DownloadSimple size={18} weight="bold" /> Xuất báo cáo chi tiết
            </button>
 
            {isManager && isPendingApproval && (
@@ -250,6 +306,39 @@ export default function ReportDetailView({
                Nộp báo cáo <Checks size={18} weight="bold" />
              </button>
            )}
+        </div>
+      </div>
+
+      <div className={styles.statsCardGrid}>
+        <div className={styles.miniStat}>
+          <div className={styles.statIconBox}><Article size={20} weight="fill" color="#2563eb" /></div>
+          <div>
+            <div className={styles.miniLabel}>Tổng hoạt động</div>
+            <div className={styles.miniValue}>{report.internal_events.length + (report.unit_events?.length || 0)}</div>
+          </div>
+        </div>
+        <div className={styles.miniStat}>
+          <div className={styles.statIconBox}><UserGear size={20} weight="fill" color="#f59e0b" /></div>
+          <div>
+            <div className={styles.miniLabel}>Được giao</div>
+            <div className={styles.miniValue}>{report.unit_events?.length || 0}</div>
+          </div>
+        </div>
+        <div className={styles.miniStat}>
+          <div className={styles.statIconBox}><UsersThree size={20} weight="fill" color="#10b981" /></div>
+          <div>
+            <div className={styles.miniLabel}>Nội bộ (Tự quản)</div>
+            <div className={styles.miniValue}>{report.internal_events.length}</div>
+          </div>
+        </div>
+        <div className={styles.miniStat}>
+          <div className={styles.statIconBox}><Globe size={20} weight="fill" color="#6366f1" /></div>
+          <div>
+            <div className={styles.miniLabel}>Trạng thái</div>
+            <div className={`${styles.badge} ${styles['s_' + report.status.toLowerCase()]}`}>
+              {report.status.replace('_', ' ')}
+            </div>
+          </div>
         </div>
       </div>
 
@@ -394,6 +483,24 @@ export default function ReportDetailView({
         reviewNote={reviewNote}
         setReviewNote={setReviewNote}
         isSubmitting={isSubmitting}
+      />
+
+      <ConfirmDialog 
+        isOpen={confirmModal.isOpen}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        onConfirm={confirmModal.onConfirm}
+        onClose={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+        danger={confirmModal.danger}
+        isSubmitting={isSubmitting}
+      />
+
+      <NotificationPopup 
+        isOpen={noticeModal.isOpen}
+        title={noticeModal.title}
+        message={noticeModal.message}
+        tone={noticeModal.tone}
+        onClose={() => setNoticeModal(prev => ({ ...prev, isOpen: false }))}
       />
     </div>
   )

@@ -23,8 +23,12 @@ body {
 
 button,
 input,
-select {
-  font: inherit;
+select,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  line-height: inherit;
 }
 
 button:disabled,
@@ -1068,6 +1072,8 @@ select:disabled {
   border-radius: 12px;
   background: #f3f5fb;
   color: #1f2937;
+  font-family: inherit;
+  font-size: 1rem;
 }
 
 .field textarea {

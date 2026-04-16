@@ -173,6 +173,11 @@ export function getManageRoleForUnit(user, unitId) {
     return null
   }
 
+  // Nếu là Admin tổng -> Có quyền tại mọi đơn vị
+  if (user?.role === USER_ROLES.admin) {
+    return USER_ROLES.admin
+  }
+
   const roleItem = (user?.roles || []).find((item) => item?.unit_id === unitId)
   return getHighestManageRole(roleItem?.roles || [])
 }
