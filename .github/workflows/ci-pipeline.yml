@@ -4,7 +4,7 @@ name: TTCS
 # 2. Trigger: Khi nào thì chạy?
 on:
   push:
-    branches: ["main", "dev"] # Chạy khi push/merge code vào branch main
+    branches: ["dev"] # Chạy khi push/merge code vào branch main
   workflow_dispatch: # Tạo nút bấm "Run workflow" để chạy bằng tay
 
 # 3. Danh sách các công việc (Jobs)
