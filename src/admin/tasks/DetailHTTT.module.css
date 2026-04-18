@@ -1,0 +1,189 @@
+/* Chi tiết HTTT (staff) — căn theo EventUnitDetail + DESIGN.md tokens */
+
+.detailRoot {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.surfaceCard {
+  background: var(--ds-surface);
+  border-radius: var(--ds-radius-card);
+  border: 1px solid var(--ds-border);
+  overflow: hidden;
+  box-shadow: var(--ds-shadow-card);
+}
+
+.heroHeader {
+  padding: 1.35rem 1.5rem 1rem;
+  border-bottom: 1px solid var(--ds-divider);
+}
+
+.heroTopRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.65rem;
+}
+
+.kindPill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.65rem;
+  border-radius: var(--ds-radius-pill);
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: var(--ds-accent-soft-bg);
+  color: var(--ds-accent-soft-text);
+  border: 1px solid var(--ds-badge-pending-border);
+}
+
+.heroTitle {
+  margin: 0;
+  font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+  font-weight: 900;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--ds-deep-navy);
+  font-family: var(--ds-font-sans);
+}
+
+.cardBody {
+  padding: 1.5rem;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1.75rem;
+}
+
+.infoItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.infoLabel {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--ds-text-muted);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.infoValue {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ds-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.descriptionSection {
+  margin-top: 0.25rem;
+}
+
+.sectionHeading {
+  margin: 0 0 1rem;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--ds-deep-navy);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.descriptionText {
+  margin: 0;
+  white-space: pre-wrap;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--ds-text-secondary);
+}
+
+.cardHeaderBar {
+  padding: 1.15rem 1.5rem;
+  border-bottom: 1px solid var(--ds-divider);
+}
+
+.cardHeaderTitle {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--ds-deep-navy);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.submissionStack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.readonlyStack {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.readonlyBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.readonlyLabel {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--ds-text-muted);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.readonlyBody {
+  margin: 0;
+  white-space: pre-wrap;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--ds-text);
+}
+
+.readonlyMuted {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--ds-text-muted);
+  font-style: normal;
+}
+
+.evidenceLink {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ds-accent);
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.evidenceLink:hover {
+  color: var(--ds-accent-hover);
+  text-decoration: underline;
+}
+
+.editActionRow {
+  margin-top: 0.25rem;
+}
+
+.formStack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}

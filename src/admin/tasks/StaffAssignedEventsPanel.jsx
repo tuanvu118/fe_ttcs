@@ -71,7 +71,12 @@ export default function StaffAssignedEventsPanel() {
         label: (
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
             <span>{s.name} - {s.academic_year}</span>
-            {s.is_active && <Badge count="Đang diễn ra" style={{ backgroundColor: '#10b981', marginLeft: '10px', fontSize: '10px' }} />}
+            {s.is_active && (
+              <Badge
+                count="Đang diễn ra"
+                style={{ backgroundColor: 'var(--ds-success)', marginLeft: '10px', fontSize: '10px' }}
+              />
+            )}
           </div>
         ),
       })),
@@ -106,23 +111,44 @@ export default function StaffAssignedEventsPanel() {
       ) : (
         <div className={styles.tableWrap}>
           <table className={styles.table}>
+            <colgroup>
+              <col className={styles.colTitle} />
+              <col className={styles.colPoint} />
+              <col className={styles.colType} />
+              <col className={styles.colDate} />
+              <col className={styles.colAction} />
+            </colgroup>
             <thead>
               <tr>
-                <th>Tên</th>
-                <th>Điểm</th>
-                <th>Loại</th>
-                <th>Ngày tạo</th>
-                <th aria-label="Thao tác" />
+                <th scope="col">Tên</th>
+                <th scope="col" className={styles.thNumeric}>
+                  Điểm
+                </th>
+                <th scope="col">Loại</th>
+                <th scope="col">Ngày tạo</th>
+                <th scope="col" className={styles.thAction} aria-label="Thao tác" />
               </tr>
             </thead>
             <tbody>
               {rows.map((row) => (
                 <tr key={row.id}>
-                  <td className={styles.titleCell}>{row.title}</td>
-                  <td>{row.point ?? 0}</td>
-                  <td>{TYPE_LABEL[row.type] || row.type}</td>
-                  <td>{row.created_at ? new Date(row.created_at).toLocaleString('vi-VN') : 'N/A'}</td>
+                  <td className={styles.titleCell}>
+                    <span className={styles.titleText}>{row.title}</span>
+                  </td>
+                  <td className={styles.numCell}>{row.point ?? 0}</td>
                   <td>
+                    <span
+                      className={`${styles.typePill} ${
+                        row.type === 'HTTT' ? styles.typePillHttt : row.type === 'HTSK' ? styles.typePillHtsk : styles.typePillNeutral
+                      }`}
+                    >
+                      {TYPE_LABEL[row.type] || row.type}
+                    </span>
+                  </td>
+                  <td className={styles.dateCell}>
+                    {row.created_at ? new Date(row.created_at).toLocaleString('vi-VN') : 'N/A'}
+                  </td>
+                  <td className={styles.actionCell}>
                     <button type="button" className={styles.linkBtn} onClick={() => goDetail(row)}>
                       Xem chi tiết
                     </button>

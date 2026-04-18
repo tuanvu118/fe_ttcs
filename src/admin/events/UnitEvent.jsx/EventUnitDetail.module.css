@@ -36,7 +36,7 @@
   border: none;
   font-size: 0.7rem;
   font-weight: 800;
-  color: #64748b;
+  color: var(--ds-text-muted);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -49,7 +49,7 @@
   margin: 0;
   font-size: 1.75rem;
   font-weight: 900;
-  color: #0c1f45;
+  color: var(--ds-deep-navy);
   line-height: 1.2;
 }
 
@@ -63,45 +63,45 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.6rem 1rem;
-  border-radius: 8px;
+  border-radius: var(--ds-radius-md);
   font-size: 0.875rem;
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.2s;
-  border: 1px solid #e2e8f0;
+  transition: background 0.2s, border-color 0.2s, color 0.2s;
+  border: 1px solid var(--ds-border);
 }
 
 .editBtn {
-  background: white;
-  color: #1e293b;
+  background: var(--ds-surface);
+  color: var(--ds-text);
 }
 
 .editBtn:hover {
-  background: #f8fafc;
-  border-color: #cbd5e1;
+  background: var(--ds-surface-warm);
+  border-color: var(--ds-border-strong);
 }
 
 .deleteBtn {
-  background: #fff;
-  color: #ef4444;
-  border-color: #fee2e2;
+  background: var(--ds-surface);
+  color: var(--ds-danger);
+  border-color: var(--ds-danger-border);
 }
 
 .deleteBtn:hover {
-  background: #fef2f2;
+  background: var(--ds-danger-bg);
 }
 
 .copyBtn {
-  background: #dbeafe;
-  color: #1d4ed8;
-  border-color: #93c5fd;
-  box-shadow: 0 0 0 1px rgba(29, 78, 216, 0.08);
+  background: var(--ds-accent-soft-bg);
+  color: var(--ds-accent-soft-text);
+  border-color: var(--ds-badge-pending-border);
+  box-shadow: 0 0 0 1px var(--ds-focus-ring);
 }
 
 .copyBtn:hover {
-  background: #bfdbfe;
-  color: #1e40af;
-  border-color: #60a5fa;
+  background: var(--ds-badge-loading-bg);
+  color: var(--ds-accent-hover);
+  border-color: var(--ds-accent);
 }
 
 .contentGrid {
@@ -126,23 +126,23 @@
 }
 
 .card {
-  background: #ffffff;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
+  background: var(--ds-surface);
+  border-radius: var(--ds-radius-card);
+  border: 1px solid var(--ds-border);
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+  box-shadow: var(--ds-shadow-card);
 }
 
 .cardHeader {
   padding: 1.25rem 1.5rem;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--ds-divider);
 }
 
 .cardTitle {
   margin: 0;
   font-size: 0.95rem;
   font-weight: 800;
-  color: #0c1f45;
+  color: var(--ds-deep-navy);
   letter-spacing: 0.02em;
   text-transform: uppercase;
 }
@@ -166,18 +166,18 @@
   gap: 0.4rem;
   flex-shrink: 0;
   padding: 0.45rem 0.85rem;
-  border-radius: 8px;
-  border: 1px solid #cbd5e1;
-  background: #fff;
-  color: #0f172a;
+  border-radius: var(--ds-radius-md);
+  border: 1px solid var(--ds-border-strong);
+  background: var(--ds-surface);
+  color: var(--ds-text);
   font-size: 0.8rem;
   font-weight: 700;
   cursor: pointer;
 }
 
 .exportExcelBtn:hover {
-  background: #f8fafc;
-  border-color: #94a3b8;
+  background: var(--ds-surface-warm);
+  border-color: var(--ds-border-input);
 }
 
 .exportExcelBtn:disabled {
@@ -205,7 +205,7 @@
 .infoLabel {
   font-size: 0.7rem;
   font-weight: 800;
-  color: #94a3b8;
+  color: var(--ds-text-muted);
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
@@ -213,7 +213,7 @@
 .infoValue {
   font-size: 1rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--ds-text);
 }
 
 .descriptionSection .cardTitle {
@@ -227,7 +227,7 @@
 .sectionDesc {
   margin-bottom: 1.25rem;
   font-size: 0.8125rem;
-  color: #64748b;
+  color: var(--ds-text-secondary);
 }
 
 .unitList {
@@ -245,9 +245,9 @@
 .unitLogo {
   width: 40px;
   height: 40px;
-  border-radius: 8px;
+  border-radius: var(--ds-radius-md);
   object-fit: cover;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--ds-border);
 }
 
 .unitInfo {
@@ -259,17 +259,17 @@
 .unitName {
   font-size: 0.875rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--ds-text);
 }
 
 .unitType {
   margin: 0;
   font-size: 0.625rem;
-  color: #94a3b8;
+  color: var(--ds-text-muted);
 }
 
 .emptyText {
-  color: #94a3b8;
+  color: var(--ds-text-muted);
   font-size: 0.8125rem;
 }
 
@@ -288,8 +288,8 @@
 .timeIcon {
   width: 2.25rem;
   height: 2.25rem;
-  background: #f8fafc;
-  border-radius: 8px;
+  background: var(--ds-surface-warm);
+  border-radius: var(--ds-radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -305,25 +305,25 @@
 .timeTitle {
   font-size: 0.65rem;
   font-weight: 800;
-  color: #94a3b8;
+  color: var(--ds-text-muted);
 }
 
 .timeValue {
   font-size: 0.875rem;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--ds-text);
 }
 
 .coopError {
   margin: 0 0 0.75rem;
   font-size: 0.8125rem;
-  color: #dc2626;
+  color: var(--ds-danger);
 }
 
 .coopTableWrap {
   width: 100%;
   overflow-x: auto;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--ds-border);
   border-radius: 10px;
 }
 
@@ -337,17 +337,17 @@
 .coopTable td {
   padding: 0.65rem 0.75rem;
   text-align: left;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--ds-divider);
   vertical-align: middle;
 }
 
 .coopTable th {
   font-size: 0.65rem;
   font-weight: 800;
-  color: #94a3b8;
+  color: var(--ds-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  background: #fafafa;
+  background: var(--ds-surface-subtle);
 }
 
 .coopTable tbody tr:last-child td {
@@ -367,9 +367,9 @@
 }
 
 .coopDetailBtn {
-  border: 1px solid #cbd5e1;
-  background: #fff;
-  color: #0f172a;
+  border: 1px solid var(--ds-border-strong);
+  background: var(--ds-surface);
+  color: var(--ds-text);
   font-weight: 700;
   font-size: 0.75rem;
   padding: 0.35rem 0.65rem;
@@ -378,7 +378,7 @@
 }
 
 .coopDetailBtn:hover:not(:disabled) {
-  background: #f8fafc;
+  background: var(--ds-surface-warm);
 }
 
 .coopDetailBtn:disabled {
@@ -390,7 +390,7 @@
   display: inline-flex;
   align-items: center;
   padding: 0.25rem 0.6rem;
-  border-radius: 999px;
+  border-radius: var(--ds-radius-pill);
   font-weight: 800;
   font-size: 0.72rem;
   letter-spacing: 0.03em;
@@ -398,26 +398,25 @@
 }
 
 .badgeNone {
-  background: #fff7ed;
-  color: #c2410c;
-  border-color: #fdba74;
+  background: var(--ds-warning-bg);
+  color: var(--ds-warning-text);
+  border-color: var(--ds-warning-border);
 }
 
 .badgePending {
-  background: #eff6ff;
-  color: #1d4ed8;
-  border-color: #93c5fd;
+  background: var(--ds-accent-soft-bg);
+  color: var(--ds-accent-soft-text);
+  border-color: var(--ds-badge-pending-border);
 }
 
 .badgeCompleted {
-  background: #ecfdf5;
-  color: #047857;
-  border-color: #6ee7b7;
+  background: var(--ds-success-bg);
+  color: var(--ds-success-text);
+  border-color: var(--ds-badge-approved-border);
 }
 
 .badgeReject {
-  background: #fef2f2;
-  color: #b91c1c;
-  border-color: #fca5a5;
+  background: var(--ds-danger-bg);
+  color: var(--ds-danger);
+  border-color: var(--ds-badge-reject-border);
 }
-

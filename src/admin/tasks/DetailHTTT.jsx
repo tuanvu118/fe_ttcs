@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { Trophy } from '@phosphor-icons/react'
 import { message } from 'antd'
 import {
   createUnitEventSubmission,
@@ -10,6 +11,12 @@ import {
   normalizeHtttSubmissionStatus,
 } from '../../utils/unitEventCooperationRows'
 import styles from './detailCommon.module.css'
+import u from './DetailHTTT.module.css'
+
+function looksLikeHttpUrl(value) {
+  if (!value || typeof value !== 'string') return false
+  return /^https?:\/\//i.test(value.trim())
+}
 
 export default function DetailHTTT({ data, unitId, taskId, semesterDisplay }) {
   const [submission, setSubmission] = useState(null)
@@ -41,8 +48,7 @@ export default function DetailHTTT({ data, unitId, taskId, semesterDisplay }) {
       } catch (err) {
         if (!cancelled) {
           const isNotFound =
-            err?.status === 404 ||
-            /not\s*found/i.test(String(err?.message || ''))
+            err?.status === 404 || /not\s*found/i.test(String(err?.message || ''))
           if (isNotFound) {
             setSubmission(null)
             setIsCreateMode(true)
@@ -160,112 +166,162 @@ export default function DetailHTTT({ data, unitId, taskId, semesterDisplay }) {
     setIsEditing(false)
   }
 
+  const evidenceTrimmed = submission?.evidenceUrl?.trim() || ''
+  const evidenceIsLink = looksLikeHttpUrl(evidenceTrimmed)
+
   return (
-    <div className={styles.stack}>
-      <section className={`page-card ${styles.card}`}>
-        <h1 className={styles.title}>{data?.title || ''}</h1>
-        <p className={styles.paragraph}>{data?.description || ''}</p>
-        <p className={styles.line}>
-          <strong>Điểm:</strong> {data?.point ?? 0}
-        </p>
-        <p className={styles.line}>
-          <strong>Học kỳ:</strong> {semesterDisplay}
-        </p>
+    <div className={u.detailRoot}>
+      <section className={u.surfaceCard} aria-labelledby="httt-event-title">
+        <header className={u.heroHeader}>
+          <div className={u.heroTopRow}>
+            <span className={u.kindPill}>Hỗ trợ truyền thông</span>
+          </div>
+          <h1 id="httt-event-title" className={u.heroTitle}>
+            {data?.title || 'Chi tiết nhiệm vụ'}
+          </h1>
+        </header>
+        <div className={u.cardBody}>
+          <div className={u.infoGrid}>
+            <div className={u.infoItem}>
+              <span className={u.infoLabel}>Điểm</span>
+              <span className={u.infoValue}>
+                <Trophy size={18} weight="fill" color="#ca8a04" aria-hidden />
+                {data?.point ?? 0}
+              </span>
+            </div>
+            <div className={u.infoItem}>
+              <span className={u.infoLabel}>Học kỳ</span>
+              <span className={u.infoValue}>{semesterDisplay}</span>
+            </div>
+          </div>
+          {data?.description ? (
+            <div className={u.descriptionSection}>
+              <h2 className={u.sectionHeading}>Nội dung chi tiết</h2>
+              <p className={u.descriptionText}>{data.description}</p>
+            </div>
+          ) : null}
+        </div>
       </section>
 
-      <section className={`page-card ${styles.card}`}>
-        <h2 className={styles.subTitle}>Phản hồi sự kiện</h2>
-
-        <div className={styles.statusRow}>
-          <span className={styles.statusLabel}>Trạng thái phản hồi</span>
-          <span
-            className={`${styles.statusBadge} ${styles[`statusBadge_${statusVariant}`] || ''}`}
-          >
-            {statusText}
-          </span>
+      <section className={u.surfaceCard} aria-labelledby="httt-submission-heading">
+        <div className={u.cardHeaderBar}>
+          <h2 id="httt-submission-heading" className={u.cardHeaderTitle}>
+            Phản hồi sự kiện
+          </h2>
         </div>
+        <div className={`${u.cardBody} ${u.submissionStack}`}>
+          <div className={styles.statusRow}>
+            <span className={styles.statusLabel}>Trạng thái phản hồi</span>
+            <span
+              className={`${styles.statusBadge} ${styles[`statusBadge_${statusVariant}`] || ''}`}
+            >
+              {statusText}
+            </span>
+          </div>
 
-        {submissionLoading ? (
-          <p className={styles.loadingHint}>Đang tải phản hồi…</p>
-        ) : (
-          <>
-            {isCreateMode && (
-              <div className={styles.instructionCallout} role="note">
-                Hãy thực hiện theo hướng dẫn trên và gửi phản hồi theo mẫu dưới đây.
-              </div>
-            )}
-
-            {isCreateMode && !isEditing ? (
-              <div className={styles.inviteActions}>
-                <button
-                  type="button"
-                  onClick={() => setIsEditing(true)}
-                  className={styles.primaryInviteBtn}
-                >
-                  Gửi phản hồi
-                </button>
-              </div>
-            ) : null}
-
-            {isEditing && !isLockedApproved ? (
-              <>
-                <div className={styles.field}>
-                  <label className={styles.label}>Nội dung phản hồi</label>
-                  <textarea
-                    rows={4}
-                    value={editContent}
-                    onChange={(e) => setEditContent(e.target.value)}
-                    placeholder="Nhập nội dung phản hồi..."
-                    className={styles.textarea}
-                  />
+          {submissionLoading ? (
+            <p className={styles.loadingHint}>Đang tải phản hồi…</p>
+          ) : (
+            <>
+              {isCreateMode && (
+                <div className={styles.instructionCallout} role="note">
+                  Hãy thực hiện theo hướng dẫn trên và gửi phản hồi theo mẫu dưới đây.
                 </div>
-                <div className={styles.field}>
-                  <label className={styles.label}>Minh chứng (URL)</label>
-                  <input
-                    type="text"
-                    value={editEvidenceUrl}
-                    onChange={(e) => setEditEvidenceUrl(e.target.value)}
-                    placeholder="https://..."
-                    className={styles.input}
-                  />
-                </div>
-                <div className={styles.actions}>
-                  <button type="button" onClick={handleCancelEdit} className={styles.secondaryBtn}>
-                    Hủy
-                  </button>
+              )}
+
+              {isCreateMode && !isEditing ? (
+                <div className={styles.inviteActions}>
                   <button
                     type="button"
-                    onClick={handleSaveSubmission}
-                    disabled={isSaving}
-                    className={styles.saveBtn}
+                    onClick={() => setIsEditing(true)}
+                    className={styles.primaryInviteBtn}
                   >
-                    {isSaving ? 'Đang lưu...' : isCreateMode ? 'Gửi phản hồi' : 'Lưu phản hồi'}
+                    Gửi phản hồi
                   </button>
                 </div>
-              </>
-            ) : null}
+              ) : null}
 
-            {!isEditing && submission ? (
-              <>
-                <p className={styles.line}>
-                  <strong>Nội dung phản hồi:</strong> {submission?.content || 'Chưa có phản hồi'}
-                </p>
-                <p className={styles.line}>
-                  <strong>Minh chứng:</strong> {submission?.evidenceUrl || 'Chưa có minh chứng'}
-                </p>
-                {isLockedApproved ? (
-                  <p className={styles.readonlyHint}>Phản hồi đã được duyệt, không thể chỉnh sửa.</p>
-                ) : (
-                  <div>
-                    <button type="button" onClick={handleStartEdit} className={styles.secondaryBtn}>
-                      Sửa phản hồi
+              {isEditing && !isLockedApproved ? (
+                <div className={u.formStack}>
+                  <div className={styles.field}>
+                    <label className={styles.label} htmlFor="httt-feedback-content">
+                      Nội dung phản hồi
+                    </label>
+                    <textarea
+                      id="httt-feedback-content"
+                      rows={5}
+                      value={editContent}
+                      onChange={(e) => setEditContent(e.target.value)}
+                      placeholder="Nhập nội dung phản hồi..."
+                      className={styles.textarea}
+                    />
+                  </div>
+                  <div className={styles.field}>
+                    <label className={styles.label} htmlFor="httt-feedback-evidence">
+                      Minh chứng (URL)
+                    </label>
+                    <input
+                      id="httt-feedback-evidence"
+                      type="text"
+                      value={editEvidenceUrl}
+                      onChange={(e) => setEditEvidenceUrl(e.target.value)}
+                      placeholder="https://..."
+                      className={styles.input}
+                    />
+                  </div>
+                  <div className={styles.actions}>
+                    <button type="button" onClick={handleCancelEdit} className={styles.secondaryBtn}>
+                      Hủy
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleSaveSubmission}
+                      disabled={isSaving}
+                      className={styles.saveBtn}
+                    >
+                      {isSaving ? 'Đang lưu...' : isCreateMode ? 'Gửi phản hồi' : 'Lưu phản hồi'}
                     </button>
                   </div>
-                )}
-              </>
-            ) : null}
-          </>
-        )}
+                </div>
+              ) : null}
+
+              {!isEditing && submission ? (
+                <div className={u.readonlyStack}>
+                  <div className={u.readonlyBlock}>
+                    <div className={u.readonlyLabel}>Nội dung phản hồi</div>
+                    <p className={u.readonlyBody}>{submission?.content?.trim() || '—'}</p>
+                  </div>
+                  <div className={u.readonlyBlock}>
+                    <div className={u.readonlyLabel}>Minh chứng</div>
+                    {evidenceIsLink ? (
+                      <a
+                        href={evidenceTrimmed}
+                        className={u.evidenceLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {evidenceTrimmed}
+                      </a>
+                    ) : evidenceTrimmed ? (
+                      <p className={u.readonlyBody}>{evidenceTrimmed}</p>
+                    ) : (
+                      <p className={u.readonlyMuted}>Chưa có minh chứng</p>
+                    )}
+                  </div>
+                  {isLockedApproved ? (
+                    <p className={styles.readonlyHint}>Phản hồi đã được duyệt, không thể chỉnh sửa.</p>
+                  ) : (
+                    <div className={u.editActionRow}>
+                      <button type="button" onClick={handleStartEdit} className={styles.secondaryBtn}>
+                        Sửa phản hồi
+                      </button>
+                    </div>
+                  )}
+                </div>
+              ) : null}
+            </>
+          )}
+        </div>
       </section>
     </div>
   )

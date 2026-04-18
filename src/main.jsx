@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { App as AntdApp, ConfigProvider } from 'antd/es'
 import viVN from 'antd/es/locale/vi_VN'
+import './styles/design-tokens.css'
 import './index.css'
 import App from './App.jsx'
 

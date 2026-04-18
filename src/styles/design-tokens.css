@@ -1,0 +1,64 @@
+/**
+ * Design tokens — DESIGN.md (Notion-inspired).
+ * Dùng trong module CSS: var(--ds-…)
+ */
+:root {
+  --ds-font-sans: Inter, -apple-system, system-ui, 'Segoe UI', 'Be Vietnam Pro', Helvetica, Arial, sans-serif;
+
+  --ds-text: rgba(0, 0, 0, 0.95);
+  --ds-text-secondary: #615d59;
+  --ds-text-muted: #a39e98;
+
+  --ds-surface: #ffffff;
+  --ds-surface-warm: #f6f5f4;
+  --ds-surface-subtle: #fafafa;
+
+  --ds-border: rgba(0, 0, 0, 0.1);
+  --ds-border-strong: rgba(0, 0, 0, 0.16);
+  --ds-border-input: #dddddd;
+  --ds-divider: rgba(0, 0, 0, 0.06);
+
+  --ds-accent: #0075de;
+  --ds-accent-hover: #005bab;
+  --ds-accent-soft-bg: #f2f9ff;
+  --ds-accent-soft-text: #097fe8;
+  --ds-focus: #097fe8;
+
+  --ds-radius-sm: 4px;
+  --ds-radius-md: 8px;
+  --ds-radius-card: 12px;
+  --ds-radius-pill: 9999px;
+
+  --ds-shadow-card: rgba(0, 0, 0, 0.04) 0px 4px 18px, rgba(0, 0, 0, 0.027) 0px 2.025px 7.84688px,
+    rgba(0, 0, 0, 0.02) 0px 0.8px 2.925px, rgba(0, 0, 0, 0.01) 0px 0.175px 1.04062px;
+
+  --ds-success: #1aae39;
+  --ds-success-bg: #ecfdf5;
+  --ds-success-text: #047857;
+  --ds-success-border: rgba(26, 174, 57, 0.28);
+
+  --ds-warning-bg: #fff7ed;
+  --ds-warning-text: #c2410c;
+  --ds-warning-border: #fdba74;
+
+  --ds-danger: #b91c1c;
+  --ds-danger-bg: #fef2f2;
+  --ds-danger-border: rgba(185, 28, 28, 0.28);
+
+  --ds-secondary-fill: rgba(0, 0, 0, 0.05);
+  --ds-surface-hover: rgba(0, 0, 0, 0.04);
+
+  --ds-deep-navy: #213183;
+
+  /* Badge / focus ring (accent family) */
+  --ds-focus-ring: rgba(0, 117, 222, 0.14);
+  --ds-badge-pending-border: rgba(9, 127, 232, 0.28);
+  --ds-badge-approved-border: var(--ds-success-border);
+  --ds-badge-reject-border: var(--ds-danger-border);
+  --ds-badge-neutral-bg: var(--ds-surface-warm);
+  --ds-badge-neutral-text: var(--ds-text-secondary);
+  --ds-badge-neutral-border: var(--ds-border);
+  --ds-badge-loading-bg: #e8f2ff;
+  --ds-badge-loading-text: #1e3a5f;
+  --ds-badge-loading-border: rgba(0, 117, 222, 0.22);
+}

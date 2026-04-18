@@ -1,3 +1,15 @@
+/* Shell trang Detail (tải lỗi / loading) — cùng module với HTTT/HTSK */
+.loadingBox {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.errorText {
+  margin: 0;
+  color: var(--ds-danger);
+}
+
 .stack {
   display: flex;
   flex-direction: column;
@@ -35,15 +47,15 @@
   gap: 0.75rem 1rem;
   padding: 0.75rem 1rem;
   border-radius: 10px;
-  border: 1px solid #e2e8f0;
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+  border: 1px solid var(--ds-border);
+  background: linear-gradient(135deg, var(--ds-surface-warm) 0%, var(--ds-surface-subtle) 100%);
+  box-shadow: var(--ds-shadow-card);
 }
 
 .statusLabel {
   font-weight: 800;
   font-size: 0.95rem;
-  color: #0f172a;
+  color: var(--ds-text);
   letter-spacing: 0.02em;
 }
 
@@ -51,7 +63,7 @@
   display: inline-flex;
   align-items: center;
   padding: 0.35rem 0.85rem;
-  border-radius: 999px;
+  border-radius: var(--ds-radius-pill);
   font-weight: 800;
   font-size: 0.9rem;
   letter-spacing: 0.04em;
@@ -59,45 +71,45 @@
 }
 
 .statusBadge_empty {
-  background: #fff7ed;
-  color: #c2410c;
-  border-color: #fdba74;
-  box-shadow: 0 0 0 1px rgba(234, 88, 12, 0.12);
+  background: var(--ds-warning-bg);
+  color: var(--ds-warning-text);
+  border-color: var(--ds-warning-border);
+  box-shadow: 0 0 0 1px var(--ds-focus-ring);
 }
 
 .statusBadge_pending {
-  background: #eff6ff;
-  color: #1d4ed8;
-  border-color: #93c5fd;
+  background: var(--ds-accent-soft-bg);
+  color: var(--ds-accent-soft-text);
+  border-color: var(--ds-badge-pending-border);
 }
 
 .statusBadge_approved {
-  background: #ecfdf5;
-  color: #047857;
-  border-color: #6ee7b7;
+  background: var(--ds-success-bg);
+  color: var(--ds-success-text);
+  border-color: var(--ds-badge-approved-border);
 }
 
 .statusBadge_reject {
-  background: #fef2f2;
-  color: #b91c1c;
-  border-color: #fca5a5;
+  background: var(--ds-danger-bg);
+  color: var(--ds-danger);
+  border-color: var(--ds-badge-reject-border);
 }
 
 .statusBadge_neutral {
-  background: #f1f5f9;
-  color: #334155;
-  border-color: #cbd5e1;
+  background: var(--ds-badge-neutral-bg);
+  color: var(--ds-badge-neutral-text);
+  border-color: var(--ds-badge-neutral-border);
 }
 
 .statusBadge_loading {
-  background: #e0e7ff;
-  color: #3730a3;
-  border-color: #a5b4fc;
+  background: var(--ds-badge-loading-bg);
+  color: var(--ds-badge-loading-text);
+  border-color: var(--ds-badge-loading-border);
 }
 
 .loadingHint {
   margin: 0;
-  color: #64748b;
+  color: var(--ds-text-secondary);
   font-size: 0.95rem;
 }
 
@@ -105,9 +117,9 @@
   margin: 0;
   padding: 0.85rem 1rem;
   border-radius: 10px;
-  border: 1px dashed #94a3b8;
-  background: #f8fafc;
-  color: #0f172a;
+  border: 1px dashed var(--ds-border-strong);
+  background: var(--ds-surface-warm);
+  color: var(--ds-text);
   font-size: 0.95rem;
   line-height: 1.55;
 }
@@ -119,16 +131,16 @@
 
 .primaryInviteBtn {
   border: none;
-  background: #0f172a;
-  color: #fff;
+  background: var(--ds-deep-navy);
+  color: var(--ds-surface);
   padding: 0.65rem 1.15rem;
-  border-radius: 8px;
+  border-radius: var(--ds-radius-md);
   font-weight: 800;
   cursor: pointer;
 }
 
 .primaryInviteBtn:hover {
-  background: #1e293b;
+  background: color-mix(in srgb, var(--ds-deep-navy) 88%, var(--ds-surface));
 }
 
 .field {
@@ -144,23 +156,38 @@
 .textarea,
 .input {
   width: 100%;
-  border-radius: 8px;
-  border: 1px solid #d1d5db;
+  border-radius: var(--ds-radius-md);
+  border: 1px solid var(--ds-border-input);
   padding: 0.625rem;
+  font-family: var(--ds-font-sans);
+  color: var(--ds-text);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.textarea:focus,
+.input:focus {
+  outline: none;
+  border-color: var(--ds-accent);
+  box-shadow: 0 0 0 3px var(--ds-focus-ring);
 }
 
 .saveBtn {
   border: none;
-  background: #0f172a;
-  color: #fff;
+  background: var(--ds-deep-navy);
+  color: var(--ds-surface);
   padding: 0.625rem 1rem;
-  border-radius: 8px;
+  border-radius: var(--ds-radius-md);
   font-weight: 700;
   cursor: pointer;
+  transition: background-color 0.15s ease, opacity 0.15s ease;
+}
+
+.saveBtn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--ds-deep-navy) 88%, var(--ds-surface));
 }
 
 .saveBtn:disabled {
-  background: #94a3b8;
+  background: var(--ds-text-muted);
   cursor: not-allowed;
 }
 
@@ -171,22 +198,22 @@
 }
 
 .secondaryBtn {
-  border: 1px solid #cbd5e1;
-  background: #ffffff;
-  color: #0f172a;
+  border: 1px solid var(--ds-border-strong);
+  background: var(--ds-surface);
+  color: var(--ds-text);
   padding: 0.625rem 1rem;
-  border-radius: 8px;
+  border-radius: var(--ds-radius-md);
   font-weight: 700;
   cursor: pointer;
 }
 
 .secondaryBtn:hover {
-  background: #f8fafc;
+  background: var(--ds-surface-warm);
 }
 
 .readonlyHint {
   margin: 0.25rem 0 0;
   font-size: 0.9rem;
-  color: #64748b;
+  color: var(--ds-text-secondary);
   line-height: 1.5;
 }

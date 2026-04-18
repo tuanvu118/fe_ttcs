@@ -5,7 +5,7 @@ import { getStoredCurrentSemester } from '../../utils/currentSemesterStorage'
 import { getMyUnitEventById } from '../../service/taskService'
 import DetailHTTT from './DetailHTTT'
 import DetailHTSK from './DetailHTSK'
-import styles from './Detail.module.css'
+import styles from './detailCommon.module.css'
 
 export default function Detail() {
   const { unitId, taskId } = useParams()
