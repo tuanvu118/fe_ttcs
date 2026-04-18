@@ -29,16 +29,19 @@ function manageRoleOptionLabel(role) {
   return role || ''
 }
 
-function unitLogoSrc(unitId, unitLogoById, manageableUnits) {
+function unitLogoSrc(unitId, unitLogoById, manageableUnits, unitRecord) {
   if (!unitId) {
     return DEFAULT_UNIT_LOGO
   }
   const fromList = manageableUnits.find((u) => u.id === unitId)?.logo?.trim() || ''
+  const fromRecord = unitRecord?.id === unitId ? (unitRecord.logo || '').trim() : ''
   const hasDetail = Object.prototype.hasOwnProperty.call(unitLogoById, unitId)
   const fromDetail = hasDetail ? (unitLogoById[unitId] || '').trim() : null
   if (fromDetail) return fromDetail
   if (hasDetail) return fromList || DEFAULT_UNIT_LOGO
-  return fromList || DEFAULT_UNIT_LOGO
+  if (fromList) return fromList
+  if (fromRecord) return fromRecord
+  return DEFAULT_UNIT_LOGO
 }
 
 const staffActions = [
@@ -86,7 +89,7 @@ export default function AdminSideNav({
           <span className={styles.unitSelectorInner}>
             <img
               className={styles.logo}
-              src={unitLogoSrc(selectedUnitId, unitLogoById, manageableUnits)}
+              src={unitLogoSrc(selectedUnitId, unitLogoById, manageableUnits, selectedUnit)}
               alt=""
               decoding="async"
               onError={(event) => {

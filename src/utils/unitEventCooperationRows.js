@@ -13,22 +13,25 @@ function getSubmissionUnitId(submission) {
   return direct != null && direct !== '' ? String(direct).trim() : ''
 }
 
-/** Chuẩn hóa trạng thái từ API (hỗ trợ COMPLETED / COMPLED typo cũ). */
+/**
+ * Chuẩn hóa trạng thái phản hồi HTTT về PENDING | APPROVED | REJECTED.
+ * Map từ giá trị API cũ: COMPLETED / COMPLED → APPROVED; REJECT / REJECTED → REJECTED.
+ */
 export function normalizeHtttSubmissionStatus(raw) {
   const s = String(raw || '').toUpperCase().trim()
-  if (s === 'COMPLED') {
-    return 'COMPLETED'
+  if (s === 'PENDING') {
+    return 'PENDING'
   }
-  if (s === 'REJECTED') {
-    return 'REJECT'
+  if (s === 'APPROVED' || s === 'COMPLETED' || s === 'COMPLED') {
+    return 'APPROVED'
   }
-  if (s === 'PENDING' || s === 'COMPLETED' || s === 'REJECT') {
-    return s
+  if (s === 'REJECTED' || s === 'REJECT') {
+    return 'REJECTED'
   }
   return ''
 }
 
-/** Nhãn hiển thị tiếng Việt cho trạng thái phản hồi. */
+/** Nhãn hiển thị tiếng Việt (mã API: PENDING / APPROVED / REJECTED). */
 export function getHtttSubmissionStatusLabel(status) {
   const n = normalizeHtttSubmissionStatus(status)
   if (!n) {
@@ -37,10 +40,10 @@ export function getHtttSubmissionStatusLabel(status) {
   if (n === 'PENDING') {
     return 'Chờ duyệt'
   }
-  if (n === 'COMPLETED') {
-    return 'Hoàn thành'
+  if (n === 'APPROVED') {
+    return 'Đã duyệt'
   }
-  if (n === 'REJECT') {
+  if (n === 'REJECTED') {
     return 'Từ chối'
   }
   return n
@@ -55,7 +58,7 @@ export function getHtttSubmissionStatusLabel(status) {
  *   unit: { id: string, name: string, logo: string|null, type: string, introduction: string|null },
  *   hasSubmission: boolean,
  *   submission: Record<string, unknown>|null,
- *   status: 'NONE'|'PENDING'|'COMPLETED'|'REJECT',
+ *   status: 'NONE'|'PENDING'|'APPROVED'|'REJECTED',
  *   statusLabel: string,
  * }>}
  */

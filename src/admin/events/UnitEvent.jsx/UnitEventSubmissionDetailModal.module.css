@@ -78,9 +78,10 @@
   color: #1e293b;
 }
 
-.link {
-  color: #1d4ed8;
+/* Minh chứng hiển thị thuần văn bản (cùng hệ blockText, URL dài xuống dòng gọn). */
+.evidencePlain {
   word-break: break-all;
+  overflow-wrap: anywhere;
   font-size: 0.9rem;
 }
 

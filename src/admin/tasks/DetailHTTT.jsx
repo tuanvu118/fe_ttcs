@@ -5,6 +5,10 @@ import {
   getUnitEventSubmissionByEventId,
   updateUnitEventSubmissionByEventId,
 } from '../../service/taskService'
+import {
+  getHtttSubmissionStatusLabel,
+  normalizeHtttSubmissionStatus,
+} from '../../utils/unitEventCooperationRows'
 import styles from './detailCommon.module.css'
 
 export default function DetailHTTT({ data, unitId, taskId, semesterDisplay }) {
@@ -73,17 +77,20 @@ export default function DetailHTTT({ data, unitId, taskId, semesterDisplay }) {
       }
       return { statusText: 'Không tải được', statusVariant: 'neutral' }
     }
-    const status = String(submission?.status || '').toUpperCase()
-    if (status === 'PENDING') {
-      return { statusText: 'PENDING', statusVariant: 'pending' }
+    const n = normalizeHtttSubmissionStatus(submission?.status) || 'PENDING'
+    if (n === 'PENDING') {
+      return { statusText: getHtttSubmissionStatusLabel(n), statusVariant: 'pending' }
     }
-    if (status === 'COMPLED' || status === 'COMPLETED') {
-      return { statusText: 'COMPLED', statusVariant: 'approved' }
+    if (n === 'APPROVED') {
+      return { statusText: getHtttSubmissionStatusLabel(n), statusVariant: 'approved' }
     }
-    if (status === 'REJECT' || status === 'REJECTED') {
-      return { statusText: 'REJECT', statusVariant: 'reject' }
+    if (n === 'REJECTED') {
+      return { statusText: getHtttSubmissionStatusLabel(n), statusVariant: 'reject' }
     }
-    return { statusText: status || 'N/A', statusVariant: 'neutral' }
+    return {
+      statusText: String(submission?.status || '').trim() || 'Không xác định',
+      statusVariant: 'neutral',
+    }
   }, [submission, submissionLoading, isCreateMode])
 
   const handleSaveSubmission = async () => {

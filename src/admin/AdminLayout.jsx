@@ -27,6 +27,41 @@ export default function AdminLayout({ currentPath, navigate, user, accessToken, 
   const selectedPanel =
     selectedPanelRaw || (isStaffContext ? 'members' : MANAGE_ADMIN_PANELS.users)
   const selectedUnit = manageableUnits.find((unitItem) => unitItem.id === selectedUnitId)
+  const [urlOnlyUnit, setUrlOnlyUnit] = useState(null)
+
+  useEffect(() => {
+    if (!selectedUnitId || !accessToken) {
+      setUrlOnlyUnit(null)
+      return
+    }
+    if (selectedUnit) {
+      setUrlOnlyUnit(null)
+      return
+    }
+
+    let cancelled = false
+    setUrlOnlyUnit(null)
+
+    ;(async () => {
+      try {
+        const unit = await getUnitById(selectedUnitId, accessToken)
+        if (cancelled || unit?.id !== selectedUnitId) {
+          return
+        }
+        setUrlOnlyUnit(unit)
+      } catch {
+        if (!cancelled) {
+          setUrlOnlyUnit(null)
+        }
+      }
+    })()
+
+    return () => {
+      cancelled = true
+    }
+  }, [selectedUnitId, selectedUnit, accessToken])
+
+  const selectedUnitForNav = selectedUnit || urlOnlyUnit
   const canRenderSidebar = Boolean(selectedUnitId && selectedUnitRole)
   const isStaffSelected = isStaffContext
 
@@ -168,7 +203,7 @@ export default function AdminLayout({ currentPath, navigate, user, accessToken, 
         isDropdownOpen={isDropdownOpen}
         setIsDropdownOpen={setIsDropdownOpen}
         selectedUnitId={selectedUnitId}
-        selectedUnit={selectedUnit}
+        selectedUnit={selectedUnitForNav}
         selectedUnitRole={selectedUnitRole}
         selectedPanel={selectedPanel}
         manageableUnits={manageableUnits}

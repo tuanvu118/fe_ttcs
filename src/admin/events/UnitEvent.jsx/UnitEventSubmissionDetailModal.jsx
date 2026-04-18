@@ -1,5 +1,17 @@
 import { Modal } from 'antd'
+import { getHtttSubmissionStatusLabel } from '../../../utils/unitEventCooperationRows'
 import styles from './UnitEventSubmissionDetailModal.module.css'
+
+function submissionEvidenceUrlText(sub) {
+  if (!sub || typeof sub !== 'object') {
+    return ''
+  }
+  const raw = sub.evidenceUrl ?? sub.evidence_url
+  if (raw == null) {
+    return ''
+  }
+  return String(raw).trim()
+}
 
 function formatDate(value) {
   if (!value) {
@@ -15,7 +27,8 @@ function formatDate(value) {
 export default function UnitEventSubmissionDetailModal({ open, onClose, row }) {
   const sub = row?.submission
   const unit = row?.unit
-  const statusLabel = row?.statusLabel ?? 'Chưa phản hồi'
+  const statusLabel = sub ? getHtttSubmissionStatusLabel(sub.status ?? 'PENDING') : 'Chưa phản hồi'
+  const evidenceUrlText = submissionEvidenceUrlText(sub)
 
   return (
     <Modal
@@ -54,15 +67,8 @@ export default function UnitEventSubmissionDetailModal({ open, onClose, row }) {
 
           <div className={styles.field}>
             <span className={styles.label}>Minh chứng (URL)</span>
-            {sub.evidenceUrl ? (
-              <a
-                href={sub.evidenceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.link}
-              >
-                {sub.evidenceUrl}
-              </a>
+            {evidenceUrlText ? (
+              <p className={`${styles.blockText} ${styles.evidencePlain}`}>{evidenceUrlText}</p>
             ) : (
               <span className={styles.muted}>—</span>
             )}

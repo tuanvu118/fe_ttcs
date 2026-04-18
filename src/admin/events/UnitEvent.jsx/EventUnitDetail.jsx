@@ -109,10 +109,10 @@ export default function UnitEventDetailPage() {
     if (status === 'PENDING') {
       return styles.badgePending
     }
-    if (status === 'COMPLETED') {
+    if (status === 'APPROVED') {
       return styles.badgeCompleted
     }
-    if (status === 'REJECT') {
+    if (status === 'REJECTED') {
       return styles.badgeReject
     }
     return styles.badgeNone
