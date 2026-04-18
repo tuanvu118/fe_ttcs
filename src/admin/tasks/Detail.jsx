@@ -55,10 +55,14 @@ export default function Detail() {
     }
   }, [taskId, unitId])
 
-  const semesterDisplay = useMemo(() => {
+  const { semesterDisplay, semesterId } = useMemo(() => {
     const semester = getStoredCurrentSemester()
-    if (!semester?.id) return 'N/A'
-    return `${semester.name || ''}${semester.academic_year ? ` - ${semester.academic_year}` : ''}`.trim() || 'N/A'
+    if (!semester?.id) {
+      return { semesterDisplay: 'N/A', semesterId: '' }
+    }
+    const label =
+      `${semester.name || ''}${semester.academic_year ? ` - ${semester.academic_year}` : ''}`.trim() || 'N/A'
+    return { semesterDisplay: label, semesterId: semester.id }
   }, [])
 
   if (loading) {
@@ -82,8 +86,24 @@ export default function Detail() {
   }
 
   if (data?.type === 'HTSK') {
-    return <DetailHTSK data={data} semesterDisplay={semesterDisplay} />
+    return (
+      <DetailHTSK
+        data={data}
+        unitId={unitId}
+        taskId={taskId}
+        semesterId={semesterId}
+        semesterDisplay={semesterDisplay}
+      />
+    )
   }
 
-  return <DetailHTSK data={data} semesterDisplay={semesterDisplay} />
+  return (
+    <DetailHTSK
+      data={data}
+      unitId={unitId}
+      taskId={taskId}
+      semesterId={semesterId}
+      semesterDisplay={semesterDisplay}
+    />
+  )
 }

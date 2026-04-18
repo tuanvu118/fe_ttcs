@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import {
   ArrowLeft,
   Buildings,
@@ -9,22 +9,17 @@ import {
   PencilSimple,
   Trash,
   Trophy,
-  WarningCircle,
 } from '@phosphor-icons/react'
-import { Popconfirm, Spin, message } from 'antd'
-import { deleteUnitEvent, getHtttSubmissionsAllByUnitEvent, getUnitEventById } from '../../../service/apiAdminEvent'
+import { Popconfirm, message } from 'antd'
+import { deleteUnitEvent, getHtttSubmissionsAllByUnitEvent } from '../../../service/apiAdminEvent'
 import { getStoredCurrentSemester } from '../../../utils/currentSemesterStorage'
 import { downloadUnitEventHtttExcel } from '../../../utils/exportUnitEventHtttExcel'
 import { buildUnitEventCooperationRows } from '../../../utils/unitEventCooperationRows'
 import UnitEventSubmissionDetailModal from './UnitEventSubmissionDetailModal'
-import styles from './EventUnitDetail.module.css'
+import styles from './EUDetail.module.css'
 
-export default function UnitEventDetailPage() {
-  const { unitId, eventId } = useParams()
+export default function EUDetailHTTT({ data, unitId, eventId }) {
   const navigate = useNavigate()
-  const [data, setData] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState(null)
   const [htttSubmissions, setHtttSubmissions] = useState([])
   const [htttSubmissionsLoading, setHtttSubmissionsLoading] = useState(false)
   const [htttSubmissionsError, setHtttSubmissionsError] = useState('')
@@ -32,11 +27,7 @@ export default function UnitEventDetailPage() {
   const [submissionModalRow, setSubmissionModalRow] = useState(null)
 
   useEffect(() => {
-    fetchData()
-  }, [unitId, eventId])
-
-  useEffect(() => {
-    if (!eventId || data?.type !== 'HTTT') {
+    if (!eventId) {
       setHtttSubmissions([])
       setHtttSubmissionsError('')
       setHtttSubmissionsLoading(false)
@@ -53,7 +44,7 @@ export default function UnitEventDetailPage() {
         if (!cancelled) {
           setHtttSubmissions(list)
         }
-      } catch (e) {
+      } catch {
         if (!cancelled) {
           setHtttSubmissions([])
           setHtttSubmissionsError('Không thể tải danh sách phản hồi.')
@@ -69,21 +60,7 @@ export default function UnitEventDetailPage() {
     return () => {
       cancelled = true
     }
-  }, [eventId, data?.type])
-
-  async function fetchData() {
-    setIsLoading(true)
-    setError(null)
-    try {
-      const eventRes = await getUnitEventById(eventId, unitId)
-      setData(eventRes)
-    } catch (err) {
-      console.error('Fetch unit event detail failed', err)
-      setError('Không thể tải thông tin yêu cầu. Vui lòng thử lại sau.')
-    } finally {
-      setIsLoading(false)
-    }
-  }
+  }, [eventId])
 
   const currentSemester = getStoredCurrentSemester()
   const semesterObj =
@@ -108,9 +85,6 @@ export default function UnitEventDetailPage() {
   }
 
   function handleExportHtttExcel() {
-    if (!data || data.type !== 'HTTT') {
-      return
-    }
     try {
       const semesterLabel = semesterObj
         ? `${semesterObj.name} - ${semesterObj.academic_year}`
@@ -149,7 +123,7 @@ export default function UnitEventDetailPage() {
     try {
       await deleteUnitEvent(eventId)
       handleBack()
-    } catch (e) {
+    } catch {
       // Error handled by service
     }
   }
@@ -163,25 +137,6 @@ export default function UnitEventDetailPage() {
       .catch(() => {
         message.error('Không thể sao chép đường dẫn.')
       })
-  }
-
-  if (isLoading) {
-    return (
-      <div className={styles.loadingBox}>
-        <Spin size="large" />
-        <p>Đang tải thông tin yêu cầu...</p>
-      </div>
-    )
-  }
-
-  if (error || !data) {
-    return (
-      <div className={styles.loadingBox}>
-        <WarningCircle size={48} color="#ef4444" />
-        <p>{error || 'Không tìm thấy dữ liệu.'}</p>
-        <button className="secondary-button" onClick={handleBack}>Quay lại</button>
-      </div>
-    )
   }
 
   return (
@@ -230,9 +185,7 @@ export default function UnitEventDetailPage() {
               <div className={styles.infoGrid}>
                 <div className={styles.infoItem}>
                   <span className={styles.infoLabel}>LOẠI YÊU CẦU</span>
-                  <span className={styles.infoValue}>
-                    {data.type === 'HTTT' ? 'HỖ TRỢ TRUYỀN THÔNG' : 'HỖ TRỢ TỔ CHỨC'}
-                  </span>
+                  <span className={styles.infoValue}>HỖ TRỢ TRUYỀN THÔNG</span>
                 </div>
                 <div className={styles.infoItem}>
                   <span className={styles.infoLabel}>ĐIỂM THƯỞNG</span>
@@ -254,106 +207,79 @@ export default function UnitEventDetailPage() {
         <div className={`${styles.card} ${styles.rightCard}`}>
           <div className={`${styles.cardHeader} ${styles.coopHeaderWithAction}`}>
             <h3 className={styles.cardTitle}>Đơn vị phối hợp</h3>
-            {data.type === 'HTTT' ? (
-              <button
-                type="button"
-                className={styles.exportExcelBtn}
-                onClick={handleExportHtttExcel}
-                disabled={htttSubmissionsLoading}
-                title="Xuất Excel: thông tin HTTT + danh sách đơn vị và trạng thái"
-              >
-                <DownloadSimple size={18} weight="bold" aria-hidden />
-                Xuất Excel
-              </button>
-            ) : null}
+            <button
+              type="button"
+              className={styles.exportExcelBtn}
+              onClick={handleExportHtttExcel}
+              disabled={htttSubmissionsLoading}
+              title="Xuất Excel: thông tin HTTT + danh sách đơn vị và trạng thái"
+            >
+              <DownloadSimple size={18} weight="bold" aria-hidden />
+              Xuất Excel
+            </button>
           </div>
           <div className={styles.cardBody}>
             <p className={styles.sectionDesc}>
               Danh sách các CLB/Khoa tham gia thực hiện yêu cầu này.
             </p>
-
-            {data.type === 'HTTT' ? (
-              <>
-                {htttSubmissionsLoading ? (
-                  <p className={styles.emptyText}>Đang tải phản hồi đơn vị…</p>
-                ) : null}
-                {htttSubmissionsError ? (
-                  <p className={styles.coopError}>{htttSubmissionsError}</p>
-                ) : null}
-                {!htttSubmissionsLoading && cooperationRows.length > 0 ? (
-                  <div className={styles.coopTableWrap}>
-                    <table className={styles.coopTable}>
-                      <thead>
-                        <tr>
-                          <th>Đơn vị</th>
-                          <th>Trạng thái phản hồi</th>
-                          <th aria-label="Thao tác" />
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {cooperationRows.map((row) => (
-                          <tr key={row.key}>
-                            <td>
-                              <div className={styles.coopUnitCell}>
-                                <img
-                                  src={row.unit.logo || 'https://via.placeholder.com/40'}
-                                  alt=""
-                                  className={styles.unitLogo}
-                                />
-                                <div className={styles.unitInfo}>
-                                  <span className={styles.unitName}>{row.unit.name}</span>
-                                  <p className={styles.unitType}>{row.unit.type}</p>
-                                </div>
-                              </div>
-                            </td>
-                            <td>
-                              <span
-                                className={`${styles.statusBadge} ${statusBadgeClass(row.status)}`}
-                              >
-                                {row.statusLabel}
-                              </span>
-                            </td>
-                            <td className={styles.coopActionCell}>
-                              <button
-                                type="button"
-                                className={styles.coopDetailBtn}
-                                disabled={!row.hasSubmission}
-                                onClick={() => openSubmissionModal(row)}
-                              >
-                                Chi tiết
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                ) : null}
-                {!htttSubmissionsLoading && cooperationRows.length === 0 ? (
-                  <p className={styles.emptyText}>Chưa gán đơn vị nào.</p>
-                ) : null}
-              </>
-            ) : (
-              <div className={styles.unitList}>
-                {data.assigned_units?.length > 0 ? (
-                  data.assigned_units.map((unit, idx) => (
-                    <div key={unit.id || idx} className={styles.unitItem}>
-                      <img
-                        src={unit.logo || 'https://via.placeholder.com/40'}
-                        alt={unit.name}
-                        className={styles.unitLogo}
-                      />
-                      <div className={styles.unitInfo}>
-                        <span className={styles.unitName}>{unit.name}</span>
-                        <p className={styles.unitType}>{unit.type}</p>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <p className={styles.emptyText}>Chưa gán đơn vị nào.</p>
-                )}
+            {htttSubmissionsLoading ? (
+              <p className={styles.emptyText}>Đang tải phản hồi đơn vị…</p>
+            ) : null}
+            {htttSubmissionsError ? (
+              <p className={styles.coopError}>{htttSubmissionsError}</p>
+            ) : null}
+            {!htttSubmissionsLoading && cooperationRows.length > 0 ? (
+              <div className={styles.coopTableWrap}>
+                <table className={styles.coopTable}>
+                  <thead>
+                    <tr>
+                      <th>Đơn vị</th>
+                      <th>Trạng thái phản hồi</th>
+                      <th aria-label="Thao tác" />
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {cooperationRows.map((row) => (
+                      <tr key={row.key}>
+                        <td>
+                          <div className={styles.coopUnitCell}>
+                            <img
+                              src={row.unit.logo || 'https://via.placeholder.com/40'}
+                              alt=""
+                              className={styles.unitLogo}
+                            />
+                            <div className={styles.unitInfo}>
+                              <span className={styles.unitName}>{row.unit.name}</span>
+                              <p className={styles.unitType}>{row.unit.type}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <span
+                            className={`${styles.statusBadge} ${statusBadgeClass(row.status)}`}
+                          >
+                            {row.statusLabel}
+                          </span>
+                        </td>
+                        <td className={styles.coopActionCell}>
+                          <button
+                            type="button"
+                            className={styles.coopDetailBtn}
+                            disabled={!row.hasSubmission}
+                            onClick={() => openSubmissionModal(row)}
+                          >
+                            Chi tiết
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-            )}
+            ) : null}
+            {!htttSubmissionsLoading && cooperationRows.length === 0 ? (
+              <p className={styles.emptyText}>Chưa gán đơn vị nào.</p>
+            ) : null}
           </div>
         </div>
 
@@ -394,7 +320,7 @@ export default function UnitEventDetailPage() {
         onClose={closeSubmissionModal}
         row={submissionModalRow}
         onAfterStatusUpdate={async () => {
-          if (!eventId || data?.type !== 'HTTT') {
+          if (!eventId) {
             return
           }
           try {

@@ -254,6 +254,29 @@ export async function getHtttSubmissionsAllByUnitEvent(unitEventId) {
   }
 }
 
+/** Danh sách đăng ký HTSK theo sự kiện (admin/manager). */
+export async function getHtskRegistrationsByUnitEvent(unitEventId) {
+  const accessToken = getStoredAuthSession()?.accessToken || ''
+  const eid = unitEventId ? String(unitEventId).trim() : ''
+  if (!eid) {
+    return []
+  }
+  try {
+    const response = await apiRequest(
+      `/unit-event-submissions/HTSK/list?unit_event_id=${encodeURIComponent(eid)}`,
+      {
+        method: 'GET',
+        headers: { Accept: 'application/json' },
+        ...(accessToken ? { authToken: accessToken } : {}),
+      },
+    )
+    return Array.isArray(response) ? response : []
+  } catch (error) {
+    notifyUnitEventsListError(error)
+    throw error
+  }
+}
+
 const HTTT_STATUS_VALUES = new Set(['PENDING', 'APPROVED', 'REJECTED'])
 
 /** Admin/Manager: cập nhật trạng thái duyệt phản hồi HTTT (POST /unit-event-submissions/status). */
