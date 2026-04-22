@@ -3,7 +3,7 @@ export const PATHS = {
   event: '/events',
   units: '/units',
   qrScan: '/qr-scan',
-  about: '/about',
+  about: '/news',
   club: '/units',
   login: '/login',
   profile: '/profile',
@@ -21,10 +21,11 @@ export const MANAGE_ADMIN_PANELS = {
   semesters: 'semesters',
   events: 'events',
   reports: 'reports',
+  promotions: 'promotions',
 }
 
 const ADMIN_PANEL_IDS = new Set(Object.values(MANAGE_ADMIN_PANELS))
-const STAFF_UNIT_PANEL_IDS = new Set(['members', 'reports', 'events'])
+const STAFF_UNIT_PANEL_IDS = new Set(['members', 'reports', 'events', 'promotions'])
 
 export const USER_ROLES = {
   admin: 'admin',
@@ -59,7 +60,7 @@ const CLUB_DETAIL_PATTERN = /^\/units\/([^/]+)$/
 export const primaryNavigation = [
   { path: PATHS.home, label: 'Trang chủ' },
   { path: PATHS.event, label: 'Sự kiện' },
-  { path: PATHS.about, label: 'Cổng thông tin' },
+  { path: PATHS.about, label: 'Bảng tin' },
   { path: PATHS.club, label: 'Đơn vị' },
 ]
 
@@ -67,7 +68,7 @@ const routeMeta = {
   [PATHS.home]: { title: 'Trang chủ' },
   [PATHS.event]: { title: 'Sự kiện' },
   [PATHS.qrScan]: { title: 'Quét QR', requiresAuth: true },
-  [PATHS.about]: { title: 'Cổng thông tin' },
+  [PATHS.about]: { title: 'Bảng tin' },
   [PATHS.club]: { title: 'Đơn vị' },
   [PATHS.login]: { title: 'Đăng nhập' },
   [PATHS.profile]: { title: 'Hồ sơ', requiresAuth: true },

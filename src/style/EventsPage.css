@@ -3,7 +3,7 @@
   grid-template-columns: 220px 1fr;
   gap: 1.5rem;
   padding: 0;
-  margin-top: -2.5rem; /* Move even higher to offset parent padding */
+  margin-top: 0.5rem;
 }
 
 

@@ -13,7 +13,8 @@ import {
   UserGear,
   DownloadSimple,
   Globe,
-  UsersThree
+  UsersThree,
+  Clock
 } from '@phosphor-icons/react'
 import styles from './reportDetail.module.css'
 import { apiRequest } from '../../service/apiClient'
@@ -98,6 +99,17 @@ export default function ReportDetailView({
   useEffect(() => {
     if (reportId) fetchDetail()
   }, [reportId])
+
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case 'CHUA_NOP': return 'Đang thu thập'
+      case 'CHO_DUYET': return 'Đã gửi'
+      case 'DA_DUYET': return 'Đã phê duyệt'
+      case 'BI_TU_CHOI':
+      case 'YEU_CAU_NOP_LAI': return 'Cần chỉnh sửa'
+      default: return status.replace('_', ' ')
+    }
+  }
 
   const handleOpenModal = (event = null) => {
     if (event) {
@@ -301,10 +313,16 @@ export default function ReportDetailView({
                 </button>
              </div>
            )}
-           {!isManager && !isLocked && (
+           {!isManager && report.status === 'YEU_CAU_NOP_LAI' && (
              <button className={styles.submitBtn} onClick={handleFinalSubmit}>
-               Nộp báo cáo <Checks size={18} weight="bold" />
+               Nộp lại báo cáo <Checks size={18} weight="bold" />
              </button>
+           )}
+           {!isManager && report.status === 'CHUA_NOP' && (
+             <div className={styles.autoSubmitNotice}>
+               <Clock size={16} weight="bold" /> 
+               Tự động nộp vào ngày 20 hàng tháng
+             </div>
            )}
         </div>
       </div>
@@ -331,15 +349,15 @@ export default function ReportDetailView({
             <div className={styles.miniValue}>{report.internal_events.length}</div>
           </div>
         </div>
-        <div className={styles.miniStat}>
-          <div className={styles.statIconBox}><Globe size={20} weight="fill" color="#6366f1" /></div>
-          <div>
-            <div className={styles.miniLabel}>Trạng thái</div>
-            <div className={`${styles.badge} ${styles['s_' + report.status.toLowerCase()]}`}>
-              {report.status.replace('_', ' ')}
+          <div className={styles.miniStat}>
+            <div className={styles.statIconBox}><Globe size={20} weight="fill" color="#6366f1" /></div>
+            <div>
+              <div className={styles.miniLabel}>Trạng thái</div>
+              <div className={`${styles.badge} ${styles['s_' + report.status.toLowerCase()]}`}>
+                {getStatusLabel(report.status)}
+              </div>
             </div>
           </div>
-        </div>
       </div>
 
       <div className={styles.standalonePage}>

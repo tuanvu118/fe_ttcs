@@ -10,9 +10,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 0.6rem;
+  padding-bottom: 0.5rem;
   border-bottom: 2px solid rgba(226, 232, 240, 0.4);
-  margin-bottom: 0.25rem;
 }
 
 .titleArea h1 {
@@ -43,85 +42,49 @@
 }
 
 .createBtn:hover {
+  filter: brightness(1.1);
   transform: translateY(-1px);
   box-shadow: 0 6px 16px rgba(12, 31, 69, 0.2);
-  filter: brightness(1.1);
 }
 
 .filterBar {
   background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(10px);
-  padding: 0.6rem 1rem;
-  border-radius: 12px;
+  padding: 0.4rem 1rem;
+  border-radius: 10px;
   border: 1px solid rgba(226, 232, 240, 0.8);
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 1rem;
-  margin-bottom: 0.25rem;
 }
 
 .filterGroup {
   display: flex;
-  align-items: center;
-  gap: 0.75rem;
+  gap: 1rem;
 }
 
 .filterSelect {
-  padding: 0 0.875rem;
+  padding: 0 0.75rem;
   background: white;
-  border: 1.5px solid #e2e8f0;
-  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  color: #64748b;
-  height: 40px;
-  transition: all 0.2s;
+  gap: 0.4rem;
+  color: #475569;
+  height: 38px;
 }
 
-.filterSelect:focus-within {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-}
-
-.filterSelect input,
 .filterSelect select {
   border: none;
   background: transparent;
   font-weight: 600;
   outline: none;
-  color: #1e293b;
-  font-size: 0.875rem;
-  height: 100%;
-}
-
-.filterSelect input {
-  width: 160px;
-}
-
-.applyFilterBtn {
-  padding: 0 1.25rem;
-  background: linear-gradient(135deg, #0c1f45 0%, #2563eb 100%);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 700;
-  font-size: 0.85rem;
-  height: 40px;
+  color: #0c1f45;
   cursor: pointer;
-  transition: all 0.2s;
-}
-
-.applyFilterBtn:hover {
-  filter: brightness(1.1);
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
-}
-
-.filterSummary {
   font-size: 0.85rem;
-  color: #64748b;
-  font-weight: 600;
+  height: 100%;
 }
 
 .tableWrapper {
@@ -133,11 +96,11 @@
 }
 
 .tableHeader {
-  padding: 0.65rem 1.5rem;
+  padding: 0.65rem 1.25rem;
   background: #f8fafc;
   border-bottom: 1px solid #f1f5f9;
   display: grid;
-  grid-template-columns: 2.5fr 1fr 120px 1.5fr 120px;
+  grid-template-columns: 110px 1fr 150px 120px 120px 110px;
   align-items: center;
   color: #64748b;
   font-size: 0.75rem;
@@ -146,83 +109,100 @@
   letter-spacing: 0.05em;
 }
 
-.tableHeader span:nth-child(3),
-.tableHeader span:nth-child(4),
 .tableHeader span:last-child {
   text-align: center;
 }
 
-.eventRow {
-  padding: 0.6rem 1.5rem;
+.promoRow {
+  padding: 0.6rem 1.25rem;
   display: grid;
-  grid-template-columns: 2.5fr 1fr 120px 1.5fr 120px;
+  grid-template-columns: 110px 1fr 150px 120px 120px 110px;
   align-items: center;
   border-bottom: 1px solid #f1f5f9;
-  background: transparent;
   transition: all 0.2s;
 }
 
-.eventRow:last-child {
-  border-bottom: none;
+.promoRow>div:last-child {
+  display: flex;
+  justify-content: center;
 }
 
-.eventRow:hover {
+.promoRow:hover {
   background: #f8fbff;
 }
 
-.nameCell strong {
-  display: block;
+.bannerCell img {
+  width: 90px;
+  height: 60px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: #f1f5f9;
+}
+
+.titleCell strong {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
   font-size: 1rem;
-  font-weight: 700;
   color: #1e293b;
+  line-height: 1.4;
+  word-break: break-word;
 }
 
-.typeCell {
+.titleCell span {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.semesterCell,
+.statusCell,
+.timeCell {
   font-size: 0.9rem;
   font-weight: 600;
   color: #475569;
 }
 
-.semesterCell {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #475569;
-  text-align: center;
-}
-
-.pointCell {
-  display: flex;
-  justify-content: center;
-  font-size: 0.95rem;
+.statusBadge {
+  display: inline-flex;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
   font-weight: 700;
-  color: #1d4ed8;
+  white-space: nowrap;
 }
 
-.actionsCell {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.6rem;
+.statusApproved {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.statusPending {
+  background: #fffbeb;
+  color: #d97706;
+}
+
+.statusRejected {
+  background: #fef2f2;
+  color: #dc2626;
 }
 
 .actionBtn {
+  padding: 0.5rem 0.75rem;
+  background: #f1f5f9;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #475569;
+  transition: all 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  cursor: pointer;
-  background: transparent;
-  border: 1px solid transparent;
-  color: #2563eb;
-  transition: all 0.2s;
 }
 
 .actionBtn:hover {
-  background: #f1f5f9;
-  border-color: #e2e8f0;
-  transform: translateY(-1px);
+  background: #e2e8f0;
+  color: #0c1f45;
 }
 
 .tableFooter {
@@ -231,8 +211,8 @@
   border-top: 1px solid #f1f5f9;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: 1.25rem;
+  justify-content: center;
+  gap: 1.5rem;
   margin-top: 0.5rem;
 }
 

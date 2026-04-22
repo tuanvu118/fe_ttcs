@@ -1,8 +1,9 @@
 import { useEffect, useState, useMemo } from 'react';
-import { Calendar, MapPin, Clock, ListBullets, CheckCircle, Star, MagnifyingGlass, Funnel } from '@phosphor-icons/react';
+import { Calendar, MapPin, Clock, ListBullets, CheckCircle, Star, MagnifyingGlass, Funnel, CaretLeft, CaretRight } from '@phosphor-icons/react';
 import { getValidPublicEvents, getMyRegistrations } from '../service/apiStudentEvent';
 import { PATHS } from '../utils/routes';
 import { message } from 'antd';
+import { useAuth } from '../hooks/useAuth';
 import '../style/EventsPage.css';
 
 const FILTER_TYPES = {
@@ -18,6 +19,7 @@ const TIME_FILTERS = {
 }
 
 export default function EventsPage({ navigate }) {
+  const { isAuthenticated } = useAuth();
   const [events, setEvents] = useState([])
   const [registrations, setRegistrations] = useState([])
   const [isLoading, setIsLoading] = useState(true)
@@ -26,20 +28,53 @@ export default function EventsPage({ navigate }) {
   const [searchQuery, setSearchQuery] = useState('')
 
   const [errorStatus, setErrorStatus] = useState(null)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [total, setTotal] = useState(0)
+  const pageSize = 8
 
   useEffect(() => {
-    loadData()
-  }, [])
+    loadData(currentPage)
+  }, [currentPage, activeFilter, timeFilter, searchQuery])
 
-  async function loadData() {
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [activeFilter, timeFilter, searchQuery])
+
+  async function loadData(page = 1) {
     setIsLoading(true)
     setErrorStatus(null)
     try {
-      const [eventsData, regsData] = await Promise.all([
-        getValidPublicEvents(),
-        getMyRegistrations()
+      const skip = (page - 1) * pageSize
+      // We pass filters to the backend, except for REGISTERED which we handle specially if needed
+      // Actually, for simplicity, we pass search and timeFilter
+      const params = {
+        skip,
+        limit: pageSize,
+        search: searchQuery,
+        timeFilter: timeFilter
+      }
+      
+      const [eventsResponse, regsData] = await Promise.all([
+        getValidPublicEvents(params),
+        isAuthenticated ? getMyRegistrations() : Promise.resolve([])
       ])
-      setEvents(eventsData)
+      
+      let finalItems = eventsResponse.items || []
+      let finalTotal = eventsResponse.total || 0
+      
+      // Specical handling for Registered filter if backend doesn't support it directly
+      if (activeFilter === FILTER_TYPES.REGISTERED) {
+        const registeredIds = new Set((regsData || []).map(r => r.event_id))
+        // If we want accurate server-side pagination for Registered, we'd need a backend update.
+        // For now, we filter the current page's results
+        finalItems = finalItems.filter(e => registeredIds.has(e.id))
+      } else if (activeFilter === FILTER_TYPES.UPCOMING) {
+        // Upcoming is handled by backend timeFilter if we passed it, 
+        // but the current get_valid_events already filters event_end >= now.
+      }
+      
+      setEvents(finalItems)
+      setTotal(finalTotal)
       setRegistrations(regsData)
     } catch (error) {
       console.error('Failed to fetch events:', error)
@@ -50,44 +85,7 @@ export default function EventsPage({ navigate }) {
   }
 
 
-  const filteredEvents = useMemo(() => {
-    let result = [...events]
-
-    // 1. Status Filter
-    if (activeFilter === FILTER_TYPES.UPCOMING) {
-      const now = new Date()
-      result = result.filter(e => new Date(e.event_start) > now)
-    } else if (activeFilter === FILTER_TYPES.REGISTERED) {
-      const registeredIds = new Set(registrations.map(r => r.event_id))
-      result = result.filter(e => registeredIds.has(e.id))
-    }
-
-    // 2. Time Filter
-    if (timeFilter) {
-      const now = new Date()
-      const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000)
-      const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, now.getDate())
-
-      result = result.filter(e => {
-        const start = new Date(e.event_start)
-        if (timeFilter === TIME_FILTERS.THIS_WEEK) return start <= nextWeek && start >= now
-        if (timeFilter === TIME_FILTERS.THIS_MONTH) return start <= nextMonth && start >= now
-        if (timeFilter === TIME_FILTERS.UPCOMING) return start > now
-        return true
-      })
-    }
-
-    // 3. Search
-    if (searchQuery) {
-      const q = searchQuery.toLowerCase()
-      result = result.filter(e => 
-        e.title.toLowerCase().includes(q) || 
-        e.description.toLowerCase().includes(q)
-      )
-    }
-
-    return result
-  }, [events, registrations, activeFilter, timeFilter, searchQuery])
+  const filteredEvents = events
 
   function getStatusLabel(event) {
     const now = new Date()
@@ -190,8 +188,15 @@ export default function EventsPage({ navigate }) {
       <main className="events-content">
         <header className="events-header">
           <div className="events-header-copy">
-            <p style={{ fontSize: '0.75rem', fontWeight: 600, color: '#0f4d93', textTransform: 'uppercase', marginBottom: '0.25rem' }}>Portal › Sự kiện</p>
-            <h1 style={{ fontSize: '1.75rem', margin: 0 }}>Danh sách sự kiện</h1>
+            <h1 style={{
+              margin: 0,
+              fontSize: '2.15rem',
+              fontWeight: 800,
+              letterSpacing: '-0.03em',
+              background: 'linear-gradient(135deg, #0c1f45 0%, #2563eb 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+            }}>Danh sách sự kiện</h1>
           </div>
           <div className="search-bar" style={{ position: 'relative' }}>
             <MagnifyingGlass 
@@ -274,6 +279,75 @@ export default function EventsPage({ navigate }) {
             <p>{errorStatus ? 'Không thể tải dữ liệu từ máy chủ. Vui lòng thử lại sau.' : 'Thử thay đổi bộ lọc hoặc từ khóa tìm kiếm của bạn.'}</p>
           </div>
         )}
+
+        <div className="pagination-footer" style={{ 
+          marginTop: '2.5rem', 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          gap: '1.25rem',
+          padding: '1.5rem',
+          borderTop: '1px solid #f1f5f9'
+        }}>
+          <button 
+            className="pagination-btn"
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            disabled={currentPage === 1 || isLoading}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.6rem 1.25rem',
+              borderRadius: '10px',
+              border: '1px solid #e2e8f0',
+              background: 'white',
+              color: '#475569',
+              fontWeight: 600,
+              fontSize: '0.9rem',
+              cursor: currentPage === 1 ? 'not-allowed' : 'pointer',
+              transition: 'all 0.2s ease',
+              opacity: currentPage === 1 ? 0.4 : 1,
+              boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+            }}
+          >
+            <CaretLeft size={18} weight="bold" /> Trước
+          </button>
+          
+          <div style={{ 
+            fontSize: '0.95rem', 
+            color: '#64748b', 
+            fontWeight: 500,
+            background: '#f8fafc',
+            padding: '0.5rem 1rem',
+            borderRadius: '8px'
+          }}>
+            Trang <strong style={{ color: '#1e293b' }}>{currentPage}</strong> / <strong style={{ color: '#1e293b' }}>{Math.ceil(total / pageSize) || 1}</strong>
+          </div>
+
+          <button 
+            className="pagination-btn"
+            onClick={() => setCurrentPage(p => p + 1)}
+            disabled={currentPage >= Math.ceil(total / pageSize) || isLoading}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.6rem 1.25rem',
+              borderRadius: '10px',
+              border: '1px solid #e2e8f0',
+              background: 'white',
+              color: '#475569',
+              fontWeight: 600,
+              fontSize: '0.9rem',
+              cursor: currentPage >= Math.ceil(total / pageSize) ? 'not-allowed' : 'pointer',
+              transition: 'all 0.2s ease',
+              opacity: currentPage >= Math.ceil(total / pageSize) ? 0.4 : 1,
+              boxShadow: '0 1px 2px rgba(0,0,0,0.05)'
+            }}
+          >
+            Sau <CaretRight size={18} weight="bold" />
+          </button>
+        </div>
       </main>
     </div>
   )

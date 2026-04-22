@@ -1,4 +1,14 @@
 import { useEffect, useState } from 'react'
+import { 
+  User, 
+  EnvelopeSimple, 
+  Lock, 
+  IdentificationCard, 
+  IdentificationBadge, 
+  Cake, 
+  Image as ImageIcon,
+  X 
+} from '@phosphor-icons/react'
 import NotificationPopup from '../NotificationPopup'
 
 const initialFormState = {
@@ -133,84 +143,121 @@ function UserFormModal({
         aria-labelledby="user-form-title"
       >
         <div className="user-modal-header">
-          <div>
-            <h2 id="user-form-title">{title}</h2>
-            <p>Điền đúng các trường API users, không thêm field ngoài backend.</p>
-          </div>
+          <h2 id="user-form-title" style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0c1f45', margin: 0 }}>{title}</h2>
           <button
             type="button"
-            className="notification-popup-close"
             aria-label="Đóng biểu mẫu"
             onClick={onClose}
+            style={{ 
+              background: '#f1f5f9', 
+              border: 'none', 
+              borderRadius: '50%', 
+              width: '32px', 
+              height: '32px', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center',
+              cursor: 'pointer',
+              color: '#64748b',
+              flexShrink: 0
+            }}
           >
-            ×
+            <X size={18} weight="bold" />
           </button>
         </div>
 
         <form className="user-form-grid" onSubmit={handleSubmit}>
           <label className="field field-full">
             <span>Họ và tên</span>
-            <input
-              name="full_name"
-              type="text"
-              value={form.full_name}
-              onChange={handleChange}
-              placeholder="Nguyễn Văn A"
-            />
+            <div className="input-with-icon">
+              <User size={18} />
+              <input
+                name="full_name"
+                type="text"
+                value={form.full_name}
+                onChange={handleChange}
+                placeholder="Ví dụ: Nguyễn Văn A"
+              />
+            </div>
           </label>
 
           <label className="field">
             <span>Email</span>
-            <input
-              name="email"
-              type="email"
-              value={form.email}
-              onChange={handleChange}
-              placeholder="user@example.com"
-            />
+            <div className="input-with-icon">
+              <EnvelopeSimple size={18} />
+              <input
+                name="email"
+                type="email"
+                value={form.email}
+                onChange={handleChange}
+                placeholder="user@example.com"
+              />
+            </div>
           </label>
 
           <label className="field">
             <span>Mật khẩu</span>
-            <input
-              name="password"
-              type="password"
-              value={form.password}
-              onChange={handleChange}
-              placeholder={mode === 'create' ? 'Tối thiểu 6 ký tự' : 'Để trống nếu không đổi'}
-            />
+            <div className="input-with-icon">
+              <Lock size={18} />
+              <input
+                name="password"
+                type="password"
+                value={form.password}
+                onChange={handleChange}
+                placeholder={mode === 'create' ? 'Tối thiểu 6 ký tự' : 'Để trống nếu không đổi'}
+              />
+            </div>
           </label>
 
           <label className="field">
             <span>Mã sinh viên</span>
-            <input
-              name="student_id"
-              type="text"
-              value={form.student_id}
-              onChange={handleChange}
-              placeholder="B21DCCN001"
-            />
+            <div className="input-with-icon">
+              <IdentificationCard size={18} />
+              <input
+                name="student_id"
+                type="text"
+                value={form.student_id}
+                onChange={handleChange}
+                placeholder="Ví dụ: B21DCCN001"
+              />
+            </div>
           </label>
 
           <label className="field">
             <span>Lớp</span>
-            <input
-              name="class_name"
-              type="text"
-              value={form.class_name}
-              onChange={handleChange}
-              placeholder="D21CQCN01-N"
-            />
+            <div className="input-with-icon">
+              <IdentificationBadge size={18} />
+              <input
+                name="class_name"
+                type="text"
+                value={form.class_name}
+                onChange={handleChange}
+                placeholder="Ví dụ: D21CQCN01-N"
+              />
+            </div>
           </label>
 
           <label className="field">
             <span>Ngày sinh</span>
-            <input name="date_of_birth" type="date" value={form.date_of_birth} onChange={handleChange} />
+            <div className="input-with-icon">
+              <Cake size={18} />
+              <input name="date_of_birth" type="date" value={form.date_of_birth} onChange={handleChange} />
+            </div>
           </label>
 
-          <label className="field">
-            <span>Ảnh đại diện</span>
-            <input name="avatar" type="file" accept="image/*" onChange={handleChange} />
+          <label className="field field-full">
+            <span>Ảnh đại diện (tuỳ chọn)</span>
+            <label className="file-upload-area">
+              <ImageIcon size={20} />
+              <span>{form.avatar ? form.avatar.name : 'Nhấn để chọn ảnh...'}</span>
+              <input
+                name="avatar"
+                type="file"
+                accept="image/*"
+                onChange={handleChange}
+                style={{ display: 'none' }}
+              />
+            </label>
           </label>
 
           <div className="user-form-actions field-full">

@@ -11,9 +11,10 @@ export function getStoredCurrentSemester() {
 export function writeStoredCurrentSemester(semester) {
   if (!semester?.id) {
     removeStorage(CURRENT_SEMESTER_KEY)
-    return
+  } else {
+    writeStorage(CURRENT_SEMESTER_KEY, semester)
   }
-  writeStorage(CURRENT_SEMESTER_KEY, semester)
+  window.dispatchEvent(new CustomEvent('semesterChanged', { detail: semester }))
 }
 
 export function clearStoredCurrentSemester() {

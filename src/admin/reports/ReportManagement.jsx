@@ -10,7 +10,9 @@ import {
   Funnel,
   Calendar,
   FileText,
-  Export
+  Export,
+  CaretLeft,
+  CaretRight
 } from '@phosphor-icons/react'
 import { getAllReports, exportSummaryExcel } from '../../service/reportService'
 import { getUnitById, getManagedUnits } from '../../service/unitService'
@@ -18,8 +20,10 @@ import styles from './reportManagement.module.css'
 import NotificationPopup from '../../components/NotificationPopup'
 import ReportDetailView from './ReportDetailView'
 
+const PAGE_SIZE = 10
+
 export default function ReportManagement({ accessToken, roleLabel, onSessionExpired }) {
-  const [reports, setReports] = useState([])
+  const [reportsData, setReportsData] = useState({ items: [], total: 0 })
   const [unitNames, setUnitNames] = useState({})
   const [isLoading, setIsLoading] = useState(true)
   const [notice, setNotice] = useState(null)
@@ -29,18 +33,26 @@ export default function ReportManagement({ accessToken, roleLabel, onSessionExpi
   const [filterYear, setFilterYear] = useState(new Date().getFullYear().toString())
   const [filterMonth, setFilterMonth] = useState('all')
   const [filterUnitId, setFilterUnitId] = useState('all')
+  const [currentPage, setCurrentPage] = useState(1)
   const [allUnits, setAllUnits] = useState([])
 
+  const reports = reportsData.items
+
   const stats = useMemo(() => ({
-    total: reports.length,
+    total: reportsData.total,
+    // Note: These stats are now approximated or would need a separate API call if we want accurate global stats while paginating
     pending: reports.filter((r) => r.status === 'CHO_DUYET').length,
     approved: reports.filter((r) => r.status === 'DA_DUYET').length,
     rejected: reports.filter((r) => r.status === 'YEU_CAU_NOP_LAI' || r.status === 'BI_TU_CHOI').length,
-  }), [reports])
+  }), [reports, reportsData.total])
 
   useEffect(() => {
     loadReports()
-  }, [accessToken, filterMonth, filterYear, filterUnitId, filterStatus])
+  }, [accessToken, filterMonth, filterYear, filterUnitId, filterStatus, currentPage])
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [filterMonth, filterYear, filterUnitId, filterStatus])
 
   useEffect(() => {
     fetchUnits()
@@ -61,10 +73,11 @@ export default function ReportManagement({ accessToken, roleLabel, onSessionExpi
       const monthParam = filterMonth === 'all' ? null : parseInt(filterMonth)
       const yearParam = parseInt(filterYear)
       const unitParam = filterUnitId === 'all' ? null : filterUnitId
+      const skip = (currentPage - 1) * PAGE_SIZE
       
-      const data = await getAllReports(accessToken, monthParam, yearParam, unitParam, filterStatus)
-      setReports(data)
-      await loadUnitNames(data)
+      const data = await getAllReports(accessToken, monthParam, yearParam, unitParam, filterStatus, skip, PAGE_SIZE)
+      setReportsData(data)
+      await loadUnitNames(data.items)
     } catch (error) {
       handleApiError(error, 'Không thể tải danh sách báo cáo.')
     } finally {
@@ -123,11 +136,11 @@ export default function ReportManagement({ accessToken, roleLabel, onSessionExpi
     }
   }
 
-  const filteredReports = useMemo(() => {
-    // Current backend already does most of the filtering, 
-    // but we can sort them here if needed.
-    return [...reports].sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at))
-  }, [reports])
+  const filteredReports = reports
+
+  const totalPages = Math.ceil(reportsData.total / PAGE_SIZE) || 1
+  const canGoPrevious = currentPage > 1
+  const canGoNext = currentPage < totalPages
 
   const getStatusLabel = (status) => {
     switch (status) {
@@ -165,7 +178,7 @@ export default function ReportManagement({ accessToken, roleLabel, onSessionExpi
           type="button"
           className={styles.exportBtn}
           onClick={handleExportSummary}
-          disabled={reports.length === 0}
+          disabled={reportsData.total === 0}
         >
           <Export size={20} weight="bold" /> Xuất tổng hợp
         </button>
@@ -182,22 +195,22 @@ export default function ReportManagement({ accessToken, roleLabel, onSessionExpi
         <div className={`${styles.statCard} ${styles.pending}`}>
           <div className={styles.statIcon}><Clock size={28} weight="fill" /></div>
           <div className={styles.statInfo}>
-             <h3>{stats.pending}</h3>
-             <span>Đang chờ duyệt</span>
+             <h3>{stats.pending}+</h3>
+             <span>Chờ duyệt (trang này)</span>
           </div>
         </div>
         <div className={`${styles.statCard} ${styles.success}`}>
           <div className={styles.statIcon}><CheckCircle size={28} weight="fill" /></div>
           <div className={styles.statInfo}>
-             <h3>{stats.approved}</h3>
-             <span>Đã hoàn thành</span>
+             <h3>{stats.approved}+</h3>
+             <span>Đã duyệt (trang này)</span>
           </div>
         </div>
         <div className={`${styles.statCard} ${styles.danger}`}>
           <div className={styles.statIcon}><XCircle size={28} weight="fill" /></div>
           <div className={styles.statInfo}>
-             <h3>{stats.rejected}</h3>
-             <span>Cần chỉnh sửa</span>
+             <h3>{stats.rejected}+</h3>
+             <span>Cần nộp lại (trang này)</span>
           </div>
         </div>
       </div>
@@ -236,7 +249,7 @@ export default function ReportManagement({ accessToken, roleLabel, onSessionExpi
               value={filterYear} 
               onChange={(e) => setFilterYear(e.target.value)}
             >
-              {[2024, 2025, 2026].map(y => (
+               {[2023, 2024, 2025, 2026].map(y => (
                 <option key={y} value={y.toString()}>Năm {y}</option>
               ))}
             </select>
@@ -247,7 +260,7 @@ export default function ReportManagement({ accessToken, roleLabel, onSessionExpi
             <select 
               value={filterUnitId} 
               onChange={(e) => setFilterUnitId(e.target.value)}
-              style={{ maxWidth: '150px' }}
+              style={{ maxWidth: '150px', fontSize: '0.85rem', height: '100%' }}
             >
               <option value="all">Tất cả đơn vị</option>
               {allUnits.map(u => (
@@ -257,7 +270,7 @@ export default function ReportManagement({ accessToken, roleLabel, onSessionExpi
           </div>
         </div>
         <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 600 }}>
-          Hiển thị {filteredReports.length} báo cáo
+          Tổng cộng {reportsData.total} báo cáo
         </span>
       </div>
 
@@ -303,6 +316,26 @@ export default function ReportManagement({ accessToken, roleLabel, onSessionExpi
             Không tìm thấy báo cáo nào phù hợp với bộ lọc.
           </div>
         )}
+
+        <div className={styles.tableFooter}>
+          <button 
+            className={styles.pageButton} 
+            disabled={!canGoPrevious || isLoading}
+            onClick={() => setCurrentPage(prev => prev - 1)}
+          >
+            <CaretLeft size={16} weight="bold" /> Trước
+          </button>
+          <div className={styles.paginationInfo}>
+            Trang <strong>{currentPage}</strong> / <strong>{totalPages}</strong>
+          </div>
+          <button 
+            className={styles.pageButton} 
+            disabled={!canGoNext || isLoading}
+            onClick={() => setCurrentPage(prev => prev + 1)}
+          >
+            Sau <CaretRight size={16} weight="bold" />
+          </button>
+        </div>
       </div>
     </div>
   )

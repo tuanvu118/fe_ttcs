@@ -11,14 +11,15 @@ import {
   Hash,
   RadioButton,
   FloppyDiskBack,
-  ArrowLeft
+  ArrowLeft,
+  ListBullets
 } from '@phosphor-icons/react'
-import { DatePicker, Select, InputNumber, Switch, message, Badge } from 'antd'
+import { DatePicker, InputNumber, Switch, message, Badge, Radio } from 'antd'
 import dayjs from 'dayjs'
 import { updatePublicEvent } from '../../service/apiAdminEvent'
-import { getSemesters } from '../../service/semesterService'
 import { getStoredAuthSession } from '../../service/authSession'
 import RichTextEditor from '../../components/RichTextEditor'
+import SemesterField from '../../components/semesters/SemesterField'
 import styles from './step2PublicEventInfo.module.css' // Reusing styles
 
 
@@ -28,8 +29,6 @@ export default function EditPublicEventForm({ eventData, unitId }) {
   const navigate = useNavigate()
   const fileInputRef = useRef(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [semesters, setSemesters] = useState([])
-  const [isLoadingSemesters, setIsLoadingSemesters] = useState(false)
 
   const [formData, setFormData] = useState({
     title: eventData.title || '',
@@ -52,23 +51,6 @@ export default function EditPublicEventForm({ eventData, unitId }) {
       type: f.field_type || f.type // Map field_type to type for consistency with creation UI
     }))
   })
-
-  useEffect(() => {
-    loadSemesters()
-  }, [])
-
-  async function loadSemesters() {
-    setIsLoadingSemesters(true)
-    try {
-      const token = getStoredAuthSession()?.accessToken
-      const res = await getSemesters(token)
-      setSemesters(res.items || [])
-    } catch (err) {
-      console.error('Failed to load semesters', err)
-    } finally {
-      setIsLoadingSemesters(false)
-    }
-  }
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }))
@@ -177,10 +159,7 @@ export default function EditPublicEventForm({ eventData, unitId }) {
       {/* 1. THÔNG TIN CƠ BẢN */}
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
-          <div className={styles.sectionTitleGroup}>
             <h2 className={styles.sectionTitle}>Thông tin cơ bản</h2>
-            <p className={styles.sectionDesc}>Cập nhật tiêu đề và ảnh bìa cho sự kiện.</p>
-          </div>
         </div>
         <div className={styles.sectionContent}>
           <div className={styles.fieldGroup}>
@@ -228,10 +207,7 @@ export default function EditPublicEventForm({ eventData, unitId }) {
       {/* 2. THỜI GIAN & ĐIỂM THƯỞNG */}
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
-            <div className={styles.sectionTitleGroup}>
-                <h2 className={styles.sectionTitle}>Thời gian & Điểm thưởng</h2>
-                <p className={styles.sectionDesc}>Thiết lập mốc thời gian và điểm rèn luyện.</p>
-            </div>
+            <h2 className={styles.sectionTitle}>Thời gian & Điểm thưởng</h2>
         </div>
         <div className={styles.sectionContent}>
           <div className={styles.row}>
@@ -259,23 +235,11 @@ export default function EditPublicEventForm({ eventData, unitId }) {
 
           <div className={styles.row}>
             <div className={styles.fieldGroup}>
-                <label className={styles.label}>Học kỳ diễn ra</label>
-                <Select 
-                    className={styles.select}
-                    placeholder="Chọn học kỳ"
-                    loading={isLoadingSemesters}
-                    value={formData.semester_id}
-                    onChange={val => handleChange('semester_id', val)}
-                    options={semesters.map(s => ({ 
-                        value: s.id, 
-                        label: (
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-                                <span>{s.name} - {s.academic_year}</span>
-                                {s.is_active && <Badge count="Đang diễn ra" style={{ backgroundColor: '#10b981', marginLeft: '10px', fontSize: '10px' }} />}
-                            </div>
-                        )
-                    }))}
-                />
+              <label className={styles.label}>HỌC KỲ DIỄN RA</label>
+              <SemesterField 
+                value={formData.semester_id}
+                onChange={val => handleChange('semester_id', val)}
+              />
             </div>
             <div className={styles.fieldGroup} style={{ maxWidth: '200px' }}>
               <label className={styles.label}>Điểm rèn luyện</label>
@@ -310,11 +274,8 @@ export default function EditPublicEventForm({ eventData, unitId }) {
       {/* 3. NỘI DUNG MÔ TẢ */}
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
-            <div className={styles.sectionTitleGroup}>
                 <h2 className={styles.sectionTitle}>Nội dung chi tiết</h2>
-                <p className={styles.sectionDesc}>Mô tả về sự kiện, mục tiêu và quyền lợi.</p>
             </div>
-        </div>
         <div className={styles.sectionContent}>
           <RichTextEditor 
             value={formData.description}
@@ -328,10 +289,7 @@ export default function EditPublicEventForm({ eventData, unitId }) {
       {/* 4. BIỂU MẪU ĐĂNG KÝ (DYNAMIC) */}
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
-          <div className={styles.sectionTitleGroup}>
             <h2 className={styles.sectionTitle}>Câu hỏi biểu mẫu</h2>
-            <p className={styles.sectionDesc}>Cập nhật các trường thông tin sinh viên cần điền.</p>
-          </div>
           <button className={styles.addBtn} onClick={addFormField}>
             <Plus size={14} weight="bold" /> Thêm câu hỏi
           </button>
@@ -363,18 +321,41 @@ export default function EditPublicEventForm({ eventData, unitId }) {
                             <label className={styles.label}>Loại phản hồi</label>
                             <Select 
                               className={styles.select}
-                              value={field.type}
-                              onChange={(val) => updateField(field.id, 'type', val)}
+                              value={field.type === 'checkbox' || field.type === 'select' || field.type === 'radio' ? 'choice' : field.type}
+                              onChange={(val) => {
+                                if (val === 'choice') {
+                                  updateField(field.id, 'type', 'select')
+                                  if (!field.options || field.options.length === 0) {
+                                    updateField(field.id, 'options', ['Lựa chọn 1'])
+                                  }
+                                } else {
+                                  updateField(field.id, 'type', val)
+                                  updateField(field.id, 'options', [])
+                                }
+                              }}
                               options={[
                                 { value: 'text', label: 'Văn bản', icon: <TextAlignLeft /> },
                                 { value: 'number', label: 'Con số', icon: <Hash /> },
-                                { value: 'checkbox', label: 'Nhiều lựa chọn', icon: <CheckSquare /> },
+                                { value: 'choice', label: 'Lựa chọn (Trắc nghiệm/Hộp kiểm)', icon: <ListBullets /> },
                               ]}
                             />
                           </div>
                        </div>
 
-                       {field.type === 'checkbox' && (
+                       {(field.type === 'select' || field.type === 'checkbox') && (
+                        <div className={styles.choiceTypeSettings}>
+                          <Radio.Group 
+                            value={field.type} 
+                            onChange={e => updateField(field.id, 'type', e.target.value)}
+                            className={styles.choiceRadioGroup}
+                          >
+                            <Radio value="select">Chọn một (Trắc nghiệm)</Radio>
+                            <Radio value="checkbox">Chọn nhiều (Hộp kiểm)</Radio>
+                          </Radio.Group>
+                        </div>
+                       )}
+
+                       {(field.type === 'checkbox' || field.type === 'select') && (
                          <div className={styles.optionsSection}>
                            <label className={styles.label}>Các lựa chọn</label>
                            <div className={styles.optionsList}>

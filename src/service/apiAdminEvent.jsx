@@ -78,36 +78,40 @@ function parseCreatedTime(createAt) {
   return Number.isNaN(t) ? 0 : t
 }
 
-export async function getAllUnitEventsForAdmin(semesterId) {
+export async function getAllUnitEventsForAdmin(semesterId, skip = 0, limit = 10) {
   const sid = semesterId ? String(semesterId).trim() : null
   const accessToken = getStoredAuthSession()?.accessToken || ''
   try {
-    const query = sid && sid !== 'all' ? `?semesterId=${sid}` : ''
-    const response = await apiRequest(`/unit-events/all${query}`, {
+    const params = new URLSearchParams()
+    if (sid && sid !== 'all') params.append('semesterId', sid)
+    params.append('skip', skip)
+    params.append('limit', limit)
+    
+    const response = await apiRequest(`/unit-events/all?${params.toString()}`, {
       method: 'GET',
       headers: {
         Accept: 'application/json',
       },
       ...(accessToken ? { authToken: accessToken } : {}),
     })
-    return Array.isArray(response) ? response : []
+    return response || { items: [], total: 0 }
   } catch (error) {
     notifyUnitEventsListError(error)
     throw error
   }
 }
 
-export async function getAllPublicEventsForAdmin() {
+export async function getAllPublicEventsForAdmin(skip = 0, limit = 10) {
   const accessToken = getStoredAuthSession()?.accessToken || ''
   try {
-    const response = await apiRequest('/events/', {
+    const response = await apiRequest(`/events/?skip=${skip}&limit=${limit}`, {
       method: 'GET',
       headers: {
         Accept: 'application/json',
       },
       ...(accessToken ? { authToken: accessToken } : {}),
     })
-    return Array.isArray(response) ? response : []
+    return response || { items: [], total: 0 }
   } catch (error) {
     notifyPublicEventsError(error)
     throw error
@@ -119,17 +123,20 @@ export async function getAllPublicEventsForAdmin() {
  * Sắp xếp theo ngày tạo: cũ → mới.
  * @returns {Promise<Array<{ id: string, title: string, point: number, create_at: string, type: string }>>}
  */
-export async function getAllEventBySemesterIdForAdmin(semesterId) {
+export async function getAllEventBySemesterIdForAdmin(semesterId, skip = 0, limit = 10) {
   if (!semesterId) {
     message.warning('Thiếu học kỳ.')
-    return []
+    return { items: [], total: 0 }
   }
 
   const sid = String(semesterId).trim()
-  const [unitList, publicList] = await Promise.all([
-    sid === 'all' ? getAllUnitEventsForAdmin(null) : getAllUnitEventsForAdmin(sid),
-    getAllPublicEventsForAdmin(),
+  const [unitData, publicData] = await Promise.all([
+    getAllUnitEventsForAdmin(sid === 'all' ? null : sid, skip, limit),
+    getAllPublicEventsForAdmin(skip, limit),
   ])
+
+  const unitList = unitData.items || []
+  const publicList = publicData.items || []
 
   const unitRows = unitList.map((item) =>
     toAdminEventRow(item, String(item?.type ?? 'HTSK')),
@@ -145,7 +152,7 @@ export async function getAllEventBySemesterIdForAdmin(semesterId) {
   merged.sort((b, a) => parseCreatedTime(a.create_at) - parseCreatedTime(b.create_at))
 
   // Map thêm thông tin semester_id vào row để hiển thị ở bảng nếu cần
-  return merged.map((row) => {
+  const items = merged.map((row) => {
     const originalItem =
       row.type === 'SK'
         ? publicList.find((p) => String(p.id) === row.id)
@@ -156,6 +163,11 @@ export async function getAllEventBySemesterIdForAdmin(semesterId) {
       semester_id: originalItem?.semester_id ?? originalItem?.semesterId ?? '',
     }
   })
+
+  return {
+    items,
+    total: Math.max(unitData.total || 0, publicData.total || 0) // Approximation for merged total
+  }
 }
 
 export async function createPublicEvent(formData) {

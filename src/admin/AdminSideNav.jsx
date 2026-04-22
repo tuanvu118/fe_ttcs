@@ -4,6 +4,7 @@ import {
   CalendarDots,
   CaretDown,
   ChartBar,
+  Megaphone,
   Users,
   UsersThree,
 } from '@phosphor-icons/react'
@@ -47,6 +48,7 @@ function unitLogoSrc(unitId, unitLogoById, manageableUnits, unitRecord) {
 const staffActions = [
   { key: 'members', label: 'Quản lý thành viên', Icon: UsersThree },
   { key: 'reports', label: 'Quản lý báo cáo', Icon: ChartBar },
+  { key: 'promotions', label: 'Truyền thông', Icon: Megaphone },
   { key: 'tasks', label: 'Quản lý sự kiện được giao', Icon: CalendarBlank },
 ]
 
@@ -56,6 +58,7 @@ const adminActions = [
   { panel: MANAGE_ADMIN_PANELS.semesters, label: 'Quản lý học kì', Icon: CalendarDots },
   { panel: MANAGE_ADMIN_PANELS.events, label: 'Quản lý sự kiện', Icon: CalendarBlank },
   { panel: MANAGE_ADMIN_PANELS.reports, label: 'Quản lý báo cáo', Icon: ChartBar },
+  { panel: MANAGE_ADMIN_PANELS.promotions, label: 'Phê duyệt Tin tức', Icon: Megaphone },
 ]
 
 export default function AdminSideNav({

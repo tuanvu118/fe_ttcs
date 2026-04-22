@@ -1,0 +1,255 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0 1.5rem 0.75rem;
+  min-height: 100%;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0.6rem;
+  border-bottom: 2px solid rgba(226, 232, 240, 0.4);
+  margin-bottom: 0.25rem;
+}
+
+.titleArea h1 {
+  margin: 0;
+  font-size: 2.15rem;
+  font-weight: 800;
+  color: #0c1f45;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, #0c1f45 0%, #2563eb 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.tabs {
+  display: flex;
+  background: #f1f5f9;
+  padding: 0.25rem;
+  border-radius: 12px;
+  gap: 0.25rem;
+}
+
+.tab {
+  padding: 0.5rem 1.25rem;
+  border-radius: 9px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  background: transparent;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.activeTab {
+  background: #2563eb;
+  color: white;
+  box-shadow: 0 4px 12px rgba(12, 31, 69, 0.2);
+}
+
+.tab:hover:not(.activeTab) {
+  color: #0c1f45;
+  background: #e2e8f0;
+}
+
+.workspaceContent {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.02);
+  padding: 1.5rem;
+  min-height: 400px;
+}
+
+.filterBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+
+.filterSelect {
+  padding: 0 0.85rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: #475569;
+  height: 40px;
+}
+
+.filterSelect input {
+  border: none;
+  background: transparent;
+  font-weight: 600;
+  outline: none;
+  width: 200px;
+  font-size: 0.85rem;
+  height: 100%;
+}
+
+.createBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 1.25rem;
+  background: linear-gradient(135deg, #0c1f45 0%, #2563eb 100%);
+  color: white;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  border: none;
+  box-shadow: 0 4px 12px rgba(12, 31, 69, 0.15);
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.createBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(12, 31, 69, 0.2);
+  filter: brightness(1.1);
+}
+
+.tableFooter {
+  padding: 0.8rem 1.25rem;
+  background: #fcfcfd;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1.25rem;
+}
+
+.paginationInfo {
+  font-size: 0.85rem;
+  color: #64748b;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.paginationInfo strong {
+  color: #1e293b;
+  font-weight: 700;
+}
+
+.pageButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.9rem;
+  border: 1px solid #e2e8f0;
+  background: white;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pageButton:hover:not(:disabled) {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+  color: #1e293b;
+}
+
+.pageButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: #f1f5f9;
+}
+
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  padding: 0.65rem 1rem;
+  background: #f8fafc;
+  border-bottom: 1px solid #f1f5f9;
+  color: #64748b;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.table th:last-child {
+  text-align: center;
+}
+
+.table td {
+  padding: 0.6rem 1rem;
+  color: #1e293b;
+  font-size: 0.9rem;
+}
+
+.table td:last-child {
+  text-align: center;
+}
+
+.userCell {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.userAvatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #eff6ff;
+  color: #2563eb;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+}
+
+.rolePill {
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.actionBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: none;
+  background: #f1f5f9;
+  color: #ef4444;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.actionBtn:hover {
+  background: #ef4444;
+  color: white;
+  transform: translateY(-1px);
+}

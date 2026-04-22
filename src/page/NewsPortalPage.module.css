@@ -1,0 +1,363 @@
+.container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0.5rem 2rem 2rem;
+  background: #f1f5f9; /* Nền đậm hơn xíu để card nổi lên */
+  min-height: 100vh;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.mainTitle {
+  margin: 0;
+  font-size: 2.15rem;
+  font-weight: 800;
+  color: #0c1f45;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, #0c1f45 0%, #2563eb 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.tabItem {
+  padding: 0.4rem 1.1rem;
+  background: transparent;
+  border: 1px solid rgba(194, 198, 210, 0.2);
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tabActive {
+  background: #0c1f45;
+  color: white;
+  border-color: #0c1f45;
+}
+
+.contentLayout {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+}
+
+.mainFeed {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.newsCard {
+  display: flex;
+  background: white;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  border: 1px solid rgba(194, 198, 210, 0.3);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.newsCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px rgba(12, 31, 69, 0.1);
+  border-color: rgba(37, 99, 235, 0.4);
+}
+
+.cardCover {
+  width: 280px;
+  height: 210px;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.cardCover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s;
+}
+
+.newsCard:hover .cardCover img {
+  transform: scale(1.05);
+}
+
+.cardBody {
+  flex: 1;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.cardMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.badge {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  color: #2563eb;
+  padding: 0.125rem 0.5rem;
+  background: rgba(37, 99, 235, 0.05);
+  border-radius: 0.125rem;
+}
+
+.time {
+  font-size: 10px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.cardTitle {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0c1f45;
+  margin-bottom: 0.5rem;
+  line-height: 1.35;
+  transition: color 0.2s;
+}
+
+.newsCard:hover .cardTitle {
+  color: #2563eb;
+}
+
+.cardDesc {
+  font-size: 0.9rem;
+  color: #64748b;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cardFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.author {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.authorIcon {
+  width: 1.5rem;
+  height: 1.5rem;
+  background: #f1f5f9;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #424750;
+}
+
+.author span {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #424750;
+}
+
+.readMore {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #2563eb;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 350px;
+}
+
+.trendingWidget {
+  background: white;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1.25rem 1.25rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(194, 198, 210, 0.3);
+  position: sticky;
+  top: 1rem;
+}
+
+.widgetTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  color: #2563eb;
+}
+
+.widgetTitle h3 {
+  margin: 0; /* Reset margin mặc định của h3 */
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #0c1f45;
+}
+
+.trendingList {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.trendingItem {
+  display: flex;
+  gap: 0.75rem; /* Khoảng cách vừa phải để ôm sát */
+  align-items: center;
+  cursor: pointer;
+}
+
+.rank {
+  font-size: 2rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, #0c1f45 0%, #2563eb 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+  transition: all 0.3s ease;
+  letter-spacing: -0.05em;
+  flex-shrink: 0;
+}
+
+.trendingItem:hover .rank {
+  transform: scale(1.1);
+}
+
+.trendInfo {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.trendInfo h4 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #0c1f45;
+  margin: 0;
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  transition: color 0.2s;
+}
+
+.trendingItem:hover h4 {
+  color: #2563eb;
+}
+
+.trendMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 10px;
+  color: #424750;
+  font-weight: 600;
+}
+
+.dot {
+  font-size: 0.5rem;
+}
+
+.loading {
+  padding: 5rem;
+  text-align: center;
+  color: #4f5f7a;
+}
+
+
+/* ── PAGINATION ── */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 2rem;
+  padding: 1rem;
+  background: white;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(194, 198, 210, 0.3);
+}
+
+.pageBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #e2e8f0;
+  background: white;
+  color: #64748b;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.pageBtn:hover:not(:disabled) {
+  background: #f8fafc;
+  border-color: #cbd5e1;
+  color: #0c1f45;
+}
+
+.pageBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pageInfo {
+  font-size: 0.95rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.pageInfo strong {
+  color: #0c1f45;
+}
+
+@media (max-width: 1024px) {
+  .contentLayout {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .newsCard {
+    flex-direction: column;
+    height: auto;
+  }
+  .cardCover {
+    width: 100%;
+    height: 180px;
+  }
+}

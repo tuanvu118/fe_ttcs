@@ -5,10 +5,17 @@ import { getStoredAuthSession } from './authSession'
  * Fetch list of valid public events for students
  */
 export async function getValidPublicEvents(params = {}) {
-  const { semesterId } = params
+  const { semesterId, search, timeFilter, skip = 0, limit = 10 } = params
   const accessToken = getStoredAuthSession()?.accessToken || ''
-  const query = semesterId ? `?semester_id=${semesterId}` : ''
-  return apiRequest(`/events/valid${query}`, {
+  
+  const queryParams = new URLSearchParams()
+  if (semesterId) queryParams.append('semester_id', semesterId)
+  if (search) queryParams.append('search', search)
+  if (timeFilter) queryParams.append('timeFilter', timeFilter)
+  queryParams.append('skip', skip)
+  queryParams.append('limit', limit)
+  
+  return apiRequest(`/events/valid?${queryParams.toString()}`, {
     method: 'GET',
     headers: { Accept: 'application/json' },
     ...(accessToken ? { authToken: accessToken } : {}),

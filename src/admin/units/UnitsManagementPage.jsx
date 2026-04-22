@@ -15,55 +15,13 @@ import { UNIT_TYPES, USER_ROLES } from '../../utils/routes'
 import { getValidationMessage } from '../../utils/userUtils'
 import UnitDetailModal from './UnitDetailModal'
 import styles from './adminUnits.module.css'
+import { Plus, MagnifyingGlass, Funnel, Pencil, Trash, Eye, CaretLeft, CaretRight } from '@phosphor-icons/react'
 
 const DEFAULT_LIMIT = 10
 const STAFF_FETCH_LIMIT = 100
+const EMPTY_ARRAY = []
 
-function IconButton({ title, onClick, danger = false, children }) {
-  return (
-    <button
-      type="button"
-      className={danger ? `${styles.iconButton} danger` : styles.iconButton}
-      onClick={onClick}
-      title={title}
-      aria-label={title}
-    >
-      {children}
-    </button>
-  )
-}
-
-function EditIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path
-        d="m4 16 9.8-9.8a2.2 2.2 0 1 1 3.1 3.1L7.1 19H4v-3Zm0 0 3 3"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
-function DeleteIcon() {
-  return (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path
-        d="M4 7h16M10 11v6M14 11v6M6 7l1 12h10l1-12M9 7V5h6v2"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
-function UnitsManagementPage({
+export default function UnitsManagementPage({
   accessToken,
   role,
   roleLabel,
@@ -77,16 +35,19 @@ function UnitsManagementPage({
     limit: DEFAULT_LIMIT,
   })
   const [memberTotals, setMemberTotals] = useState({})
-  const [filters, setFilters] = useState({
-    name: '',
-    type: '',
-  })
-  const [query, setQuery] = useState({
-    skip: 0,
-    limit: DEFAULT_LIMIT,
-    name: '',
-    type: '',
-  })
+  const [query, setQuery] = useState({ skip: 0, limit: 10, name: '', type: '' })
+  const [filters, setFilters] = useState({ name: '', type: '' })
+
+  useEffect(() => {
+    // Tránh chạy lúc mount nếu giá trị giống hệt query mặc định
+    if (filters.name === query.name && filters.type === query.type) return
+
+    const timer = setTimeout(() => {
+      setQuery(prev => ({ ...prev, skip: 0, name: filters.name, type: filters.type }))
+    }, 400)
+    return () => clearTimeout(timer)
+  }, [filters, query.name, query.type])
+
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [notice, setNotice] = useState(null)
@@ -98,45 +59,24 @@ function UnitsManagementPage({
   const isAdmin = role === USER_ROLES.admin
   const isStaff = role === USER_ROLES.staff
   const staffManagedUnitIds = useMemo(() => {
-    if (!isStaff) {
-      return []
-    }
-
+    if (!isStaff) return EMPTY_ARRAY
     return [
       ...new Set(
         (user?.roles || [])
-          .filter(
-            (roleItem) =>
-              roleItem?.unit_id &&
-              Array.isArray(roleItem?.roles) &&
-              roleItem.roles.some(
-                (roleName) => String(roleName).trim().toUpperCase() === 'STAFF',
-              ),
-          )
-          .map((roleItem) => roleItem.unit_id),
+          .filter(r => r?.unit_id && (r?.roles || []).some(rn => rn.toUpperCase() === 'STAFF'))
+          .map(r => r.unit_id)
       ),
     ]
-  }, [isStaff, user?.roles])
+  }, [isStaff, JSON.stringify(user?.roles)])
 
   const currentPage = Math.floor(result.skip / Math.max(result.limit, 1)) + 1
   const totalPages = Math.max(Math.ceil(result.total / Math.max(result.limit, 1)), 1)
   const canGoPrevious = result.skip > 0
   const canGoNext = result.skip + result.limit < result.total
   const showingFrom = result.total ? result.skip + 1 : 0
-  const showingTo = result.total
-    ? Math.min(result.skip + result.items.length, result.total)
-    : 0
+  const showingTo = result.total ? Math.min(result.skip + result.items.length, result.total) : 0
 
   const pageTitle = 'Quản lý đơn vị / CLB'
-  const pageDescription = 'Quản lý cơ cấu tổ chức, đơn vị và các câu lạc bộ trong hệ thống.'
-
-  const activeTypeLabel = useMemo(() => {
-    if (!query.type) {
-      return 'Tất cả loại hình'
-    }
-
-    return query.type
-  }, [query.type])
 
   useEffect(() => {
     loadUnits(query)
@@ -148,14 +88,12 @@ function UnitsManagementPage({
 
   async function loadUnits(nextQuery) {
     setIsLoading(true)
-
     try {
       if (isStaff) {
         const items = await getAllUnitsForStaff(nextQuery)
-        const filteredItems = items.filter((unit) => staffManagedUnitIds.includes(unit.id))
+        const filteredItems = items.filter(unit => staffManagedUnitIds.includes(unit.id))
         const start = nextQuery.skip || 0
         const end = start + (nextQuery.limit || DEFAULT_LIMIT)
-
         setResult({
           items: filteredItems.slice(start, end),
           total: filteredItems.length,
@@ -164,7 +102,6 @@ function UnitsManagementPage({
         })
         return
       }
-
       const response = await getManagedUnits(nextQuery, accessToken)
       setResult({
         items: response.items,
@@ -180,220 +117,88 @@ function UnitsManagementPage({
   }
 
   async function getAllUnitsForStaff(nextQuery) {
-    const baseQuery = {
-      skip: 0,
-      limit: STAFF_FETCH_LIMIT,
-      name: nextQuery.name,
-      type: nextQuery.type,
-    }
-
+    const baseQuery = { skip: 0, limit: STAFF_FETCH_LIMIT, name: nextQuery.name, type: nextQuery.type }
     const firstPage = await getManagedUnits(baseQuery, accessToken)
     const allItems = [...firstPage.items]
     let loaded = firstPage.items.length
-    const total = firstPage.total
-
-    while (loaded < total) {
-      const nextPage = await getManagedUnits(
-        { ...baseQuery, skip: loaded },
-        accessToken,
-      )
-
-      if (!nextPage.items.length) {
-        break
-      }
-
+    while (loaded < firstPage.total) {
+      const nextPage = await getManagedUnits({ ...baseQuery, skip: loaded }, accessToken)
+      if (!nextPage.items.length) break
       allItems.push(...nextPage.items)
       loaded += nextPage.items.length
     }
-
     return allItems
   }
 
   async function loadMemberTotals(units) {
-    if (!units.length) {
-      setMemberTotals({})
-      return
-    }
-
-    const pairs = await Promise.all(
-      units.map(async (unit) => {
-        try {
-          const response = await getUnitMembers(unit.id, { skip: 0, limit: 1 }, accessToken)
-          return [unit.id, response.total]
-        } catch {
-          return [unit.id, null]
-        }
-      }),
-    )
-
+    if (!units.length) { setMemberTotals({}); return; }
+    const pairs = await Promise.all(units.map(async (unit) => {
+      try {
+        const response = await getUnitMembers(unit.id, { skip: 0, limit: 1 }, accessToken)
+        return [unit.id, response.total]
+      } catch { return [unit.id, null] }
+    }))
     setMemberTotals(Object.fromEntries(pairs))
   }
 
   async function handleCreateUnit(form) {
     setIsSubmitting(true)
-
     try {
       await createUnit(form, accessToken)
       setIsCreateOpen(false)
-      const nextQuery = { ...query, skip: 0 }
-      setQuery(nextQuery)
-      await loadUnits(nextQuery)
+      setQuery({ ...query, skip: 0 })
+      await loadUnits({ ...query, skip: 0 })
     } catch (error) {
       handleApiError(error, getValidationMessage(error, 'Tạo đơn vị thất bại.'))
-    } finally {
-      setIsSubmitting(false)
-    }
+    } finally { setIsSubmitting(false) }
   }
 
   async function handleEditUnit(form) {
-    if (!editingUnit?.id) {
-      return
-    }
-
+    if (!editingUnit?.id) return
     setIsSubmitting(true)
-
     try {
       await updateUnit(editingUnit.id, form, accessToken)
       setEditingUnit(null)
       await loadUnits(query)
     } catch (error) {
       handleApiError(error, getValidationMessage(error, 'Cập nhật đơn vị thất bại.'))
-    } finally {
-      setIsSubmitting(false)
-    }
+    } finally { setIsSubmitting(false) }
   }
 
   async function handleDeleteUnit() {
-    if (!deletingUnit?.id) {
-      return
-    }
-
+    if (!deletingUnit?.id) return
     setIsSubmitting(true)
-
     try {
       await deleteUnit(deletingUnit.id, accessToken)
       setDeletingUnit(null)
-
-      const fallbackSkip =
-        result.items.length <= 1 && query.skip > 0
-          ? Math.max(query.skip - query.limit, 0)
-          : query.skip
-
-      const nextQuery = { ...query, skip: fallbackSkip }
-      setQuery(nextQuery)
-      await loadUnits(nextQuery)
+      const fallbackSkip = result.items.length <= 1 && query.skip > 0 ? Math.max(query.skip - query.limit, 0) : query.skip
+      setQuery({ ...query, skip: fallbackSkip })
+      await loadUnits({ ...query, skip: fallbackSkip })
     } catch (error) {
       handleApiError(error, 'Xóa đơn vị thất bại.')
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  async function handleUnitDeleted(deletedUnitId) {
-    setViewingUnit(null)
-    setEditingUnit(null)
-    setDeletingUnit(null)
-    setMemberTotals((current) => {
-      const nextTotals = { ...current }
-      delete nextTotals[deletedUnitId]
-      return nextTotals
-    })
-
-    const fallbackSkip =
-      result.items.length <= 1 && query.skip > 0
-        ? Math.max(query.skip - query.limit, 0)
-        : query.skip
-
-    const nextQuery = { ...query, skip: fallbackSkip }
-    setQuery(nextQuery)
-    await loadUnits(nextQuery)
+    } finally { setIsSubmitting(false) }
   }
 
   function handleApiError(error, fallbackMessage) {
     if (error?.status === 401) {
-      setNotice({
-        title: 'Phiên đăng nhập hết hạn',
-        message: 'Vui lòng đăng nhập lại để tiếp tục.',
-        onClose: onSessionExpired,
-      })
+      setNotice({ title: 'Phiên đăng nhập hết hạn', message: 'Vui lòng đăng nhập lại.', onClose: onSessionExpired })
       return
     }
-
-    if (error?.status === 403) {
-      setNotice({
-        title: 'Không có quyền',
-        message: 'Bạn không có quyền thực hiện thao tác này.',
-      })
-      return
-    }
-
-    if (error?.status === 404) {
-      setNotice({
-        title: 'Không tìm thấy đơn vị',
-        message: 'Đơn vị bạn cần thao tác không còn tồn tại.',
-      })
-      return
-    }
-
-    if (error?.status === 400 || error?.status === 422) {
-      setNotice({
-        title: 'Dữ liệu chưa hợp lệ',
-        message: getValidationMessage(error, fallbackMessage),
-      })
-      return
-    }
-
-    setNotice({
-      title: 'Có lỗi xảy ra',
-      message: fallbackMessage || error?.message || 'Yêu cầu thất bại.',
-    })
-  }
-
-  function handleSearchSubmit(event) {
-    event.preventDefault()
-
-    setQuery((currentQuery) => ({
-      ...currentQuery,
-      skip: 0,
-      name: filters.name.trim(),
-      type: filters.type,
-    }))
-  }
-
-  function handleResetFilters() {
-    setFilters({
-      name: '',
-      type: '',
-    })
-
-    setQuery({
-      skip: 0,
-      limit: DEFAULT_LIMIT,
-      name: '',
-      type: '',
-    })
+    setNotice({ title: 'Có lỗi xảy ra', message: error?.message || fallbackMessage })
   }
 
   function handlePageChange(direction) {
-    const nextSkip =
-      direction === 'next'
-        ? query.skip + query.limit
-        : Math.max(query.skip - query.limit, 0)
-
-    setQuery((currentQuery) => ({ ...currentQuery, skip: nextSkip }))
+    const nextSkip = direction === 'next' ? query.skip + query.limit : Math.max(query.skip - query.limit, 0)
+    setQuery(prev => ({ ...prev, skip: nextSkip }))
   }
 
   return (
-    <section className={styles.unitsPage}>
+    <div className={styles.container}>
       <NotificationPopup
         isOpen={Boolean(notice?.message)}
         title={notice?.title}
         message={notice?.message}
-        onClose={() => {
-          const callback = notice?.onClose
-          setNotice(null)
-          callback?.()
-        }}
+        onClose={() => setNotice(null)}
       />
 
       <UnitFormModal
@@ -437,192 +242,119 @@ function UnitsManagementPage({
           user={user}
           onClose={() => setViewingUnit(null)}
           onSessionExpired={onSessionExpired}
-          onUnitDeleted={handleUnitDeleted}
+          onUnitDeleted={() => loadUnits(query)}
         />
       )}
 
-      <div className={`page-card ${styles.consoleHeader}`}>
-        <div>
-          <span className="dashboard-badge">{roleLabel}</span>
+      <header className={styles.header}>
+        <div className={styles.titleArea}>
           <h1>{pageTitle}</h1>
-          <p>{pageDescription}</p>
         </div>
-
         {isAdmin && (
-          <button
-            type="button"
-            className={`primary-button ${styles.consoleCreateButton}`}
-            onClick={() => setIsCreateOpen(true)}
-          >
-            + Thêm đơn vị
+          <button className={styles.createBtn} onClick={() => setIsCreateOpen(true)}>
+            <Plus size={18} weight="bold" /> Thêm đơn vị mới
           </button>
         )}
-      </div>
+      </header>
 
-      <form
-        className={`page-card ${styles.consoleToolbar} ${styles.consoleToolbarCompact}`}
-        onSubmit={handleSearchSubmit}
-      >
-        <label className={`field ${styles.consoleSearch}`}>
-          <span>Tìm kiếm theo tên</span>
-          <input
-            type="search"
-            value={filters.name}
-            onChange={(event) =>
-              setFilters((current) => ({ ...current, name: event.target.value }))
-            }
-            placeholder="Tìm kiếm tên đơn vị"
-          />
-        </label>
-
-        <label className="field">
-          <span>Loại hình</span>
-          <select
-            value={filters.type}
-            onChange={(event) =>
-              setFilters((current) => ({ ...current, type: event.target.value }))
-            }
-          >
-            <option value="">Tất cả loại hình</option>
-            <option value={UNIT_TYPES.lck}>LCK</option>
-            <option value={UNIT_TYPES.clb}>CLB</option>
-            <option value={UNIT_TYPES.system}>SYSTEM</option>
-          </select>
-        </label>
-
-        <div className={styles.consoleToolbarActions}>
-          <button type="submit" className="secondary-button">
-            Áp dụng
-          </button>
-          <button type="button" className="secondary-button" onClick={handleResetFilters}>
-            Xóa lọc
-          </button>
+      <div className={styles.filterBar}>
+        <div className={styles.filterGroup}>
+          <div className={styles.filterSelect}>
+            <MagnifyingGlass size={16} />
+            <input 
+              placeholder="Tìm theo tên..." 
+              value={filters.name}
+              onChange={e => setFilters(p => ({ ...p, name: e.target.value }))}
+            />
+          </div>
+          <div className={styles.filterSelect}>
+            <Funnel size={16} />
+            <select 
+              value={filters.type} 
+              onChange={e => setFilters(p => ({ ...p, type: e.target.value }))}
+            >
+              <option value="">Tất cả loại hình</option>
+              <option value={UNIT_TYPES.lck}>Liên chi khoa</option>
+              <option value={UNIT_TYPES.clb}>Câu lạc bộ</option>
+              <option value={UNIT_TYPES.system}>Hệ thống</option>
+            </select>
+          </div>
         </div>
-      </form>
-
-      <div className={styles.consoleSummary}>
-        <span>Loại hình: {activeTypeLabel}</span>
-        <span>
-          Hiển thị {showingFrom} - {showingTo} trên tổng số {result.total} đơn vị
+        <span className={styles.filterSummary}>
+          Hiển thị {result.items.length} đơn vị
         </span>
       </div>
 
-      {isLoading ? (
-        <section className="page-card">
-          <p>Đang tải danh sách đơn vị...</p>
-        </section>
-      ) : result.items.length ? (
-        <section className={`page-card ${styles.managementTableShell}`}>
-          <table className={styles.managementTable}>
-            <thead>
-              <tr>
-                <th>Logo</th>
-                <th>Tên đơn vị</th>
-                <th>Loại hình</th>
-                <th>Tổng TV</th>
-                <th>Thao tác</th>
-              </tr>
-            </thead>
-            <tbody>
-              {result.items.map((unit) => (
-                <tr key={unit.id}>
-                  <td>
-                    <UnitLogo logo={unit.logo} name={unit.name} size="small" />
-                  </td>
-                  <td>
-                    <div className={styles.tableName}>
-                      <button
-                        type="button"
-                        className={styles.nameLink}
-                        onClick={() => setViewingUnit(unit)}
-                      >
-                        {unit.name || 'Chưa cập nhật'}
-                      </button>
-                    </div>
-                  </td>
-                  <td>
-                    <UnitTypeBadge type={unit.type} />
-                  </td>
-                  <td className={styles.totalCell}>
-                    {memberTotals[unit.id] === null || memberTotals[unit.id] === undefined
-                      ? '-'
-                      : memberTotals[unit.id]}
-                  </td>
-                  <td>
-                    <div className={`${styles.tableActions} ${styles.tableActionsIcon}`}>
-                      {isAdmin ? (
-                        <>
-                          <button
-                            type="button"
-                            className="secondary-button unit-action-button"
-                            onClick={() => setViewingUnit(unit)}
-                          >
-                            Mở
-                          </button>
-                          <IconButton
-                            title="Sửa đơn vị"
-                            onClick={() => setEditingUnit(unit)}
-                          >
-                            <EditIcon />
-                          </IconButton>
-                          <IconButton
-                            title="Xóa đơn vị"
-                            danger
-                            onClick={() => setDeletingUnit(unit)}
-                          >
-                            <DeleteIcon />
-                          </IconButton>
-                        </>
-                      ) : (
-                        <button
-                          type="button"
-                          className="secondary-button unit-action-button"
-                          onClick={() => setViewingUnit(unit)}
-                        >
-                          Mở
-                        </button>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      <div className={styles.tableWrapper}>
+        <div className={styles.tableHeader}>
+          <span>LOGO</span>
+          <span>Tên đơn vị</span>
+          <span>Loại hình</span>
+          <span>Thành viên</span>
+          <span>Thao tác</span>
+        </div>
 
-          <div className="unit-table-footer">
-            <button
-              type="button"
-              className="secondary-button unit-page-button"
-              onClick={() => handlePageChange('previous')}
-              disabled={!canGoPrevious}
-            >
-              Trước
-            </button>
-            <span>
-              Trang {currentPage} / {totalPages}
-            </span>
-            <button
-              type="button"
-              className="secondary-button unit-page-button"
-              onClick={() => handlePageChange('next')}
-              disabled={!canGoNext}
-            >
-              Sau
-            </button>
-          </div>
-        </section>
-      ) : (
-        <section className="page-card">
-          <h2>Không có đơn vị phù hợp</h2>
-          <p>
-            {query.name || query.type
-              ? 'Không tìm thấy đơn vị nào khớp với bộ lọc hiện tại.'
-              : 'Hiện chưa có đơn vị nào trong hệ thống.'}
-          </p>
-        </section>
-      )}
-    </section>
+        {isLoading ? (
+          <div className={styles.emptyState}>Đang tải dữ liệu...</div>
+        ) : result.items.length > 0 ? (
+          result.items.map((unit) => (
+            <div key={unit.id} className={styles.unitRow}>
+              <div className={styles.logoCell}>
+                <UnitLogo logo={unit.logo} name={unit.name} size="small" />
+              </div>
+              <div className={styles.nameCell}>
+                <strong>{unit.name}</strong>
+              </div>
+              <div className={styles.typeCell}>
+                <UnitTypeBadge type={unit.type} />
+              </div>
+              <div className={styles.membersCell}>
+                {memberTotals[unit.id] ?? '-'}
+              </div>
+              <div className={styles.actionsCell}>
+                <button className={`${styles.actionBtn} ${styles.viewBtn}`} onClick={() => setViewingUnit(unit)} title="Xem chi tiết">
+                  <Eye size={18} />
+                </button>
+                {isAdmin && (
+                  <>
+                    <button className={`${styles.actionBtn} ${styles.editBtn}`} onClick={() => setEditingUnit(unit)} title="Chỉnh sửa">
+                      <Pencil size={18} />
+                    </button>
+                    <button className={`${styles.actionBtn} ${styles.deleteBtn}`} onClick={() => setDeletingUnit(unit)} title="Xóa">
+                      <Trash size={18} />
+                    </button>
+                  </>
+                )}
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className={styles.emptyState}>Không tìm thấy đơn vị nào phù hợp.</div>
+        )}
+      </div>
+
+      <div className={styles.tableFooter}>
+        <button
+          type="button"
+          className={styles.pageButton}
+          onClick={() => handlePageChange('previous')}
+          disabled={!canGoPrevious}
+        >
+          <CaretLeft size={16} weight="bold" /> Trước
+        </button>
+        <div className={styles.paginationInfo}>
+          Trang <strong>{currentPage}</strong> / <strong>{totalPages}</strong>
+        </div>
+        <button
+          type="button"
+          className={styles.pageButton}
+          onClick={() => handlePageChange('next')}
+          disabled={!canGoNext}
+        >
+          Sau <CaretRight size={16} weight="bold" />
+        </button>
+      </div>
+    </div>
   )
 }
 
-export default UnitsManagementPage

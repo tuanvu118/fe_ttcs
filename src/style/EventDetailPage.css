@@ -17,7 +17,7 @@
   align-items: center;
   overflow: hidden;
   border-radius: 16px; /* Added slight radius for contained feel */
-  margin-top: 1rem;
+  margin-top: 1.5rem;
 }
 
 .event-hero-bg {

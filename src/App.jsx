@@ -5,7 +5,8 @@ import { useRouter } from './hooks/useRouter'
 import AdminLayout from './admin/AdminLayout'
 import AdminRouter from './admin/AdminRouter'
 import { isAdminPath } from './admin/adminPaths'
-import AboutPage from './page/AboutPage'
+import NewsPortalPage from './page/NewsPortalPage'
+import NewsDetailPage from './page/NewsDetailPage'
 import ClubDetailPage from './page/ClubDetailPage'
 import ClubPage from './page/ClubPage'
 import EventDetailPage from './page/EventDetailPage'
@@ -42,6 +43,8 @@ function App() {
   const clubUnitId = getClubUnitIdFromPath(pathname)
   const eventIdMatched = pathname.match(/^\/events\/([^/]+)$/)
   const eventId = eventIdMatched?.[1] || ''
+  const newsIdMatched = pathname.match(/^\/news\/([^/]+)$/)
+  const newsId = newsIdMatched?.[1] || ''
   const taskIdMatched = pathname.match(/^\/task\/([^/]+)$/)
   const taskId = taskIdMatched?.[1] || ''
   const isAdminArea = isAdminPath(pathname)
@@ -56,10 +59,6 @@ function App() {
   let page = <NotFoundPage />
 
   const requiresAuthPaths = new Set([
-    PATHS.home,
-    PATHS.event,
-    PATHS.about,
-    PATHS.club,
     PATHS.profile,
     PATHS.logout,
     PATHS.qrScan,
@@ -67,7 +66,6 @@ function App() {
   const mustCheckAuth =
     requiresAuthPaths.has(pathname) ||
     isAdminArea ||
-    pathname.startsWith(`${PATHS.club}/`) ||
     Boolean(taskId)
 
 
@@ -87,7 +85,9 @@ function App() {
   } else if (taskId) {
     page = null
   } else if (pathname === PATHS.about) {
-    page = <AboutPage />
+    page = <NewsPortalPage />
+  } else if (newsId) {
+    page = <NewsDetailPage newsId={newsId} navigate={navigate} />
   } else if (pathname === PATHS.club) {
     page = <ClubPage navigate={navigate} search={search} />
   } else if (clubUnitId) {
@@ -144,7 +144,7 @@ function App() {
           {page}
         </AdminLayout>
       ) : (
-        <main className={`page-content ${pathname === PATHS.event ? 'page-content-wide' : (eventId ? 'page-content-full' : '')}`}>
+        <main className={`page-content ${pathname === PATHS.home ? 'page-content-home' : [PATHS.event, PATHS.about].includes(pathname) ? 'page-content-wide' : (eventId || newsId ? 'page-content-full' : '')}`}>
           {page}
         </main>
 

@@ -13,10 +13,10 @@ import {
   CheckSquare,
   X
 } from '@phosphor-icons/react'
-import { DatePicker, Select, InputNumber, Switch, Badge } from 'antd'
-import { getSemesters } from '../../service/semesterService'
+import { DatePicker, Select, InputNumber, Switch, Badge, Radio } from 'antd'
 import { getStoredAuthSession } from '../../service/authSession'
 import RichTextEditor from '../../components/RichTextEditor'
+import SemesterField from '../../components/semesters/SemesterField'
 import styles from './step2PublicEventInfo.module.css'
 
 
@@ -25,35 +25,15 @@ const { RangePicker } = DatePicker
 const FIELD_TYPES = [
   { id: 'text', label: 'Văn bản', icon: TextAlignLeft },
   { id: 'number', label: 'Con số', icon: Hash },
-  { id: 'checkbox', label: 'Nhiều lựa chọn', icon: CheckSquare },
+  { id: 'choice', label: 'Lựa chọn (Trắc nghiệm/Hộp kiểm)', icon: ListBullets },
 ]
 
 export default function Step2PublicEventInfo({ data, setData, isSubmitting, onBack, onNext }) {
-  const [semesters, setSemesters] = useState([])
-  const [isLoadingSemesters, setIsLoadingSemesters] = useState(false)
   const fileInputRef = useRef(null)
 
   useEffect(() => {
-    loadSemesters()
+    // Initial data setup if needed, semesters are handled by child component
   }, [])
-
-  async function loadSemesters() {
-    setIsLoadingSemesters(true)
-    try {
-      const token = getStoredAuthSession()?.accessToken
-      const res = await getSemesters(token)
-      setSemesters(res.items || [])
-      // Set default semester if not set
-      if (!data.semesterId && res.items?.length > 0) {
-        const active = res.items.find(s => s.is_active) || res.items[0]
-        setData(prev => ({ ...prev, semesterId: active.id }))
-      }
-    } catch (err) {
-      console.error('Failed to load semesters', err)
-    } finally {
-      setIsLoadingSemesters(false)
-    }
-  }
 
   const handleImageChange = (e) => {
     const file = e.target.files[0]
@@ -152,7 +132,6 @@ export default function Step2PublicEventInfo({ data, setData, isSubmitting, onBa
         <div className={styles.sectionHeader}>
           <div className={styles.sectionTitleGroup}>
             <h3 className={styles.sectionTitle}>Thông tin cơ bản</h3>
-            <p className={styles.sectionDesc}>Tiêu đề và hình ảnh nhận diện thương hiệu cho sự kiện.</p>
           </div>
         </div>
         
@@ -211,7 +190,6 @@ export default function Step2PublicEventInfo({ data, setData, isSubmitting, onBa
         <div className={styles.sectionHeader}>
           <div className={styles.sectionTitleGroup}>
             <h3 className={styles.sectionTitle}>Nội dung & Điểm số</h3>
-            <p className={styles.sectionDesc}>Mô tả mục tiêu và quyền lợi dành cho sinh viên tham gia.</p>
           </div>
         </div>
 
@@ -253,22 +231,10 @@ export default function Step2PublicEventInfo({ data, setData, isSubmitting, onBa
 
           <div className={styles.row}>
             <div className={styles.fieldGroup}>
-              <label className={styles.label}>HỌC KỲ</label>
-              <Select 
-                className={styles.select}
-                placeholder="Chọn học kỳ"
-                loading={isLoadingSemesters}
+              <label className={styles.label}>HỌC KỲ DIỄN RA</label>
+              <SemesterField 
                 value={data.semesterId}
                 onChange={val => setData(prev => ({ ...prev, semesterId: val }))}
-                options={semesters.map(s => ({ 
-                  value: s.id, 
-                  label: (
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-                      <span>{s.name} - {s.academic_year}</span>
-                      {s.is_active && <Badge count="Đang diễn ra" style={{ backgroundColor: '#10b981', marginLeft: '10px', fontSize: '10px' }} />}
-                    </div>
-                  )
-                }))}
               />
             </div>
             <div className={styles.fieldGroup}>
@@ -294,7 +260,6 @@ export default function Step2PublicEventInfo({ data, setData, isSubmitting, onBa
         <div className={styles.sectionHeader}>
           <div className={styles.sectionTitleGroup}>
             <h3 className={styles.sectionTitle}>Thời gian biểu</h3>
-            <p className={styles.sectionDesc}>Lịch trình đăng ký và tổ chức hoạt động.</p>
           </div>
         </div>
 
@@ -335,7 +300,6 @@ export default function Step2PublicEventInfo({ data, setData, isSubmitting, onBa
         <div className={styles.sectionHeader}>
           <div className={styles.sectionTitleGroup}>
             <h3 className={styles.sectionTitle}>Form đăng ký tùy chỉnh</h3>
-            <p className={styles.sectionDesc}>Thêm các câu hỏi thu thập thông tin sinh viên khi đăng ký.</p>
           </div>
           <button className={styles.addBtn} onClick={addFormField}>
             <Plus size={16} weight="bold" />
@@ -374,12 +338,31 @@ export default function Step2PublicEventInfo({ data, setData, isSubmitting, onBa
                         <label className={styles.label}>KIỂU DỮ LIỆU</label>
                         <Select 
                           className={styles.select}
-                          value={field.field_type}
-                          onChange={val => updateFormField(field.id, { field_type: val, options: [] })}
+                          value={field.field_type === 'checkbox' || field.field_type === 'select' || field.field_type === 'radio' ? 'choice' : field.field_type}
+                          onChange={val => {
+                            if (val === 'choice') {
+                              updateFormField(field.id, { field_type: 'select', options: ['Lựa chọn 1'] })
+                            } else {
+                              updateFormField(field.id, { field_type: val, options: [] })
+                            }
+                          }}
                           options={FIELD_TYPES.map(t => ({ value: t.id, label: t.label }))}
                         />
                       </div>
                     </div>
+
+                    {(field.field_type === 'select' || field.field_type === 'checkbox') && (
+                      <div className={styles.choiceTypeSettings}>
+                        <Radio.Group 
+                          value={field.field_type} 
+                          onChange={e => updateFormField(field.id, { field_type: e.target.value })}
+                          className={styles.choiceRadioGroup}
+                        >
+                          <Radio value="select">Chọn một (Trắc nghiệm)</Radio>
+                          <Radio value="checkbox">Chọn nhiều (Hộp kiểm)</Radio>
+                        </Radio.Group>
+                      </div>
+                    )}
 
                     <div className={styles.fieldExtraActions}>
                       <div className={styles.switchGroup}>
@@ -392,7 +375,7 @@ export default function Step2PublicEventInfo({ data, setData, isSubmitting, onBa
                       </div>
                     </div>
 
-                    {field.field_type === 'checkbox' && (
+                    {(field.field_type === 'checkbox' || field.field_type === 'select') && (
                       <div className={styles.optionsSection}>
                         <label className={styles.label}>CÁC TÙY CHỌN</label>
                         <div className={styles.optionsList}>

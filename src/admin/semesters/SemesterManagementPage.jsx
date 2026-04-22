@@ -7,20 +7,18 @@ import { formatSemesterDate } from '../../utils/semesterUtils'
 import SemesterFormModal from './SemesterFormModal'
 import SemesterStatusBadge from './SemesterStatusBadge'
 import styles from './adminSemesters.module.css'
+import { Plus, Pencil, CaretLeft, CaretRight } from '@phosphor-icons/react'
 
 const DEFAULT_LIMIT = 10
 
-function SemesterManagementPage({ accessToken, roleLabel, role, onSessionExpired }) {
+export default function SemesterManagementPage({ accessToken, roleLabel, role, onSessionExpired }) {
   const [result, setResult] = useState({
     items: [],
     total: 0,
     skip: 0,
     limit: DEFAULT_LIMIT,
   })
-  const [query, setQuery] = useState({
-    skip: 0,
-    limit: DEFAULT_LIMIT,
-  })
+  const [query, setQuery] = useState({ skip: 0, limit: DEFAULT_LIMIT })
   const [isLoadingList, setIsLoadingList] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [notice, setNotice] = useState(null)
@@ -28,13 +26,10 @@ function SemesterManagementPage({ accessToken, roleLabel, role, onSessionExpired
   const [editingSemester, setEditingSemester] = useState(null)
 
   const isGlobalAdmin = role === USER_ROLES.admin
-
   const currentPage = Math.floor(result.skip / Math.max(result.limit, 1)) + 1
   const totalPages = Math.max(Math.ceil(result.total / Math.max(result.limit, 1)), 1)
   const canGoPrevious = result.skip > 0
   const canGoNext = result.skip + result.limit < result.total
-  const showingFrom = result.total ? result.skip + 1 : 0
-  const showingTo = result.total ? Math.min(result.skip + result.items.length, result.total) : 0
 
   useEffect(() => {
     loadSemesters(query)
@@ -42,7 +37,6 @@ function SemesterManagementPage({ accessToken, roleLabel, role, onSessionExpired
 
   async function loadSemesters(nextQuery) {
     setIsLoadingList(true)
-
     try {
       const response = await getSemesters(nextQuery, accessToken)
       setResult({
@@ -60,109 +54,48 @@ function SemesterManagementPage({ accessToken, roleLabel, role, onSessionExpired
 
   async function handleCreateSemester(payload) {
     setIsSubmitting(true)
-
     try {
       await createSemester(payload, accessToken)
       setIsCreateOpen(false)
-      const nextQuery = { ...query, skip: 0 }
-      setQuery(nextQuery)
-      await loadSemesters(nextQuery)
+      setQuery(p => ({ ...p, skip: 0 }))
+      await loadSemesters({ ...query, skip: 0 })
     } catch (error) {
       handleApiError(error, getValidationMessage(error, 'Tạo học kỳ thất bại.'))
-    } finally {
-      setIsSubmitting(false)
-    }
+    } finally { setIsSubmitting(false) }
   }
 
   async function handleEditSemester(payload) {
-    if (!editingSemester?.id) {
-      return
-    }
-
+    if (!editingSemester?.id) return
     setIsSubmitting(true)
-
     try {
       await updateSemester(editingSemester.id, payload, accessToken)
       setEditingSemester(null)
       await loadSemesters(query)
     } catch (error) {
       handleApiError(error, getValidationMessage(error, 'Cập nhật học kỳ thất bại.'))
-    } finally {
-      setIsSubmitting(false)
-    }
+    } finally { setIsSubmitting(false) }
   }
 
   function handleApiError(error, fallbackMessage) {
     if (error?.status === 401) {
-      setNotice({
-        title: 'Phiên đăng nhập hết hạn',
-        message: 'Vui lòng đăng nhập lại để tiếp tục.',
-        onClose: onSessionExpired,
-      })
+      setNotice({ title: 'Phiên đăng nhập hết hạn', message: 'Vui lòng đăng nhập lại.', onClose: onSessionExpired })
       return
     }
-
-    if (error?.status === 403) {
-      setNotice({
-        title: 'Không có quyền',
-        message: 'Bạn không có quyền thực hiện thao tác này.',
-      })
-      return
-    }
-
-    if (error?.status === 404) {
-      setNotice({
-        title: 'Không tìm thấy học kỳ',
-        message: 'Học kỳ bạn cần thao tác không tồn tại.',
-      })
-      return
-    }
-
-    if (error?.status === 400) {
-      setNotice({
-        title: 'Thời gian học kỳ không hợp lệ',
-        message: fallbackMessage || 'Ngày bắt đầu phải nhỏ hơn ngày kết thúc.',
-      })
-      return
-    }
-
-    if (error?.status === 422) {
-      setNotice({
-        title: 'Dữ liệu chưa hợp lệ',
-        message: getValidationMessage(error, fallbackMessage),
-      })
-      return
-    }
-
-    setNotice({
-      title: 'Có lỗi xảy ra',
-      message: fallbackMessage || error?.message || 'Yêu cầu thất bại.',
-    })
+    setNotice({ title: 'Có lỗi xảy ra', message: error?.message || fallbackMessage })
   }
 
-  function handlePageChange(direction) {
-    const nextSkip =
-      direction === 'next'
-        ? query.skip + query.limit
-        : Math.max(query.skip - query.limit, 0)
-
-    setQuery((currentQuery) => ({
-      ...currentQuery,
-      skip: nextSkip,
-    }))
+  const handlePageChange = (direction) => {
+    const nextSkip = direction === 'next' ? query.skip + query.limit : Math.max(query.skip - query.limit, 0)
+    setQuery(prev => ({ ...prev, skip: nextSkip }))
   }
 
   return (
-    <section className={styles.page}>
+    <div className={styles.container}>
       <NotificationPopup
         isOpen={Boolean(notice?.message)}
         title={notice?.title}
         message={notice?.message}
-        onClose={() => {
-          const callback = notice?.onClose
-          setNotice(null)
-          callback?.()
-        }}
+        onClose={() => setNotice(null)}
       />
 
       <SemesterFormModal
@@ -182,105 +115,73 @@ function SemesterManagementPage({ accessToken, roleLabel, role, onSessionExpired
         onSubmit={handleEditSemester}
       />
 
-      <div className={`page-card ${styles.pageHeader}`}>
-        <div>
-          <span className="dashboard-badge">{roleLabel}</span>
+      <header className={styles.header}>
+        <div className={styles.titleArea}>
           <h1>Quản lý học kỳ</h1>
-          <p>Theo dõi và cấu hình học kỳ trong hệ thống.</p>
+        </div>
+        {isGlobalAdmin && (
+          <button className={styles.createBtn} onClick={() => setIsCreateOpen(true)}>
+            <Plus size={18} weight="bold" /> Tạo học kỳ mới
+          </button>
+        )}
+      </header>
+
+      <div className={styles.tableWrapper}>
+        <div className={styles.tableHeader}>
+          <span>Tên học kỳ</span>
+          <span>Năm học</span>
+          <span>Bắt đầu</span>
+          <span>Kết thúc</span>
+          <span>Trạng thái / Thao tác</span>
         </div>
 
-        {isGlobalAdmin && (
-          <button type="button" className="primary-button" onClick={() => setIsCreateOpen(true)}>
-            Tạo học kỳ
-          </button>
+        {isLoadingList ? (
+          <div className={styles.emptyState}>Đang tải dữ liệu...</div>
+        ) : result.items.length > 0 ? (
+          result.items.map((semester) => (
+            <div key={semester.id} className={styles.semesterRow}>
+              <div className={styles.semesterName}>{semester.name}</div>
+              <div className={styles.yearValue}>{semester.academic_year}</div>
+              <div className={styles.dateValue}>{formatSemesterDate(semester.start_date)}</div>
+              <div className={styles.dateValue}>{formatSemesterDate(semester.end_date)}</div>
+              <div className={styles.actions}>
+                <span className={`${styles.statusPill} ${semester.is_active ? styles.active : styles.inactive}`}>
+                  • {semester.is_active ? 'Đang hoạt động' : 'Tạm ngưng'}
+                </span>
+                {isGlobalAdmin && (
+                  <button className={styles.actionBtn} onClick={() => setEditingSemester(semester)} title="Chỉnh sửa">
+                    <Pencil size={18} />
+                  </button>
+                )}
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className={styles.emptyState}>Chưa có học kỳ nào trong hệ thống.</div>
         )}
       </div>
 
-      <div className={styles.summary}>
-        <span>
-          Hiển thị {showingFrom} - {showingTo} trên tổng số {result.total} học kỳ
-        </span>
+      <div className={styles.tableFooter}>
+        <button
+          type="button"
+          className={styles.pageButton}
+          onClick={() => handlePageChange('previous')}
+          disabled={!canGoPrevious}
+        >
+          <CaretLeft size={16} weight="bold" /> Trước
+        </button>
+        <div className={styles.paginationInfo}>
+          Trang <strong>{currentPage}</strong> / <strong>{totalPages}</strong>
+        </div>
+        <button
+          type="button"
+          className={styles.pageButton}
+          onClick={() => handlePageChange('next')}
+          disabled={!canGoNext}
+        >
+          Sau <CaretRight size={16} weight="bold" />
+        </button>
       </div>
-
-      {isLoadingList ? (
-        <section className="page-card">
-          <p>Đang tải danh sách học kỳ...</p>
-        </section>
-      ) : result.items.length ? (
-        <section className={`page-card ${styles.tableShell}`}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Tên học kỳ</th>
-                <th>Năm học</th>
-                <th>Ngày bắt đầu</th>
-                <th>Ngày kết thúc</th>
-                <th>Trạng thái</th>
-                <th>Ngày tạo</th>
-                {isGlobalAdmin && <th>Thao tác</th>}
-              </tr>
-            </thead>
-            <tbody>
-              {result.items.map((semester) => (
-                <tr key={semester.id} className={semester.is_active ? styles.rowActive : ''}>
-                  <td>
-                    <div className={styles.nameCell}>
-                      <strong>{semester.name || 'Chưa cập nhật'}</strong>
-                    </div>
-                  </td>
-                  <td>{semester.academic_year || 'Chưa cập nhật'}</td>
-                  <td>{formatSemesterDate(semester.start_date)}</td>
-                  <td>{formatSemesterDate(semester.end_date)}</td>
-                  <td>
-                    <SemesterStatusBadge isActive={semester.is_active} />
-                  </td>
-                  <td>{formatSemesterDate(semester.created_at)}</td>
-                  {isGlobalAdmin && (
-                    <td>
-                      <button
-                        type="button"
-                        className="secondary-button"
-                        onClick={() => setEditingSemester(semester)}
-                      >
-                        Chỉnh sửa
-                      </button>
-                    </td>
-                  )}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-
-          <div className="unit-table-footer">
-            <button
-              type="button"
-              className="secondary-button unit-page-button"
-              onClick={() => handlePageChange('previous')}
-              disabled={!canGoPrevious}
-            >
-              Trước
-            </button>
-            <span>
-              Trang {currentPage} / {totalPages}
-            </span>
-            <button
-              type="button"
-              className="secondary-button unit-page-button"
-              onClick={() => handlePageChange('next')}
-              disabled={!canGoNext}
-            >
-              Sau
-            </button>
-          </div>
-        </section>
-      ) : (
-        <section className={`page-card ${styles.emptyState}`}>
-          <h3>Chưa có học kỳ</h3>
-          <p>Danh sách học kỳ hiện đang trống.</p>
-        </section>
-      )}
-    </section>
+    </div>
   )
 }
-
-export default SemesterManagementPage

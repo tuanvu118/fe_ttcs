@@ -1,69 +1,41 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Select, Badge, Popconfirm, Button } from 'antd'
-import { Broadcast, Globe, Handshake, Tag, Trash } from '@phosphor-icons/react'
-import { 
+import { Badge, Popconfirm } from 'antd'
+import { Broadcast, Globe, Handshake, Tag, Trash, Plus, Funnel, Eye, CaretLeft, CaretRight } from '@phosphor-icons/react'
+import {
   getAllEventBySemesterIdForAdmin,
   deletePublicEvent,
   deleteUnitEvent
 } from '../../service/apiAdminEvent'
 import { getStoredAuthSession } from '../../service/authSession'
 import { getSemesters } from '../../service/semesterService'
-
-import {
-  CURRENT_SEMESTER_STORAGE_KEY,
-  getStoredCurrentSemester,
-} from '../../utils/currentSemesterStorage'
 import { buildAdminEventDetailPath } from '../adminPaths'
+import SemesterSelector from '../../components/semesters/SemesterSelector'
+import { useCurrentSemester } from '../../hooks/useCurrentSemester'
 import styles from './eventPage.module.css'
 
-const TYPE_LABEL = {
-  SK: 'Sự kiện',
-  HTSK: 'Hỗ trợ sự kiện',
-  HTTT: 'Hỗ trợ truyền thông',
-}
-
-const EVENT_TYPE_ICON = {
-  SK: Globe,
-  HTSK: Handshake,
-  HTTT: Broadcast,
-}
-
-const TYPE_ICON_SIZE = 20
-
-function EventTitleCell({ title, eventType }) {
-  const Icon = EVENT_TYPE_ICON[eventType] ?? Tag
-  const typeLabel = TYPE_LABEL[eventType] ?? eventType
-  return (
-    <div className={styles.eventTitleCell}>
-      <span className={styles.eventTitleIcon} data-event-type={eventType} aria-hidden>
-        <Icon size={TYPE_ICON_SIZE} weight="regular" />
-      </span>
-      <span className={styles.eventTitleText} title={`${typeLabel} — ${title}`}>
-        {title}
-      </span>
-    </div>
-  )
-}
-
-function EventTypeBadge({ eventType }) {
-  const label = TYPE_LABEL[eventType] ?? eventType
-  return (
-    <span className={styles.typeBadge} data-event-type={eventType} title={eventType}>
-      {label}
-    </span>
-  )
-}
+const TYPE_LABEL = { SK: 'Sự kiện', HTSK: 'Hỗ trợ sự kiện', HTTT: 'Hỗ trợ truyền thông' }
+const EVENT_TYPE_ICON = { SK: Globe, HTSK: Handshake, HTTT: Broadcast }
 
 export default function EventPage({ navigate, adminUnitId }) {
   const [rows, setRows] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [semesters, setSemesters] = useState([])
-  const [selectedSemesterId, setSelectedSemesterId] = useState(() => {
-     const stored = getStoredCurrentSemester()
-     return stored?.id || 'all'
+  const [semester] = useCurrentSemester()
+  const [filters, setFilters] = useState({ type: 'all' })
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalRows, setTotalRows] = useState(0)
+  const pageSize = 10
+
+  const filteredRows = rows.filter(row => {
+    const matchType = filters.type === 'all' || row.type === filters.type
+    return matchType
   })
+
+  useEffect(() => {
+    loadEvents(currentPage)
+  }, [semester?.id, currentPage])
 
   useEffect(() => {
     fetchSemesters()
@@ -73,57 +45,36 @@ export default function EventPage({ navigate, adminUnitId }) {
     try {
       const token = getStoredAuthSession()?.accessToken
       const res = await getSemesters(token)
-      const list = res.items || []
-      setSemesters(list)
-
-      // Tự động chọn học kỳ đang hoạt động nếu chưa có lựa chọn hợp lệ
-      setSelectedSemesterId(prev => {
-        const isValid = prev && prev !== 'all' && list.some(s => s.id === prev)
-        if (isValid) return prev
-        const active = list.find(s => s.is_active)
-        return active ? active.id : 'all'
-      })
-    } catch (err) {
-      console.error('Failed to fetch semesters', err)
-    }
+      setSemesters(res.items || [])
+    } catch (err) { console.error('Failed to fetch semesters', err) }
   }
 
-  useEffect(() => {
-    loadEvents()
-  }, [selectedSemesterId])
-
-  async function loadEvents() {
+  async function loadEvents(page = 1) {
     setLoading(true)
     setError('')
     try {
-      const events = await getAllEventBySemesterIdForAdmin(selectedSemesterId)
-      setRows(events)
+      const skip = (page - 1) * pageSize
+      const semesterId = semester?.id || 'all'
+      const response = await getAllEventBySemesterIdForAdmin(semesterId, skip, pageSize)
+      setRows(response.items || [])
+      setTotalRows(response.total || 0)
     } catch (e) {
       setError('Không tải được danh sách sự kiện.')
       setRows([])
-    } finally {
-      setLoading(false)
-    }
+      setTotalRows(0)
+    } finally { setLoading(false) }
   }
 
   const handleDelete = async (row) => {
     try {
-      if (row.type === 'SK') {
-        await deletePublicEvent(row.id)
-      } else {
-        await deleteUnitEvent(row.id)
-      }
-      loadEvents() // Refresh list
-    } catch (e) {
-      // Error handled by service message
-    }
+      if (row.type === 'SK') await deletePublicEvent(row.id)
+      else await deleteUnitEvent(row.id)
+      loadEvents()
+    } catch (e) { }
   }
 
-
-  function goDetail(row) {
-    if (!adminUnitId) {
-      return
-    }
+  const goDetail = (row) => {
+    if (!adminUnitId) return
     navigate(buildAdminEventDetailPath(adminUnitId, row.id, row.type))
   }
 
@@ -142,101 +93,112 @@ export default function EventPage({ navigate, adminUnitId }) {
   ]
 
   return (
-    <section className={`page-card ${styles.eventsRoot}`}>
-      <div className={styles.header}>
-        <h1 className={styles.title}>Sự kiện</h1>
-        <div className={styles.actions}>
-          <Select
-            className={styles.semesterSelect}
-            style={{ width: 300 }}
-            placeholder="Chọn học kỳ"
-            value={selectedSemesterId}
-            onChange={setSelectedSemesterId}
-            options={semesterOptions}
-          />
-          <Link 
-            to={`/admin/${adminUnitId}/events/create`} 
-            className={styles.createBtn}
-            style={{ textDecoration: 'none', display: 'inline-flex', alignItems: 'center' }}
-          >
-            Tạo sự kiện mới
-          </Link>
+    <div className={styles.container}>
+      <header className={styles.header}>
+        <div className={styles.titleArea}>
+          <h1>Quản lý sự kiện</h1>
         </div>
-      </div>
-      
-      {loading ? (
-        <div className={styles.hint}>Đang tải…</div>
-      ) : error ? (
-        <div className={styles.error}>{error}</div>
-      ) : rows.length === 0 ? (
-        <div className={styles.empty}>Không có sự kiện nào.</div>
-      ) : (
-        <div className={styles.tableWrap}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>Tên</th>
-                <th>Điểm</th>
-                <th>Loại</th>
-                {selectedSemesterId === 'all' && <th>Học kỳ</th>}
-                <th aria-label="Thao tác" />
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => (
-                <tr key={`${row.type}-${row.id}`}>
-                  <td>
-                    <EventTitleCell title={row.title} eventType={row.type} />
-                  </td>
-                  <td>
-                    <span className={styles.pointCell}>
-                      <span className={styles.pointDot} aria-hidden />
-                      <span>{row.point}</span>
-                    </span>
-                  </td>
-                  <td>
-                    <EventTypeBadge eventType={row.type} />
-                  </td>
-                  {selectedSemesterId === 'all' && (
-                    <td style={{ fontSize: '12px', color: '#64748b' }}>
-                      {semesters.find(s => s.id === (row.semester_id || row.semesterId))?.name || 'N/A'}
-                    </td>
-                  )}
-                  <td>
-                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                      <button
-                        type="button"
-                        className={styles.linkBtn}
-                        onClick={() => goDetail(row)}
-                        disabled={!adminUnitId}
-                      >
-                        Xem chi tiết
-                      </button>
-                      
-                      <Popconfirm
-                        title="Xóa sự kiện"
-                        description="Bạn có chắc muốn xóa vĩnh viễn sự kiện này không? Hành động này không thể khôi phục."
-                        onConfirm={() => handleDelete(row)}
-                        okText="Xóa"
-                        cancelText="Hủy"
-                        okButtonProps={{ danger: true }}
-                      >
-                        <Button 
-                          type="text" 
-                          danger 
-                          icon={<Trash size={18} />} 
-                          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                        />
-                      </Popconfirm>
-                    </div>
-                  </td>
+        <Link
+          to={`/admin/${adminUnitId}/events/create`}
+          className={styles.createBtn}
+          style={{ textDecoration: 'none' }}
+        >
+          <Plus size={18} weight="bold" /> Tạo sự kiện mới
+        </Link>
+      </header>
+      <div className={styles.filterBar}>
+        <div className={styles.filterGroup}>
+          <SemesterSelector variant="filter" showLabel={false} allowAll={true} />
 
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className={styles.filterSelect}>
+            <Tag size={18} />
+            <select 
+              value={filters.type} 
+              onChange={e => setFilters(p => ({ ...p, type: e.target.value }))}
+            >
+              <option value="all">Tất cả loại hình</option>
+              <option value="SK">Sự kiện chung (SK)</option>
+              <option value="HTSK">Hỗ trợ sự kiện (HTSK)</option>
+              <option value="HTTT">Hỗ trợ truyền thông (HTTT)</option>
+            </select>
+          </div>
         </div>
-      )}
-    </section>
+        <span className={styles.filterSummary}>
+          Hiển thị {filteredRows.length}/{rows.length} sự kiện
+        </span>
+      </div>
+
+      <div className={styles.tableWrapper}>
+        <div className={styles.tableHeader}>
+          <span>Tên sự kiện</span>
+          <span>Loại hình</span>
+          <span>Điểm</span>
+          <span>Học kỳ</span>
+          <span>Thao tác</span>
+        </div>
+
+        {loading ? (
+          <div className={styles.emptyState}>Đang tải dữ liệu...</div>
+        ) : error ? (
+          <div className={styles.emptyState} style={{ color: '#ef4444' }}>{error}</div>
+        ) : filteredRows.length === 0 ? (
+          <div className={styles.emptyState}>Không tìm thấy sự kiện nào khớp với bộ lọc.</div>
+        ) : (
+          filteredRows.map((row) => (
+            <div key={`${row.type}-${row.id}`} className={styles.eventRow}>
+              <div className={styles.nameCell}>
+                <strong>{row.title}</strong>
+              </div>
+              <div className={styles.typeCell}>
+                {TYPE_LABEL[row.type]}
+              </div>
+              <div className={styles.pointCell}>
+                {row.point}
+              </div>
+              <div className={styles.semesterCell}>
+                {semesters.find(s => s.id === (row.semester_id || row.semesterId))?.name || 'N/A'}
+              </div>
+              <div className={styles.actionsCell}>
+                <button className={styles.actionBtn} onClick={() => goDetail(row)} title="Xem chi tiết">
+                  <Eye size={18} />
+                </button>
+                <Popconfirm
+                  title="Xóa sự kiện"
+                  description="Xóa vĩnh viễn sự kiện này?"
+                  onConfirm={() => handleDelete(row)}
+                  okText="Xóa"
+                  cancelText="Hủy"
+                  okButtonProps={{ danger: true }}
+                >
+                  <button className={styles.actionBtn} style={{ color: '#ef4444' }} title="Xóa">
+                    <Trash size={18} />
+                  </button>
+                </Popconfirm>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      <div className={styles.tableFooter}>
+        <button 
+          className={styles.pageButton}
+          onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+          disabled={currentPage === 1 || loading}
+        >
+          <CaretLeft size={16} weight="bold" /> Trước
+        </button>
+        <div className={styles.paginationInfo}>
+          Trang <strong>{currentPage}</strong> / <strong>{Math.ceil(totalRows / pageSize) || 1}</strong>
+        </div>
+        <button 
+          className={styles.pageButton}
+          onClick={() => setCurrentPage(prev => prev + 1)}
+          disabled={currentPage >= Math.ceil(totalRows / pageSize) || loading}
+        >
+          Sau <CaretRight size={16} weight="bold" />
+        </button>
+      </div>
+    </div>
   )
 }

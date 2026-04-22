@@ -18,11 +18,14 @@ import {
   registerPublicEvent,
   cancelRegistration
 } from '../service/apiStudentEvent'
-import { Modal, Form, Input, Select, Button, message } from 'antd'
+import { useAuth } from '../hooks/useAuth'
+import { PATHS } from '../utils/routes'
+import { Modal, Form, Input, Select, Button, message, Radio } from 'antd'
 import '../style/EventDetailPage.css'
 
 export default function EventDetailPage({ eventId }) {
   const navigate = useNavigate()
+  const { isAuthenticated } = useAuth()
   const [eventData, setEventData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -40,21 +43,27 @@ export default function EventDetailPage({ eventId }) {
     setLoading(true)
     setError(null)
     try {
-      // 1. Try to get registration detail first (only works if logged in and registered)
-      let detail = null
-      try {
-        detail = await getMyEventRegistrationDetail(eventId)
-      } catch (err) {
-        // Not registered or not logged in, ignore
+      // 1. Luôn lấy thông tin công khai trước để đảm bảo dữ liệu sự kiện đầy đủ và mới nhất
+      const publicEvent = await getEventPublicDetail(eventId)
+      
+      // 2. Nếu đã đăng nhập, lấy thêm thông tin đăng ký cụ thể của user
+      let registrationDetail = null
+      if (isAuthenticated) {
+        try {
+          registrationDetail = await getMyEventRegistrationDetail(eventId)
+        } catch (err) {
+          // Chưa đăng ký, bỏ qua
+        }
       }
 
-      if (detail && detail.event_id) {
-        // Student is registered
-        setEventData(detail)
+      if (registrationDetail) {
+        // Merge thông tin: Ưu tiên dữ liệu công khai, bổ sung answers, registered_at, checked_in
+        setEventData({
+          ...publicEvent,
+          ...registrationDetail
+        })
         setIsRegistered(true)
       } else {
-        // 2. Fetch public detail instead
-        const publicEvent = await getEventPublicDetail(eventId)
         setEventData(publicEvent)
         setIsRegistered(false)
       }
@@ -67,6 +76,12 @@ export default function EventDetailPage({ eventId }) {
   }
 
   const handleRegister = async () => {
+    if (!isAuthenticated) {
+      message.info('Vui lòng đăng nhập để đăng ký tham gia sự kiện.')
+      navigate(PATHS.login)
+      return
+    }
+
     // If event has form fields, open modal
     if (eventData.form_fields && eventData.form_fields.length > 0) {
       setIsRegModalOpen(true)
@@ -248,9 +263,9 @@ export default function EventDetailPage({ eventId }) {
             <div className="reg-status">
               <span className="reg-status-label">Trạng thái đăng ký</span>
               {isRegistered ? (
-                <div className="reg-status-value open">
+                <div className={`reg-status-value ${eventData?.checked_in ? 'checked-in' : 'open'}`}>
                   <CheckCircle size={20} weight="fill" />
-                  <span>Đã đăng ký tham gia</span>
+                  <span>{eventData?.checked_in ? 'Đã điểm danh tham gia' : 'Đã đăng ký tham gia'}</span>
                 </div>
               ) : isExpired ? (
                 <div className="reg-status-value closed">
@@ -296,10 +311,10 @@ export default function EventDetailPage({ eventId }) {
             ) : (
               <button 
                 className={`reg-action-btn ${canRegister ? 'btn-register' : 'btn-disabled'}`}
-                disabled={!canRegister || submitting}
+                disabled={(!isAuthenticated ? false : !canRegister) || submitting}
                 onClick={handleRegister}
               >
-                {submitting ? 'Đang xử lý...' : canRegister ? 'Đăng ký tham gia' : 'Không khả dụng'}
+                {submitting ? 'Đang xử lý...' : !isAuthenticated ? 'Đăng nhập để đăng ký' : canRegister ? 'Đăng ký tham gia' : 'Không khả dụng'}
               </button>
             )}
 
@@ -365,19 +380,27 @@ export default function EventDetailPage({ eventId }) {
               label={field.label}
               rules={[
                 { required: field.required, message: `Vui lòng nhập ${field.label.toLowerCase()}` },
-                { max: 1000, message: 'Nội dung quá dài (tối đa 1000 ký tự)' }
-              ]}
+                (field.field_type === 'text' || field.field_type === 'textarea') && { max: 1000, message: 'Nội dung quá dài (tối đa 1000 ký tự)' }
+              ].filter(Boolean)}
             >
-              {field.field_type === 'text' ? (
+              {field.field_type === 'text' || field.field_type === 'textarea' ? (
                 <Input.TextArea placeholder="..." rows={4} maxLength={1000} />
               ) : field.field_type === 'checkbox' ? (
-                <Select mode="multiple" placeholder="Chọn các tùy chọn phù hợp">
+                <Select mode="multiple" placeholder="Chọn các tùy chọn (có thể chọn nhiều)">
                   {field.options?.map(opt => <Select.Option key={opt} value={opt}>{opt}</Select.Option>)}
                 </Select>
+              ) : field.field_type === 'select' ? (
+                <Select placeholder="Chọn một tùy chọn">
+                  {field.options?.map(opt => <Select.Option key={opt} value={opt}>{opt}</Select.Option>)}
+                </Select>
+              ) : field.field_type === 'radio' ? (
+                <Radio.Group className="premium-radio-group">
+                  {field.options?.map(opt => <Radio key={opt} value={opt} style={{ display: 'block', marginBottom: '8px' }}>{opt}</Radio>)}
+                </Radio.Group>
               ) : field.field_type === 'number' ? (
                 <Input type="number" placeholder="Nhập số..." />
               ) : (
-                <Input placeholder="..." />
+                <Input placeholder="..." maxLength={1000} />
               )}
             </Form.Item>
           ))}

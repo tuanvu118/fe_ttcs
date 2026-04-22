@@ -4,8 +4,8 @@ import { ArrowLeft, FloppyDiskBack, Trophy, WarningCircle } from '@phosphor-icon
 import { Badge, InputNumber, message, Select, Spin } from 'antd'
 import { getUnitEventById, updateUnitEvent } from '../../../service/apiAdminEvent'
 import { getStoredAuthSession } from '../../../service/authSession'
-import { getSemesters } from '../../../service/semesterService'
 import { getUnits } from '../../../service/unitService'
+import SemesterField from '../../../components/semesters/SemesterField'
 import styles from './Edit.module.css'
 
 export default function UnitEventEditPage() {
@@ -55,16 +55,7 @@ export default function UnitEventEditPage() {
   }
 
   async function fetchSemesters() {
-    setIsLoadingSemesters(true)
-    try {
-      const token = getStoredAuthSession()?.accessToken
-      const res = await getSemesters(token)
-      setSemesters(res.items || [])
-    } catch (err) {
-      console.error('Failed to load semesters', err)
-    } finally {
-      setIsLoadingSemesters(false)
-    }
+    // Handled by SemesterField
   }
 
   async function fetchUnits() {
@@ -216,24 +207,11 @@ export default function UnitEventEditPage() {
 
               <div className={styles.fieldGroup}>
                 <label className={styles.label}>Học kỳ diễn ra</label>
-                <Select
-                  className={styles.select}
-                  placeholder="Chọn học kỳ"
-                  loading={isLoadingSemesters}
+                <SemesterField 
                   value={formData.semesterId}
                   onChange={(val) => handleChange('semesterId', val)}
-                  options={semesters.map((s) => ({
-                    value: s.id,
-                    label: (
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-                        <span>{s.name} - {s.academic_year}</span>
-                        {s.is_active && <Badge count="Đang diễn ra" style={{ backgroundColor: '#10b981', marginLeft: '10px', fontSize: '10px' }} />}
-                      </div>
-                    ),
-                  }))}
                 />
               </div>
-
               <div className={styles.fieldGroup} style={{ maxWidth: '240px' }}>
                 <label className={styles.label}>Điểm rèn luyện thưởng thêm</label>
                 <div className={styles.inputWithSuffix}>

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { getManagedUnits } from '../service/unitService'
 import { PATHS, USER_ROLES } from '../utils/routes'
 import UnitLogo from './units/UnitLogo'
+import SemesterSelector from './semesters/SemesterSelector'
 
 const STAFF_FETCH_LIMIT = 100
 
@@ -211,6 +212,8 @@ function AdminShell({
   return (
     <section className="admin-shell">
       <aside className="admin-shell-sidebar">
+        <SemesterSelector variant="sidebar" showLabel />
+        
         <nav className="admin-shell-menu" aria-label="Điều hướng quản trị">
           {menuItems.map((item) => {
             const isActive =

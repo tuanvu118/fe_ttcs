@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { IdentificationCard, X } from '@phosphor-icons/react'
 import NotificationPopup from '../NotificationPopup'
 
 const initialFormState = {
@@ -61,28 +62,32 @@ function UnitMemberModal({ isOpen, isSubmitting, onClose, onSubmit }) {
       >
         <div className="user-modal-header">
           <div>
-            <h2 id="unit-member-form-title">Thêm thành viên vào đơn vị</h2>
+            <h2 id="unit-member-form-title">Thêm thành viên</h2>
+            <p>Nhập mã sinh viên để thêm vào đơn vị.</p>
           </div>
           <button
             type="button"
-            className="notification-popup-close"
             aria-label="Đóng biểu mẫu thành viên"
             onClick={onClose}
+            className="user-modal-close"
           >
-            ×
+            <X size={18} weight="bold" />
           </button>
         </div>
 
         <form className="unit-form-grid" onSubmit={handleSubmit}>
           <label className="field field-full">
             <span>Mã sinh viên</span>
-            <input
-              name="student_id"
-              type="text"
-              value={form.student_id}
-              onChange={handleChange}
-              placeholder="B21DCCN001"
-            />
+            <div className="input-with-icon">
+              <IdentificationCard size={18} />
+              <input
+                name="student_id"
+                type="text"
+                value={form.student_id}
+                onChange={handleChange}
+                placeholder="Ví dụ: B21DCCN001"
+              />
+            </div>
           </label>
 
           <div className="user-form-actions field-full">

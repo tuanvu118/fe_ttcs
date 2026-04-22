@@ -1,4 +1,4 @@
-import * as XLSX from 'xlsx'
+import * as XLSX from 'xlsx/xlsx.mjs'
 
 function stringifyCell(value) {
   if (value === null || value === undefined) {

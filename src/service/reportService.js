@@ -3,18 +3,38 @@ import { appConfig } from '../configurations/configuration'
 
 const BASE_URL = '/reports'
 
-export const getAllReports = async (authToken, month, year, unitId, status) => {
+export const getAllReports = async (authToken, month, year, unitId, status, skip = 0, limit = 10) => {
   const params = new URLSearchParams()
   if (month) params.append('month', month)
   if (year) params.append('year', year)
   if (unitId) params.append('unit_id', unitId)
   if (status && status !== 'all') params.append('status_filter', status)
+  params.append('skip', skip)
+  params.append('limit', limit)
   
   const queryString = params.toString()
   const url = `${BASE_URL}/all${queryString ? `?${queryString}` : ''}`
   
   return await apiRequest(url, {
     method: 'GET',
+    authToken,
+  })
+}
+
+export const getStaffReports = async (authToken, unitId, month, year, status, skip = 0, limit = 10) => {
+  const params = new URLSearchParams()
+  if (month && month !== 'all') params.append('month', month)
+  if (year) params.append('year', year)
+  if (status && status !== 'all') params.append('status_filter', status)
+  params.append('skip', skip)
+  params.append('limit', limit)
+
+  const queryString = params.toString()
+  const url = `${BASE_URL}/${queryString ? `?${queryString}` : ''}`
+  
+  return await apiRequest(url, {
+    method: 'GET',
+    headers: { 'X-Unit-Id': unitId },
     authToken,
   })
 }

@@ -10,6 +10,9 @@ import UnitEventDetailPage from './events/UnitEvent.jsx/EUDetail'
 import UnitEventEditPage from './events/UnitEvent.jsx/Edit'
 import SemestersPage from './semesters/SemestersPage'
 import UnitsManagementPage from './units/UnitsManagementPage'
+import EventPromotionListPage from './promotions/EventPromotionListPage'
+import CreateEventPromotionPage from './promotions/CreateEventPromotionPage'
+import AdminPromotionManagement from './promotions/AdminPromotionManagement'
 
 import StaffUnitsWorkspace from './members/StaffUnitsWorkspace'
 import StaffReportsPanel from './reports/StaffReportsPanel'
@@ -50,12 +53,21 @@ function LegacyUnitContextRedirect() {
 }
 
 function StaffUnitsPanelView({ accessToken, selectedUnitId, staffPanel, onSessionExpired }) {
-  const activePanel = ['members', 'reports', 'events'].includes(staffPanel) ? staffPanel : 'members'
+  const activePanel = ['members', 'reports', 'events', 'promotions'].includes(staffPanel) ? staffPanel : 'members'
   if (activePanel === 'reports') {
-    return <StaffReportsPanel />
+    return (
+      <StaffReportsPanel
+        accessToken={accessToken}
+        unitId={selectedUnitId}
+        onSessionExpired={onSessionExpired}
+      />
+    )
   }
   if (activePanel === 'events') {
     return <StaffAssignedEventsPanel />
+  }
+  if (activePanel === 'promotions') {
+    return <EventPromotionListPage />
   }
   return (
     <StaffUnitsWorkspace
@@ -100,6 +112,9 @@ function AdminStaffRoute({ staffPanel, user, accessToken, onSessionExpired, role
     if (staffPanel === 'task-detail') {
       return <StaffTaskDetailPage />
     }
+    if (staffPanel === 'promotion-create') {
+      return <CreateEventPromotionPage />
+    }
     return (
       <StaffUnitsPanelView
         accessToken={accessToken}
@@ -122,6 +137,20 @@ function AdminStaffRoute({ staffPanel, user, accessToken, onSessionExpired, role
       )
     }
     // Admin context nhưng chỉ là staff -> redirect hoặc báo lỗi (hoặc cho xem StaffReportsPanel)
+    return <ForbiddenPage requiredRoleLabel="Quản lý hoặc Admin" />
+  }
+
+  // Nếu là context /admin, ưu tiên giao diện Quản lý
+  if (staffPanel === 'promotions') {
+    if (scopedRole === USER_ROLES.admin || scopedRole === USER_ROLES.manager) {
+      return (
+        <AdminPromotionManagement
+          accessToken={accessToken}
+          roleLabel={roleLabel}
+          onSessionExpired={onSessionExpired}
+        />
+      )
+    }
     return <ForbiddenPage requiredRoleLabel="Quản lý hoặc Admin" />
   }
 
@@ -329,6 +358,7 @@ export default function AdminRouter({
       <Route path="/unit/:unitId/*" element={<LegacyUnitContextRedirect />} />
 
       {/* Admin Context Routes */}
+      <Route path="/admin/:unitId/promotions" element={<AdminStaffRoute {...shared} staffPanel="promotions" />} />
       <Route
         path="/admin/:unitId/events/u/:eventId"
         element={<AdminManagerUnitEventDetailRoute {...shared} />}
@@ -364,6 +394,14 @@ export default function AdminRouter({
       <Route
         path="/staff/:unitId/reports"
         element={<AdminStaffRoute {...shared} staffPanel="reports" />}
+      />
+      <Route
+        path="/staff/:unitId/promotions"
+        element={<AdminStaffRoute {...shared} staffPanel="promotions" />}
+      />
+      <Route
+        path="/staff/:unitId/promotions/create"
+        element={<AdminStaffRoute {...shared} staffPanel="promotion-create" />}
       />
       <Route
         path="/staff/:unitId/reports/:reportId"

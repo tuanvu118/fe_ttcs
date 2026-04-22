@@ -68,9 +68,10 @@
 
 .input {
   width: 100%;
-  padding: 0.75rem 1rem;
+  height: 38px;
+  padding: 0 1rem;
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  border-radius: 6px;
   font-size: 0.875rem;
   color: #1e293b;
   background-color: #f8fafc;
@@ -89,7 +90,7 @@
   min-height: 10rem;
   padding: 1rem;
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  border-radius: 6px;
   background-color: #f8fafc;
   font-size: 0.875rem;
   resize: vertical;
@@ -188,10 +189,10 @@
 
 /* AntD Select Overrides */
 .select :global(.ant-select-selector) {
-  border-radius: 8px !important;
+  border-radius: 6px !important;
   background-color: #f8fafc !important;
   border-color: #e2e8f0 !important;
-  min-height: 42px;
+  height: 38px !important;
   display: flex;
   align-items: center;
 }
@@ -201,10 +202,10 @@
   display: flex;
   align-items: stretch;
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  border-radius: 6px;
   background-color: #f8fafc;
   overflow: hidden;
-  height: 42px;
+  height: 38px;
 }
 
 .numberInput {

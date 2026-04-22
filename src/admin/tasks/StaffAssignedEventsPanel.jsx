@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Badge, Select } from 'antd'
+import { Badge } from 'antd'
 import { useNavigate, useParams } from 'react-router-dom'
+import { CaretLeft, CaretRight, MagnifyingGlass, Funnel, Eye } from '@phosphor-icons/react'
 import { getMyUnitEventsBySemester } from '../../service/taskService'
-import { getSemesters } from '../../service/semesterService'
-import { getStoredAuthSession } from '../../service/authSession'
-import { getStoredCurrentSemester } from '../../utils/currentSemesterStorage'
+import { useCurrentSemester } from '../../hooks/useCurrentSemester'
+import SemesterSelector from '../../components/semesters/SemesterSelector'
 import styles from './staffAssignedEventsPanel.module.css'
 
 const TYPE_LABEL = {
@@ -18,72 +18,27 @@ export default function StaffAssignedEventsPanel() {
   const [rows, setRows] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [semesters, setSemesters] = useState([])
-  const [selectedSemesterId, setSelectedSemesterId] = useState(() => {
-    const stored = getStoredCurrentSemester()
-    return stored?.id || ''
-  })
+  const [semester] = useCurrentSemester()
   const [keyword, setKeyword] = useState('')
   const [typeFilter, setTypeFilter] = useState('ALL')
-
-  useEffect(() => {
-    async function fetchSemesters() {
-      try {
-        const token = getStoredAuthSession()?.accessToken
-        const res = await getSemesters(token)
-        const items = res.items || []
-        setSemesters(items)
-        if (!selectedSemesterId && items.length > 0) {
-          const active = items.find((s) => s.is_active) || items[0]
-          setSelectedSemesterId(active.id)
-        }
-      } catch {
-        setSemesters([])
-      }
-    }
-    fetchSemesters()
-  }, [selectedSemesterId])
+  const [currentPage, setCurrentPage] = useState(1)
+  const itemsPerPage = 10
 
   useEffect(() => {
     async function loadAssignedEvents() {
-      if (!unitId || !selectedSemesterId) {
-        setRows([])
-        setLoading(false)
-        return
+      if (!unitId || !semester?.id) {
+        setRows([]); setLoading(false); return
       }
-      setLoading(true)
-      setError('')
+      setLoading(true); setError('')
       try {
-        const events = await getMyUnitEventsBySemester(selectedSemesterId, unitId)
+        const events = await getMyUnitEventsBySemester(semester.id, unitId)
         setRows(events)
       } catch (e) {
-        setRows([])
-        setError('Không tải được danh sách sự kiện được giao.')
-      } finally {
-        setLoading(false)
-      }
+        setRows([]); setError('Không tải được danh sách sự kiện.')
+      } finally { setLoading(false) }
     }
     loadAssignedEvents()
-  }, [selectedSemesterId, unitId])
-
-  const semesterOptions = useMemo(
-    () =>
-      semesters.map((s) => ({
-        value: s.id,
-        label: (
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-            <span>{s.name} - {s.academic_year}</span>
-            {s.is_active && (
-              <Badge
-                count="Đang diễn ra"
-                style={{ backgroundColor: 'var(--ds-success)', marginLeft: '10px', fontSize: '10px' }}
-              />
-            )}
-          </div>
-        ),
-      })),
-    [semesters],
-  )
+  }, [semester?.id, unitId])
 
   const filteredRows = useMemo(() => {
     const q = keyword.trim().toLowerCase()
@@ -95,104 +50,117 @@ export default function StaffAssignedEventsPanel() {
     })
   }, [rows, keyword, typeFilter])
 
-  function goDetail(row) {
-    if (!unitId) return
-    navigate(`/staff/${unitId}/tasks/${row.id}`)
+  const totalPages = Math.max(1, Math.ceil(filteredRows.length / itemsPerPage))
+  const canGoPrevious = currentPage > 1
+  const canGoNext = currentPage < totalPages
+
+  const handlePageChange = (direction) => {
+    if (direction === 'previous' && canGoPrevious) setCurrentPage(prev => prev - 1)
+    if (direction === 'next' && canGoNext) setCurrentPage(prev => prev + 1)
   }
 
+  const paginatedRows = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage
+    return filteredRows.slice(start, start + itemsPerPage)
+  }, [filteredRows, currentPage])
+
   return (
-    <section className={`page-card ${styles.root}`}>
-      <div className={styles.header}>
-        <h1 className={styles.title}>Sự kiện được giao</h1>
-        <Select
-          className={styles.semesterSelect}
-          style={{ width: 300 }}
-          placeholder="Chọn học kỳ"
-          value={selectedSemesterId || undefined}
-          onChange={setSelectedSemesterId}
-          options={semesterOptions}
-        />
-      </div>
-
-      <div className={styles.filterRow}>
-        <input
-          className={styles.searchInput}
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-          placeholder="Tìm theo tên sự kiện..."
-          aria-label="Tìm theo tên sự kiện"
-        />
-        <Select
-          className={styles.typeSelect}
-          value={typeFilter}
-          onChange={setTypeFilter}
-          options={[
-            { value: 'ALL', label: 'Tất cả loại' },
-            { value: 'HTTT', label: TYPE_LABEL.HTTT },
-            { value: 'HTSK', label: TYPE_LABEL.HTSK },
-          ]}
-        />
-      </div>
-
-      {loading ? (
-        <div className={styles.hint}>Đang tải…</div>
-      ) : error ? (
-        <div className={styles.error}>{error}</div>
-      ) : rows.length === 0 ? (
-        <div className={styles.empty}>Không có sự kiện được giao trong học kỳ này.</div>
-      ) : filteredRows.length === 0 ? (
-        <div className={styles.empty}>Không có sự kiện phù hợp với bộ lọc/từ khóa.</div>
-      ) : (
-        <div className={styles.tableWrap}>
-          <table className={styles.table}>
-            <colgroup>
-              <col className={styles.colTitle} />
-              <col className={styles.colPoint} />
-              <col className={styles.colType} />
-              <col className={styles.colDate} />
-              <col className={styles.colAction} />
-            </colgroup>
-            <thead>
-              <tr>
-                <th scope="col">Tên</th>
-                <th scope="col" className={styles.thNumeric}>
-                  Điểm
-                </th>
-                <th scope="col">Loại</th>
-                <th scope="col">Ngày tạo</th>
-                <th scope="col" className={styles.thAction} aria-label="Thao tác" />
-              </tr>
-            </thead>
-            <tbody>
-              {filteredRows.map((row) => (
-                <tr key={row.id}>
-                  <td className={styles.titleCell}>
-                    <span className={styles.titleText}>{row.title}</span>
-                  </td>
-                  <td className={styles.numCell}>{row.point ?? 0}</td>
-                  <td>
-                    <span
-                      className={`${styles.typePill} ${
-                        row.type === 'HTTT' ? styles.typePillHttt : row.type === 'HTSK' ? styles.typePillHtsk : styles.typePillNeutral
-                      }`}
-                    >
-                      {TYPE_LABEL[row.type] || row.type}
-                    </span>
-                  </td>
-                  <td className={styles.dateCell}>
-                    {row.created_at ? new Date(row.created_at).toLocaleString('vi-VN') : 'N/A'}
-                  </td>
-                  <td className={styles.actionCell}>
-                    <button type="button" className={styles.linkBtn} onClick={() => goDetail(row)}>
-                      Xem chi tiết
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+    <div className={styles.container}>
+      <header className={styles.header}>
+        <div className={styles.titleArea}>
+          <h1>Sự kiện được giao</h1>
         </div>
-      )}
-    </section>
+      </header>
+
+      <div className={styles.filterBar}>
+        <div className={styles.filterGroup}>
+          <div className={styles.filterSelect}>
+            <MagnifyingGlass size={16} />
+            <input
+              placeholder="Tìm kiếm sự kiện..."
+              value={keyword}
+              onChange={e => setKeyword(e.target.value)}
+              style={{ border: 'none', background: 'transparent', fontWeight: 600, outline: 'none', width: '180px' }}
+            />
+          </div>
+          <div className={styles.filterSelect}>
+            <Funnel size={16} />
+            <select
+              value={typeFilter}
+              onChange={e => setTypeFilter(e.target.value)}
+            >
+              <option value="ALL">Tất cả loại</option>
+              <option value="HTTT">{TYPE_LABEL.HTTT}</option>
+              <option value="HTSK">{TYPE_LABEL.HTSK}</option>
+            </select>
+          </div>
+          <div className={styles.filterGroup}>
+            <SemesterSelector variant="filter" showLabel={false} allowAll={false} />
+          </div>
+        </div>
+        <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 500 }}>
+          Hiển thị {filteredRows.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0}-{Math.min(currentPage * itemsPerPage, filteredRows.length)} của {filteredRows.length} sự kiện
+        </span>
+      </div>
+
+      <div className={styles.tableWrapper}>
+        <div className={styles.tableHeader}>
+          <span>Tên sự kiện</span>
+          <span>Loại hình / Điểm</span>
+          <span>Ngày tạo</span>
+          <span>Thao tác</span>
+        </div>
+
+        {loading ? (
+          <div className={styles.emptyState}>Đang tải dữ liệu...</div>
+        ) : error ? (
+          <div className={styles.emptyState} style={{ color: '#ef4444' }}>{error}</div>
+        ) : filteredRows.length === 0 ? (
+          <div className={styles.emptyState}>Không tìm thấy sự kiện nào.</div>
+        ) : (
+          paginatedRows.map((row) => (
+            <div key={row.id} className={styles.eventRow}>
+              <div className={styles.eventInfo}>
+                <strong>{row.title}</strong>
+                <span>ID: {row.id.substring(0, 8)}...</span>
+              </div>
+              <div className={styles.categoryCell}>
+                {TYPE_LABEL[row.type] || row.type} - {row.point ?? 0} điểm
+              </div>
+              <div className={styles.timeCell}>
+                {row.created_at ? new Date(row.created_at).toLocaleDateString('vi-VN') : 'N/A'}
+              </div>
+              <div className={styles.actionsCell}>
+                <button className={styles.actionBtn} onClick={() => navigate(`/staff/${unitId}/tasks/${row.id}`)}>
+                  <Eye size={18} style={{ marginRight: '6px' }} /> Xem chi tiết
+                </button>
+              </div>
+            </div>
+          ))
+        )}
+
+        <div className={styles.tableFooter}>
+          <button
+            type="button"
+            className={styles.pageButton}
+            onClick={() => handlePageChange('previous')}
+            disabled={!canGoPrevious}
+          >
+            <CaretLeft size={16} weight="bold" /> Trước
+          </button>
+          <div className={styles.paginationInfo}>
+            Trang <strong>{currentPage}</strong> / <strong>{totalPages}</strong>
+          </div>
+          <button
+            type="button"
+            className={styles.pageButton}
+            onClick={() => handlePageChange('next')}
+            disabled={!canGoNext}
+          >
+            Sau <CaretRight size={16} weight="bold" />
+          </button>
+        </div>
+      </div>
+    </div>
   )
 }

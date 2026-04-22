@@ -1,0 +1,184 @@
+.selectorContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: white;
+  transition: all 0.3s ease;
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+}
+
+.label small {
+  font-size: 0.7rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  font-weight: 600;
+}
+
+.label strong {
+  font-size: 0.85rem;
+  color: #1e293b;
+}
+
+.select {
+  flex: 1;
+}
+
+:global(.semester-select-dropdown) {
+  border-radius: 12px;
+  padding: 6px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+  border: 1px solid #f1f5f9 !important;
+}
+
+.optionContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 6px 4px;
+}
+
+.optionMain {
+  display: flex;
+  flex-direction: column;
+}
+
+.activeName {
+  font-weight: 700;
+  color: #059669;
+}
+
+.activeSelect :global(.ant-select-selection-item) {
+  color: #059669 !important;
+}
+
+.inactiveName {
+  font-weight: 600;
+  color: #dc2626;
+}
+
+.optionYear {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+
+/* Sidebar context styles */
+.inSidebar {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: none;
+  width: calc(100% - 32px);
+  margin: 16px;
+  padding: 10px 14px;
+}
+
+.inSidebar:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.inSidebar .icon {
+  color: #a5b4fc;
+}
+
+.inSidebar .label small {
+  color: #94a3b8;
+}
+
+.inSidebar .label strong {
+  color: white;
+}
+
+.inSidebar :global(.ant-select-selection-item) {
+    color: white !important;
+    font-weight: 600;
+}
+
+.inSidebar :global(.ant-select-arrow) {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.inSidebar :global(.ant-select-selector) {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+}
+
+/* In-page filter styles */
+.inPage {
+  padding: 0 0.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  min-width: 140px;
+  height: 38px;
+}
+
+.inPage .icon {
+  margin-right: -4px;
+}
+
+.inPage .select :global(.ant-select-selection-item) {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding-right: 4px !important;
+}
+
+/* Bỏ các border màu đặc biệt theo yêu cầu */
+.activeBorder, .inactiveBorder {
+  border-color: #e2e8f0 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+}
+
+.activeText {
+  color: #059669;
+}
+
+.inactiveText {
+  color: #dc2626;
+}
+
+.inPage .label strong {
+    font-weight: 800;
+}
+
+/* Form field styles */
+.fieldSelect {
+  width: 100%;
+}
+
+.fieldSelect :global(.ant-select-selector) {
+  border-radius: 6px !important;
+  border: 1px solid #e2e8f0 !important;
+  height: 38px !important;
+  padding: 0 12px !important;
+  transition: all 0.2s !important;
+}
+
+.fieldSelect :global(.ant-select-selection-item) {
+  display: flex !important;
+  align-items: center !important;
+  font-weight: 600 !important;
+  font-size: 0.9rem !important;
+  color: #1e293b !important;
+}
+
+.fieldSelect:hover :global(.ant-select-selector) {
+  border-color: #cbd5e1 !important;
+}
+
+.fieldSelect:global(.ant-select-focused) :global(.ant-select-selector) {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1) !important;
+}

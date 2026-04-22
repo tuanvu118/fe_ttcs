@@ -26,48 +26,22 @@ export function isAdminPath(pathname) {
   if (!pathname || typeof pathname !== 'string') {
     return false
   }
+  const lowPath = pathname.toLowerCase()
   if (
-    pathname === '/admin' ||
-    pathname === '/admin/' ||
-    pathname === '/staff' ||
-    pathname === '/staff/' ||
-    pathname === '/unit' ||
-    pathname === '/unit/'
+    lowPath === '/admin' ||
+    lowPath === '/admin/' ||
+    lowPath === '/staff' ||
+    lowPath === '/staff/' ||
+    lowPath === '/unit' ||
+    lowPath === '/unit/'
   ) {
     return true
   }
-  if (!pathname.startsWith('/admin/') && !pathname.startsWith('/staff/') && !pathname.startsWith('/unit/')) {
-    return false
-  }
-  const segments = adminPathSegments(pathname)
-  if (!segments || segments.length <= 2) {
+  
+  if (lowPath.startsWith('/admin/') || lowPath.startsWith('/staff/') || lowPath.startsWith('/unit/')) {
     return true
   }
-  if (
-    segments.length === 3 &&
-    (
-      segments[1] === MANAGE_ADMIN_PANELS.events ||
-      segments[1] === MANAGE_ADMIN_PANELS.reports ||
-      segments[1] === 'tasks'
-    )
-  ) {
-    return true
-  }
-  if (
-    segments.length === 4 &&
-    segments[1] === MANAGE_ADMIN_PANELS.events &&
-    (segments[2] === 'p' || segments[2] === 'u')
-  ) {
-    return true
-  }
-  if (
-    segments.length === 5 &&
-    segments[1] === MANAGE_ADMIN_PANELS.events &&
-    (segments[2] === 'p' || segments[2] === 'u') &&
-    segments[4] === 'edit'
-  ) {
-    return true
-  }
+
   return false
 }
 

@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   optimizeDeps: {
-    include: ['antd/es', 'antd/es/locale/vi_VN'],
+    include: ['antd/es', 'antd/es/locale/vi_VN', 'xlsx'],
   },
   server: {
     host: '0.0.0.0',

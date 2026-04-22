@@ -8,10 +8,12 @@ import {
   Image as ImageIcon,
   User,
   CaretRight,
-  X
+  X,
+  FileXls
 } from '@phosphor-icons/react'
 import { useState, useEffect } from 'react'
 import { getEventRegistrations } from '../../service/apiAdminEvent'
+import { downloadPublicEventExcel } from '../../utils/exportPublicEventExcel'
 import styles from './adminEventDetail.module.css'
 
 export default function EventPublicDetail({ data, semester }) {
@@ -112,11 +114,36 @@ export default function EventPublicDetail({ data, semester }) {
                 <tbody>
                   {data.form_fields.map((field, idx) => (
                     <tr key={idx}>
-                      <td>{field.label}</td>
+                      <td style={{ fontWeight: 600 }}>{field.label}</td>
                       <td>
-                        {(field.field_type || field.type) === 'number' ? 'Con số' : 
-                         (field.field_type || field.type) === 'checkbox' ? 'Nhiều lựa chọn' : 
-                         'Văn bản'}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                          <span style={{ fontSize: '0.8125rem', color: '#1e293b' }}>
+                            {(field.field_type || field.type) === 'number' ? 'Con số' : 
+                             (field.field_type || field.type) === 'checkbox' ? 'Chọn nhiều (Hộp kiểm)' : 
+                             (field.field_type || field.type) === 'select' || (field.field_type || field.type) === 'radio' ? 'Chọn một (Trắc nghiệm)' :
+                             'Văn bản'}
+                          </span>
+                          
+                          {field.options?.length > 0 && (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', marginTop: '0.2rem' }}>
+                              {field.options.map((opt, oIdx) => (
+                                <div 
+                                  key={oIdx} 
+                                  style={{ 
+                                    fontSize: '0.75rem',
+                                    color: '#64748b',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '0.4rem'
+                                  }}
+                                >
+                                  <div style={{ width: '4px', height: '4px', borderRadius: '50%', backgroundColor: '#cbd5e1' }} />
+                                  {opt}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                        </div>
                       </td>
                       <td>
                         {field.required && <span className={styles.requiredBadge}>Bắt buộc</span>}
@@ -137,6 +164,18 @@ export default function EventPublicDetail({ data, semester }) {
         <div className={styles.card} style={{ marginTop: '1.5rem' }}>
           <div className={styles.cardHeader} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <h3 className={styles.cardTitle}>DANH SÁCH NGƯỜI ĐĂNG KÝ ({registrations.length})</h3>
+            <button 
+              className={styles.exportBtn}
+              onClick={() => downloadPublicEventExcel({ 
+                eventData: data, 
+                registrations, 
+                semesterLabel: semester ? `${semester.name} - ${semester.academic_year}` : '' 
+              })}
+              disabled={registrations.length === 0}
+            >
+              <FileXls size={18} />
+              XUẤT EXCEL
+            </button>
           </div>
           <div className={styles.cardBody} style={{ padding: 0 }}>
             {loading ? (

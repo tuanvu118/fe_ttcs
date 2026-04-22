@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import NotificationPopup from '../NotificationPopup'
 import { unitTypeOptions } from '../../utils/unitUtils'
+import { Buildings, Tag, Image as ImageIcon, AlignLeft, X } from '@phosphor-icons/react'
 
 const initialFormState = {
   name: '',
@@ -32,35 +33,27 @@ function UnitFormModal({
   const [notice, setNotice] = useState('')
 
   useEffect(() => {
-    if (!isOpen) {
-      return
-    }
-
+    if (!isOpen) return
     setForm(buildFormState(initialValues))
     setNotice('')
   }, [initialValues, isOpen])
 
-  if (!isOpen) {
-    return null
-  }
+  if (!isOpen) return null
 
   function handleChange(event) {
     const { name, value, files } = event.target
-
-    setForm((currentForm) => ({
-      ...currentForm,
+    setForm((cur) => ({
+      ...cur,
       [name]: name === 'logo' ? files?.[0] || null : value,
     }))
   }
 
   async function handleSubmit(event) {
     event.preventDefault()
-
     if (!form.name.trim() || !form.type) {
       setNotice('Vui lòng nhập đầy đủ tên đơn vị và loại đơn vị.')
       return
     }
-
     await onSubmit({
       name: form.name.trim(),
       type: form.type,
@@ -83,80 +76,91 @@ function UnitFormModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="unit-form-title"
+        style={{ maxWidth: '520px' }}
       >
+        {/* Header */}
         <div className="user-modal-header">
-          <div>
-            <h2 id="unit-form-title">{title}</h2>
-            <p>
-              {mode === 'create'
-                ? 'Tạo đơn vị mới bằng API POST /units.'
-                : 'Cập nhật đơn vị bằng API PUT /units/{unit_id}.'}
-            </p>
-          </div>
+          <h2 id="unit-form-title">
+            {title}
+          </h2>
           <button
             type="button"
-            className="notification-popup-close"
-            aria-label="Đóng biểu mẫu đơn vị"
+            aria-label="Đóng"
             onClick={onClose}
+            className="user-modal-close"
           >
-            ×
+            <X size={18} weight="bold" />
           </button>
         </div>
 
+        {/* Form */}
         <form className="unit-form-grid" onSubmit={handleSubmit}>
+          {/* Tên đơn vị */}
           <label className="field field-full">
             <span>Tên đơn vị</span>
-            <input
-              name="name"
-              type="text"
-              value={form.name}
-              onChange={handleChange}
-              placeholder="CLB Tin Học"
-            />
+            <div className="input-with-icon">
+              <Buildings size={18} />
+              <input
+                name="name"
+                type="text"
+                value={form.name}
+                onChange={handleChange}
+                placeholder="Ví dụ: CLB Tin Học"
+              />
+            </div>
           </label>
 
-          <label className="field">
+          {/* Loại đơn vị */}
+          <label className="field field-full">
             <span>Loại đơn vị</span>
-            <select name="type" value={form.type} onChange={handleChange}>
-              <option value="">Chọn loại đơn vị</option>
-              {unitTypeOptions.map((type) => (
-                <option key={type} value={type}>
-                  {type}
-                </option>
-              ))}
-            </select>
+            <div className="input-with-icon">
+              <Tag size={18} />
+              <select name="type" value={form.type} onChange={handleChange}>
+                <option value="">Chọn loại đơn vị</option>
+                {unitTypeOptions.map((type) => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
+              </select>
+            </div>
           </label>
 
-          <label className="field">
-            <span>Logo</span>
-            <input name="logo" type="file" accept="image/*" onChange={handleChange} />
+          {/* Logo */}
+          <label className="field field-full">
+            <span>Logo (tuỳ chọn)</span>
+            <label className="file-upload-area">
+              <ImageIcon size={20} />
+              <span>{form.logo ? form.logo.name : 'Nhấn để chọn ảnh...'}</span>
+              <input
+                name="logo"
+                type="file"
+                accept="image/*"
+                onChange={handleChange}
+                style={{ display: 'none' }}
+              />
+            </label>
           </label>
 
+          {/* Giới thiệu */}
           <label className="field field-full">
             <span>Giới thiệu</span>
-            <textarea
-              name="introduction"
-              rows={4}
-              value={form.introduction}
-              onChange={handleChange}
-              placeholder="Nhập nội dung giới thiệu đơn vị"
-            />
+            <div className="input-with-icon-textarea">
+              <AlignLeft size={18} />
+              <textarea
+                name="introduction"
+                rows={4}
+                value={form.introduction}
+                onChange={handleChange}
+                placeholder="Mô tả ngắn về đơn vị..."
+              />
+            </div>
           </label>
 
+          {/* Actions */}
           <div className="user-form-actions field-full">
-            <button
-              type="button"
-              className="secondary-button"
-              onClick={onClose}
-              disabled={isSubmitting}
-            >
+            <button type="button" className="secondary-button" onClick={onClose} disabled={isSubmitting}>
               Hủy
             </button>
-            <button
-              type="submit"
-              className="primary-button"
-              disabled={isSubmitting}
-            >
+            <button type="submit" className="primary-button" disabled={isSubmitting}>
               {isSubmitting ? 'Đang xử lý...' : submitLabel}
             </button>
           </div>
@@ -167,5 +171,4 @@ function UnitFormModal({
 }
 
 export default UnitFormModal
-
 

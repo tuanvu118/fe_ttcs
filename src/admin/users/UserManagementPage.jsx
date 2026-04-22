@@ -7,6 +7,8 @@ import { USER_ROLES } from '../../utils/routes'
 import { getValidationMessage } from '../../utils/userUtils'
 import UserDetailDrawer from './UserDetailDrawer'
 import styles from './adminUsers.module.css'
+import { MagnifyingGlass, Funnel, Plus, CaretLeft, CaretRight } from '@phosphor-icons/react'
+import { Select, Popconfirm, Pagination } from 'antd'
 
 const DEFAULT_LIMIT = 10
 
@@ -306,16 +308,14 @@ function UserManagementPage({
         onRoleChanged={handleRoleChanged}
       />
 
-      <section className={`page-card ${styles.consoleHeader}`}>
+      <section className={styles.consoleHeader}>
         <div>
-          <span className="dashboard-badge">{roleLabel}</span>
           <h1>{pageTitle}</h1>
-          <p>{pageDescription}</p>
         </div>
         {canCreateUser && (
           <button
             type="button"
-            className={`primary-button ${styles.consoleCreateButton}`}
+            className={styles.consoleCreateButton}
             onClick={() => setIsCreateOpen(true)}
           >
             + Thêm người dùng
@@ -323,7 +323,7 @@ function UserManagementPage({
         )}
       </section>
 
-      <form className={`page-card ${styles.consoleToolbar}`} onSubmit={handleFilterSubmit}>
+      <form className={styles.consoleToolbar} onSubmit={handleFilterSubmit}>
         <div className={styles.consoleFilterGrid}>
           <label className="field">
             <span>Họ và tên</span>
@@ -375,27 +375,24 @@ function UserManagementPage({
         </div>
 
         <div className={styles.consoleToolbarActions}>
-          <button type="submit" className="secondary-button">
+          <span style={{ fontSize: '0.85rem', color: '#64748b', fontWeight: 500 }}>
+            Hiển thị {showingFrom}-{showingTo} của {result.total} người dùng
+          </span>
+          <button type="submit" className={styles.applyBtn}>
             Áp dụng
           </button>
-          <button type="button" className="secondary-button" onClick={handleResetFilters}>
+          <button type="button" className={styles.resetBtn} onClick={handleResetFilters}>
             Xóa lọc
           </button>
         </div>
       </form>
 
-      <div className={styles.consoleSummary}>
-        <span>
-          Hiển thị {showingFrom} - {showingTo} trên tổng số {result.total} người dùng
-        </span>
-      </div>
-
       {isLoadingUsers ? (
-        <section className="page-card">
-          <p>Đang tải danh sách người dùng...</p>
+        <section className={styles.tableShell}>
+          <div style={{ padding: '2rem', textAlign: 'center', color: '#64748b' }}>Đang tải danh sách người dùng...</div>
         </section>
       ) : result.items.length ? (
-        <section className={`page-card ${styles.tableShell}`}>
+        <section className={styles.tableShell}>
           <table className={styles.dataTable}>
             <thead>
               <tr>
@@ -418,15 +415,13 @@ function UserManagementPage({
                   <td>{userItem.student_id || 'Chưa cập nhật'}</td>
                   <td>{userItem.class_name || 'Chưa cập nhật'}</td>
                   <td>
-                    <div className={styles.tableActions}>
-                      <button
-                        type="button"
-                        className={`secondary-button ${styles.tableActionButton}`}
-                        onClick={() => handleViewDetail(userItem.id)}
-                      >
-                        Xem chi tiết
-                      </button>
-                    </div>
+                    <button
+                      type="button"
+                      className={styles.tableActionButton}
+                      onClick={() => handleViewDetail(userItem.id)}
+                    >
+                      Xem chi tiết
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -436,29 +431,31 @@ function UserManagementPage({
           <div className={styles.tableFooter}>
             <button
               type="button"
-              className={`secondary-button ${styles.pageButton}`}
+              className={styles.pageButton}
               onClick={() => handlePageChange('previous')}
               disabled={!canGoPrevious}
             >
-              Trước
+              <CaretLeft size={16} weight="bold" /> Trước
             </button>
-            <span>
-              Trang {currentPage} / {totalPages}
-            </span>
+            <div className={styles.paginationInfo}>
+              Trang <strong>{currentPage}</strong> / <strong>{totalPages}</strong>
+            </div>
             <button
               type="button"
-              className={`secondary-button ${styles.pageButton}`}
+              className={styles.pageButton}
               onClick={() => handlePageChange('next')}
               disabled={!canGoNext}
             >
-              Sau
+              Sau <CaretRight size={16} weight="bold" />
             </button>
           </div>
         </section>
       ) : (
-        <section className="page-card">
-          <h2>Không có người dùng phù hợp</h2>
-          <p>Không tìm thấy người dùng nào khớp với bộ lọc hiện tại.</p>
+        <section className={styles.tableShell}>
+          <div style={{ padding: '3rem', textAlign: 'center', color: '#64748b' }}>
+            <h2 style={{ fontSize: '1.2rem', marginBottom: '0.5rem' }}>Không có người dùng phù hợp</h2>
+            <p>Không tìm thấy người dùng nào khớp với bộ lọc hiện tại.</p>
+          </div>
         </section>
       )}
     </section>

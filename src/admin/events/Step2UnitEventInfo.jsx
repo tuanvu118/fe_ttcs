@@ -5,37 +5,18 @@ import {
 } from '@phosphor-icons/react'
 import { Select, InputNumber, Badge, message } from 'antd'
 import { getUnits } from '../../service/unitService'
-import { getSemesters } from '../../service/semesterService'
 import { getStoredAuthSession } from '../../service/authSession'
+import SemesterField from '../../components/semesters/SemesterField'
 import styles from './step2UnitEventInfo.module.css'
 
 export default function Step2UnitEventInfo({ type, data, setData, isSubmitting, onBack, onNext }) {
   const [units, setUnits] = useState([])
   const [isLoadingUnits, setIsLoadingUnits] = useState(false)
   const [semesters, setSemesters] = useState([])
-  const [isLoadingSemesters, setIsLoadingSemesters] = useState(false)
 
   useEffect(() => {
     loadUnits()
-    loadSemesters()
   }, [])
-
-  async function loadSemesters() {
-    setIsLoadingSemesters(true)
-    try {
-      const token = getStoredAuthSession()?.accessToken
-      const res = await getSemesters(token)
-      setSemesters(res.items || [])
-      if (!data.semesterId && res.items?.length > 0) {
-        const active = res.items.find(s => s.is_active) || res.items[0]
-        setData(prev => ({ ...prev, semesterId: active.id }))
-      }
-    } catch (err) {
-      console.error('Failed to load semesters', err)
-    } finally {
-      setIsLoadingSemesters(false)
-    }
-  }
 
   async function loadUnits() {
     setIsLoadingUnits(true)
@@ -119,22 +100,10 @@ export default function Step2UnitEventInfo({ type, data, setData, isSubmitting, 
             </div>
 
             <div className={styles.fieldGroup} style={{ maxWidth: '300px' }}>
-                <label className={styles.label}>HỌC KỲ</label>
-                <Select 
-                    className={styles.select}
-                    placeholder="Chọn học kỳ"
-                    loading={isLoadingSemesters}
+                <label className={styles.label}>HỌC KỲ DIỄN RA</label>
+                <SemesterField 
                     value={data.semesterId}
                     onChange={val => setData(prev => ({ ...prev, semesterId: val }))}
-                    options={semesters.map(s => ({ 
-                        value: s.id, 
-                        label: (
-                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-                                <span>{s.name} - {s.academic_year}</span>
-                                {s.is_active && <Badge count="Đang diễn ra" style={{ backgroundColor: '#10b981', marginLeft: '10px', fontSize: '10px' }} />}
-                            </div>
-                        )
-                    }))}
                 />
             </div>
           
