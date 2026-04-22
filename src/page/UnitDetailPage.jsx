@@ -1,11 +1,17 @@
 import { useEffect, useState } from 'react'
+import { 
+  EnvelopeSimple, 
+  Globe, 
+  User, 
+  CaretLeft,
+  Info,
+  Users
+} from '@phosphor-icons/react'
 import ConfirmDialog from '../components/ConfirmDialog'
 import NotificationPopup from '../components/NotificationPopup'
-import UserAvatar from '../components/users/UserAvatar'
 import UnitFormModal from '../components/units/UnitFormModal'
 import UnitLogo from '../components/units/UnitLogo'
 import UnitMemberModal from '../components/units/UnitMemberModal'
-import UnitTypeBadge from '../components/units/UnitTypeBadge'
 import {
   addUnitMember,
   deleteUnit,
@@ -19,9 +25,8 @@ import { getValidationMessage } from '../utils/userUtils'
 import {
   canManageUnitMembers,
   canViewUnitMembers,
-  formatJoinedAt,
-  getUnitIntroduction,
 } from '../utils/unitUtils'
+import './UnitDetailPage.css'
 
 const DEFAULT_MEMBER_LIMIT = 10
 
@@ -348,7 +353,7 @@ function UnitDetailPage({
   }
 
   return (
-    <section className="unit-detail-page">
+    <div className="unit-detail-container">
       <NotificationPopup
         isOpen={Boolean(notice?.message)}
         title={notice?.title}
@@ -400,213 +405,208 @@ function UnitDetailPage({
         onConfirm={handleDeleteUnit}
       />
 
-      <button
-        type="button"
-        className="secondary-button unit-back-button"
-        onClick={() => navigate(PATHS.units)}
-      >
-        Quay lại danh sách đơn vị
-      </button>
-
-      <div className="page-card unit-detail-hero-card">
-        <div className="unit-detail-hero">
-          <UnitLogo logo={unit.logo} name={unit.name} size="large" />
-          <div className="unit-detail-copy">
-            <span className="dashboard-badge">{roleLabel}</span>
-            <h1>{unit.name || 'Chưa cập nhật'}</h1>
-            <div className="unit-detail-meta">
-              <UnitTypeBadge type={unit.type} />
-            </div>
-            <p>{getUnitIntroduction(unit)}</p>
+      {/* Hero Section */}
+      <section className="unit-hero-section">
+        <div className="unit-hero-banner">
+          <img 
+            src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1920&q=80" 
+            alt="University Campus" 
+          />
+        </div>
+        <div className="unit-header-content">
+          <div className="unit-logo-wrapper">
+            <UnitLogo logo={unit.logo} name={unit.name} size="large" />
+          </div>
+          <div className="unit-identity">
+            <span className="unit-category">
+              {unit.type === 'clb' ? 'Câu lạc bộ' : unit.type === 'lck' ? 'Liên chi đoàn' : 'Đơn vị hệ thống'}
+            </span>
+            <h1 className="unit-name-title">{unit.name || 'Chưa cập nhật'}</h1>
+            
+            {(canEditUnit || canDeleteUnit) && (
+              <div className="unit-admin-actions">
+                {canEditUnit && (
+                  <button type="button" className="primary-button" onClick={() => setIsEditOpen(true)}>
+                    Chỉnh sửa đơn vị
+                  </button>
+                )}
+                {canDeleteUnit && (
+                  <button type="button" className="danger-button" onClick={() => setIsDeleteOpen(true)}>
+                    Xóa đơn vị
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         </div>
+      </section>
 
-        {(canEditUnit || canDeleteUnit) && (
-          <div className="unit-detail-actions">
-            {canEditUnit && (
-              <button type="button" className="primary-button" onClick={() => setIsEditOpen(true)}>
-                Chỉnh sửa đơn vị
-              </button>
-            )}
-            {canDeleteUnit && (
-              <button type="button" className="danger-button" onClick={() => setIsDeleteOpen(true)}>
-                Xóa đơn vị
-              </button>
-            )}
-          </div>
-        )}
-      </div>
+      {/* Content Layout */}
+      <div className="unit-content-layout">
+        <main className="unit-main-column">
+          <button
+            type="button"
+            className="unit-back-btn"
+            onClick={() => navigate(PATHS.units)}
+          >
+            <CaretLeft size={20} weight="bold" /> Quay lại danh sách
+          </button>
 
-      {canViewMembers ? (
-        <section className="page-card unit-members-card">
-          <div className="unit-members-header">
-            <div>
-              <h2>Danh sách thành viên đơn vị</h2>
-              <p>Đang dùng học kỳ active của backend.</p>
+          <article>
+            <h2 className="unit-section-title">
+              <Info size={24} weight="bold" /> Mô tả chi tiết
+            </h2>
+            <div className="unit-description-text">
+              {unit.introduction || 'Hiện chưa có mô tả chi tiết cho đơn vị này.'}
             </div>
-            {canManageMembers && (
-              <button type="button" className="primary-button" onClick={() => setIsAddMemberOpen(true)}>
-                Thêm thành viên
-              </button>
-            )}
-          </div>
+          </article>
 
-          <form className="unit-member-filter-grid" onSubmit={handleMemberFilterSubmit}>
-            <label className="field">
-              <span>Họ tên</span>
-              <input
-                type="text"
-                value={memberFilters.full_name}
-                onChange={(event) =>
-                  setMemberFilters((current) => ({
-                    ...current,
-                    full_name: event.target.value,
-                  }))
-                }
-                placeholder="Lọc theo họ tên"
-              />
-            </label>
-
-            <label className="field">
-              <span>Email</span>
-              <input
-                type="text"
-                value={memberFilters.email}
-                onChange={(event) =>
-                  setMemberFilters((current) => ({
-                    ...current,
-                    email: event.target.value,
-                  }))
-                }
-                placeholder="Lọc theo email"
-              />
-            </label>
-
-            <label className="field">
-              <span>Mã sinh viên</span>
-              <input
-                type="text"
-                value={memberFilters.student_id}
-                onChange={(event) =>
-                  setMemberFilters((current) => ({
-                    ...current,
-                    student_id: event.target.value,
-                  }))
-                }
-                placeholder="Lọc theo mã sinh viên"
-              />
-            </label>
-
-            <label className="field">
-              <span>Lớp</span>
-              <input
-                type="text"
-                value={memberFilters.class_name}
-                onChange={(event) =>
-                  setMemberFilters((current) => ({
-                    ...current,
-                    class_name: event.target.value,
-                  }))
-                }
-                placeholder="Lọc theo lớp"
-              />
-            </label>
-
-            <div className="unit-member-filter-actions">
-              <button type="submit" className="secondary-button">
-                Áp dụng
-              </button>
-              <button type="button" className="secondary-button" onClick={handleResetMemberFilters}>
-                Xóa lọc
-              </button>
-            </div>
-          </form>
-
-          {isLoadingMembers ? (
-            <p>Đang tải danh sách thành viên...</p>
-          ) : membersResult.items.length ? (
-            <div className="unit-member-table-shell">
-              <table className="unit-member-table">
-                <thead>
-                  <tr>
-                    <th>Thành viên</th>
-                    <th>Mã sinh viên</th>
-                    <th>Lớp</th>
-                    <th>Semester ID</th>
-                    <th>Tham gia lúc</th>
-                    {canManageMembers && <th>Thao tác</th>}
-                  </tr>
-                </thead>
-                <tbody>
-                  {membersResult.items.map((member) => (
-                    <tr key={`${member.user_id}-${member.semester_id}`}>
-                      <td>
-                        <div className="unit-member-name">
-                          <UserAvatar avatarUrl={member.avatar_url} fullName={member.full_name} size="small" />
-                          <div>
-                            <strong>{member.full_name || 'Chưa cập nhật'}</strong>
-                            <span>{member.email || 'Chưa cập nhật'}</span>
-                          </div>
-                        </div>
-                      </td>
-                      <td>{member.student_id || 'Chưa cập nhật'}</td>
-                      <td>{member.class_name || 'Chưa cập nhật'}</td>
-                      <td>{member.semester_id || 'Active'}</td>
-                      <td>{formatJoinedAt(member.joined_at)}</td>
-                      {canManageMembers && (
-                        <td>
-                          <button
-                            type="button"
-                            className="danger-button unit-action-button"
-                            onClick={() => setMemberToRemove(member)}
-                          >
-                            Xóa thành viên
-                          </button>
-                        </td>
-                      )}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-
-              <div className="unit-table-footer">
-                <button
-                  type="button"
-                  className="secondary-button unit-page-button"
-                  onClick={() => handleMemberPageChange('previous')}
-                  disabled={!canGoPreviousMembers}
-                >
-                  Trước
-                </button>
-                <span>
-                  Trang {memberCurrentPage} / {memberTotalPages}
-                </span>
-                <button
-                  type="button"
-                  className="secondary-button unit-page-button"
-                  onClick={() => handleMemberPageChange('next')}
-                  disabled={!canGoNextMembers}
-                >
-                  Sau
-                </button>
+          {/* Members Section (Accessible for Admin/Staff) */}
+          {canViewMembers && (
+            <section className="unit-members-section">
+              <div className="unit-section-title">
+                <Users size={24} weight="bold" /> Quản lý thành viên
               </div>
-            </div>
-          ) : (
-            <div className="unit-empty-state">
-              <h3>Chưa có thành viên</h3>
-              <p>Danh sách thành viên của đơn vị đang trống với bộ lọc hiện tại.</p>
-            </div>
+              
+              <div className="page-card">
+                <div className="unit-members-header" style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <p style={{ margin: 0, color: '#64748b', fontSize: '0.9rem' }}>
+                    Danh sách thành viên chính thức trong học kỳ hiện tại.
+                  </p>
+                  {canManageMembers && (
+                    <button type="button" className="primary-button" onClick={() => setIsAddMemberOpen(true)}>
+                      Thêm thành viên
+                    </button>
+                  )}
+                </div>
+
+                <form className="unit-member-filter-grid" onSubmit={handleMemberFilterSubmit} style={{ marginBottom: '1.5rem' }}>
+                  <label className="field">
+                    <span>Mã sinh viên</span>
+                    <input
+                      type="text"
+                      value={memberFilters.student_id}
+                      onChange={(e) => setMemberFilters(c => ({ ...c, student_id: e.target.value }))}
+                      placeholder="Lọc theo mã SV"
+                    />
+                  </label>
+                  <label className="field">
+                    <span>Họ tên</span>
+                    <input
+                      type="text"
+                      value={memberFilters.full_name}
+                      onChange={(e) => setMemberFilters(c => ({ ...c, full_name: e.target.value }))}
+                      placeholder="Lọc theo họ tên"
+                    />
+                  </label>
+                  <div className="unit-member-filter-actions">
+                    <button type="submit" className="secondary-button">Lọc</button>
+                    <button type="button" className="secondary-button" onClick={handleResetMemberFilters}>Xóa</button>
+                  </div>
+                </form>
+
+                {isLoadingMembers ? (
+                  <p>Đang tải danh sách thành viên...</p>
+                ) : membersResult.items.length ? (
+                  <div className="unit-member-table-shell">
+                    <table className="unit-member-table">
+                      <thead>
+                        <tr>
+                          <th>Thành viên</th>
+                          <th>Mã SV</th>
+                          <th>Lớp</th>
+                          {canManageMembers && <th>Thao tác</th>}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {membersResult.items.map((member) => (
+                          <tr key={`${member.user_id}-${member.semester_id}`}>
+                            <td>
+                              <div className="unit-member-name">
+                                <strong>{member.full_name}</strong>
+                                <span>{member.email}</span>
+                              </div>
+                            </td>
+                            <td>{member.student_id}</td>
+                            <td>{member.class_name}</td>
+                            {canManageMembers && (
+                              <td>
+                                <button
+                                  type="button"
+                                  className="danger-button unit-action-button"
+                                  onClick={() => setMemberToRemove(member)}
+                                >
+                                  Xóa
+                                </button>
+                              </td>
+                            )}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+
+                    <div className="unit-table-footer">
+                      <button
+                        type="button"
+                        className="secondary-button unit-page-button"
+                        onClick={() => handleMemberPageChange('previous')}
+                        disabled={!canGoPreviousMembers}
+                      >
+                        Trước
+                      </button>
+                      <span>Trang {memberCurrentPage} / {memberTotalPages}</span>
+                      <button
+                        type="button"
+                        className="secondary-button unit-page-button"
+                        onClick={() => handleMemberPageChange('next')}
+                        disabled={!canGoNextMembers}
+                      >
+                        Sau
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="unit-muted-copy">Chưa có thành viên nào.</p>
+                )}
+              </div>
+            </section>
           )}
-        </section>
-      ) : (
-        <section className="page-card unit-content-note">
-          <h2>Thông tin đơn vị</h2>
-          <p>
-            Danh sách thành viên chỉ hiển thị cho tài khoản có quyền theo quy định của hệ thống.
-          </p>
-        </section>
-      )}
-    </section>
+        </main>
+
+        <aside className="unit-sidebar-column">
+          <div className="unit-sidebar-card">
+            <h3 className="unit-section-title" style={{ fontSize: '1.1rem', marginBottom: '1.5rem' }}>
+              Thông tin liên hệ
+            </h3>
+            <ul className="unit-info-list">
+              <li className="unit-info-item">
+                <EnvelopeSimple size={24} className="unit-info-icon" />
+                <div className="unit-info-content">
+                  <p>Email chính thức</p>
+                  <p>{unit.email || 'Chưa cập nhật'}</p>
+                </div>
+              </li>
+              <li className="unit-info-item">
+                <Globe size={24} className="unit-info-icon" />
+                <div className="unit-info-content">
+                  <p>Mạng xã hội</p>
+                  <p>
+                    <a href="#" className="unit-info-link">fb.com/official.unit</a>
+                  </p>
+                </div>
+              </li>
+              <li className="unit-info-item">
+                <User size={24} className="unit-info-icon" />
+                <div className="unit-info-content">
+                  <p>Người phụ trách</p>
+                  <p>Ban Quản lý Đơn vị</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+    </div>
   )
 }
 

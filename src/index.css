@@ -16,6 +16,26 @@
   --glass-blur: blur(12px);
 }
 
+.premium-title {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 850;
+  color: #0c1f45;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #0c1f45 0%, #2563eb 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.page-header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 0.5rem;
+  margin-bottom: 1rem;
+}
+
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
@@ -280,16 +300,16 @@ select:disabled {
 .club-page,
 .club-detail-page {
   display: grid;
-  gap: 1.75rem;
+  gap: 1rem;
 }
 
 .club-page-hero,
 .club-detail-card {
-  padding: 2rem;
+  padding: 1.25rem 1.5rem;
   border: 1px solid #e1e9f5;
-  border-radius: 28px;
+  border-radius: 12px;
   background: #ffffff;
-  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.04);
 }
 
 .club-page-copy h1,
@@ -302,8 +322,8 @@ select:disabled {
 
 .club-page-copy {
   display: grid;
-  gap: 0.8rem;
-  margin-bottom: 1.5rem;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 .club-page-copy p,
@@ -312,7 +332,7 @@ select:disabled {
 .club-empty-state p {
   margin: 0;
   color: #667085;
-  line-height: 1.7;
+  line-height: 1.6;
 }
 
 .club-toolbar {
@@ -329,17 +349,17 @@ select:disabled {
 .club-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1.25rem;
+  gap: 1rem;
 }
 
 .club-card {
   display: grid;
-  gap: 1.1rem;
-  padding: 1.35rem;
+  gap: 0.85rem;
+  padding: 1.15rem;
   border: 1px solid #e3ebf7;
-  border-radius: 24px;
+  border-radius: 12px;
   background: #ffffff;
-  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.05);
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.04);
 }
 
 .club-card-top {
@@ -743,10 +763,11 @@ select:disabled {
 }
 
 .user-role-card {
-  display: grid;
-  gap: 0.45rem;
-  padding: 0.9rem 1rem;
-  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
   background: #f8faff;
   border: 1px solid #e4ebfb;
 }
@@ -760,8 +781,8 @@ select:disabled {
 .user-role-badge {
   display: inline-flex;
   align-items: center;
-  padding: 0.4rem 0.7rem;
-  border-radius: 999px;
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
   background: #e0edff;
   color: #0f5cab;
   font-size: 0.82rem;
@@ -1526,3 +1547,5 @@ select:disabled {
   }
 
 }
+
+

@@ -81,9 +81,16 @@ function buildUnitFormData(form) {
   appendOptionalFormField(formData, 'name', form.name?.trim())
   appendOptionalFormField(formData, 'type', form.type)
   appendOptionalFormField(formData, 'introduction', form.introduction?.trim())
+  appendOptionalFormField(formData, 'established_year', form.established_year)
+  appendOptionalFormField(formData, 'member_count', form.member_count)
+  appendOptionalFormField(formData, 'email', form.email?.trim())
 
   if (form.logo instanceof File) {
     formData.append('logo', form.logo)
+  }
+
+  if (form.cover instanceof File) {
+    formData.append('cover', form.cover)
   }
 
   return formData
@@ -104,13 +111,17 @@ function buildQuery(params = {}) {
   return queryString ? `?${queryString}` : ''
 }
 
-function mapUnit(unit) {
+function mapUnit(data) {
   return {
-    id: unit?.id || '',
-    name: unit?.name || '',
-    logo: unit?.logo || null,
-    introduction: unit?.introduction || null,
-    type: unit?.type || null,
+    id: data?._id || data?.id || '',
+    name: data?.name || '',
+    logo: data?.logo || null,
+    cover_url: data?.cover_url || null,
+    introduction: data?.introduction || null,
+    type: data?.type || null,
+    established_year: data?.established_year || null,
+    member_count: data?.member_count || 0,
+    email: data?.email || ''
   }
 }
 

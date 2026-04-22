@@ -3,6 +3,7 @@ import ConfirmDialog from '../../components/ConfirmDialog'
 import NotificationPopup from '../../components/NotificationPopup'
 import UnitLogo from '../../components/units/UnitLogo'
 import UnitMemberModal from '../../components/units/UnitMemberModal'
+import UnitEditModal from '../../components/units/UnitEditModal'
 import UnitTypeBadge from '../../components/units/UnitTypeBadge'
 import UserAvatar from '../../components/users/UserAvatar'
 import {
@@ -10,16 +11,27 @@ import {
   getUnitById,
   getUnitMembers,
   removeUnitMember,
+  updateUnit,
 } from '../../service/unitService'
-import { formatJoinedAt, getUnitIntroduction } from '../../utils/unitUtils'
+import { formatJoinedAt } from '../../utils/unitUtils'
 import styles from './staffUnitsWorkspace.module.css'
-import { CaretLeft, CaretRight, Plus, Trash, MagnifyingGlass, Funnel, Info, Users } from '@phosphor-icons/react'
+import { 
+  Info, 
+  Users, 
+  PencilSimple,
+  Calendar,
+  EnvelopeSimple,
+  Plus,
+  Trash,
+  MagnifyingGlass
+} from '@phosphor-icons/react'
 
 const DEFAULT_MEMBER_LIMIT = 10
 
 export default function StaffUnitsWorkspace({
   accessToken,
   selectedUnitId,
+  role,
   activePanel: initialPanel,
   onSessionExpired,
 }) {
@@ -35,12 +47,8 @@ export default function StaffUnitsWorkspace({
   const [isLoadingMembers, setIsLoadingMembers] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isAddMemberOpen, setIsAddMemberOpen] = useState(false)
+  const [isEditUnitOpen, setIsEditUnitOpen] = useState(false)
   const [memberToRemove, setMemberToRemove] = useState(null)
-
-  const memberCurrentPage = Math.floor(membersResult.skip / Math.max(membersResult.limit, 1)) + 1
-  const memberTotalPages = Math.max(Math.ceil(membersResult.total / Math.max(membersResult.limit, 1)), 1)
-  const canGoPreviousMembers = membersResult.skip > 0
-  const canGoNextMembers = membersResult.skip + membersResult.limit < membersResult.total
 
   useEffect(() => {
     if (!selectedUnitId) return
@@ -81,6 +89,18 @@ export default function StaffUnitsWorkspace({
     finally { setIsSubmitting(false) }
   }
 
+  async function handleUpdateUnit(payload) {
+    if (!selectedUnitId) return
+    setIsSubmitting(true)
+    try {
+      await updateUnit(selectedUnitId, payload, accessToken)
+      setIsEditUnitOpen(false)
+      loadUnitDetail(selectedUnitId)
+      setNotice({ title: 'Thành công', message: 'Cập nhật thông tin đơn vị thành công!' })
+    } catch (error) { handleApiError(error, 'Cập nhật thông tin đơn vị thất bại.') }
+    finally { setIsSubmitting(false) }
+  }
+
   async function handleRemoveMember() {
     if (!selectedUnitId || !memberToRemove?.user_id) return
     setIsSubmitting(true)
@@ -92,13 +112,6 @@ export default function StaffUnitsWorkspace({
     finally { setIsSubmitting(false) }
   }
 
-  function handlePageChange(direction) {
-    setMemberQuery(prev => ({
-      ...prev,
-      skip: direction === 'next' ? prev.skip + prev.limit : Math.max(0, prev.skip - prev.limit)
-    }))
-  }
-
   function handleApiError(error, fallbackMessage) {
     if (error?.status === 401) { setNotice({ title: 'Hết hạn', message: 'Vui lòng đăng nhập lại.', onClose: onSessionExpired }); return }
     setNotice({ title: 'Có lỗi', message: error?.message || fallbackMessage })
@@ -108,6 +121,7 @@ export default function StaffUnitsWorkspace({
     <div className={styles.container}>
       <NotificationPopup isOpen={Boolean(notice?.message)} title={notice?.title} message={notice?.message} onClose={() => setNotice(null)} />
       <UnitMemberModal isOpen={isAddMemberOpen} isSubmitting={isSubmitting} onClose={() => setIsAddMemberOpen(false)} onSubmit={handleAddMember} />
+      <UnitEditModal isOpen={isEditUnitOpen} unit={unitDetail} isAdmin={role === 'ADMIN'} isSubmitting={isSubmitting} onClose={() => setIsEditUnitOpen(false)} onSubmit={handleUpdateUnit} />
       <ConfirmDialog isOpen={Boolean(memberToRemove)} title="Xóa thành viên" message={`Xóa "${memberToRemove?.full_name}" khỏi đơn vị?`} confirmLabel="Xóa" danger isSubmitting={isSubmitting} onClose={() => setMemberToRemove(null)} onConfirm={handleRemoveMember} />
 
       <header className={styles.header}>
@@ -135,11 +149,47 @@ export default function StaffUnitsWorkspace({
       <div className={styles.workspaceContent}>
         {activePanel === 'overview' ? (
           unitDetail ? (
-            <div style={{ display: 'flex', gap: '2rem', alignItems: 'flex-start' }}>
-              <UnitLogo logo={unitDetail.logo} name={unitDetail.name} size="large" />
-              <div>
-                <UnitTypeBadge type={unitDetail.type} />
-                <p style={{ marginTop: '1rem', color: '#475569', lineHeight: '1.6' }}>{getUnitIntroduction(unitDetail)}</p>
+            <div className={styles.overviewWrapper}>
+              <div className={styles.overviewHeader}>
+                <div className={styles.overviewIdentity}>
+                  <div className={styles.overviewLogoBox}>
+                    <UnitLogo logo={unitDetail.logo} name={unitDetail.name} size="large" />
+                  </div>
+                  <div className={styles.overviewNameBox}>
+                    <UnitTypeBadge type={unitDetail.type} />
+                    <h2 className={styles.overviewTitle}>{unitDetail.name}</h2>
+                    <div className={styles.overviewQuickStats}>
+                      <span className={styles.statItem}>
+                        <Users size={16} weight="bold" /> {unitDetail.member_count || 0} thành viên
+                      </span>
+                      <span className={styles.statItem}>
+                        <Calendar size={16} weight="bold" /> Thành lập: {unitDetail.established_year || 'N/A'}
+                      </span>
+                      <span className={styles.statItem}>
+                        <EnvelopeSimple size={16} weight="bold" /> {unitDetail.email || 'Chưa có email'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <button 
+                  className={styles.editUnitBtn}
+                  onClick={() => setIsEditUnitOpen(true)}
+                >
+                  <PencilSimple size={18} weight="bold" /> Chỉnh sửa thông tin
+                </button>
+              </div>
+
+              <div className={styles.overviewBody}>
+                <div className={styles.overviewSection}>
+                  <h3 className={styles.sectionTitle}>Giới thiệu chi tiết</h3>
+                  <div className={styles.introductionContent}>
+                    {unitDetail.introduction ? (
+                      <p>{unitDetail.introduction}</p>
+                    ) : (
+                      <p className={styles.placeholderText}>Chưa có thông tin giới thiệu. Hãy nhấn "Chỉnh sửa" để cập nhật nội dung cho sinh viên xem.</p>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           ) : <p>Chọn đơn vị để xem chi tiết.</p>

@@ -1,3 +1,4 @@
+import { Badge, Select } from 'antd'
 import { useEffect, useMemo, useState } from 'react'
 import ConfirmDialog from '../../components/ConfirmDialog'
 import {
@@ -7,9 +8,11 @@ import {
   removeAssignment,
 } from '../../service/rbacService'
 import { getSemesters } from '../../service/semesterService'
-import { getUnits } from '../../service/unitService'
+import { getManagedUnits } from '../../service/unitService'
 import { formatDateTime, getValidationMessage } from '../../utils/userUtils'
 import styles from './adminUsers.module.css'
+import SemesterSelector from '../../components/semesters/SemesterSelector'
+import { useCurrentSemester } from '../../hooks/useCurrentSemester'
 
 const INITIAL_ASSIGN_FORM = {
   role_id: '',
@@ -23,7 +26,7 @@ function UserRoleManagementSection({ userId, accessToken, onError, onRoleChanged
   const [semesters, setSemesters] = useState([])
   const [assignments, setAssignments] = useState([])
   const [totalAssignments, setTotalAssignments] = useState(0)
-  const [assignmentSemesterFilter, setAssignmentSemesterFilter] = useState('')
+  const [globalSemester] = useCurrentSemester()
   const [form, setForm] = useState(INITIAL_ASSIGN_FORM)
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -70,22 +73,25 @@ function UserRoleManagementSection({ userId, accessToken, onError, onRoleChanged
 
   useEffect(() => {
     loadAssignments()
-  }, [userId, accessToken, assignmentSemesterFilter])
+  }, [userId, accessToken, globalSemester?.id])
 
   async function loadCatalogData() {
     setIsLoading(true)
 
     try {
-      const [nextRoles, unitResponse, semesterResponse] = await Promise.all([
-        getRoles(accessToken),
-        getUnits({ skip: 0, limit: 100 }),
-        getSemesters({ skip: 0, limit: 100 }, accessToken),
-      ])
-
+      // Fetch roles
+      const nextRoles = await getRoles(accessToken)
       setRoles(nextRoles)
+
+      // Fetch units with auth
+      const unitResponse = await getManagedUnits({ skip: 0, limit: 100 }, accessToken)
       setUnits(unitResponse.items)
+
+      // Fetch semesters for table display
+      const semesterResponse = await getSemesters({ skip: 0, limit: 100 }, accessToken)
       setSemesters(semesterResponse.items)
     } catch (error) {
+      console.error('Failed to load RBAC catalog data:', error)
       onError?.(error, 'Không thể tải danh mục phân quyền.')
     } finally {
       setIsLoading(false)
@@ -99,7 +105,7 @@ function UserRoleManagementSection({ userId, accessToken, onError, onRoleChanged
       const assignmentResponse = await getUserAssignments(
         userId,
         accessToken,
-        assignmentSemesterFilter || undefined,
+        globalSemester?.id === 'all' ? undefined : globalSemester?.id,
       )
       setAssignments(assignmentResponse.items)
       setTotalAssignments(assignmentResponse.total)
@@ -174,73 +180,61 @@ function UserRoleManagementSection({ userId, accessToken, onError, onRoleChanged
 
       <div className={styles.roleManagementHeader}>
         <h4>Quản lý phân quyền (RBAC)</h4>
-        <label className={`field ${styles.roleFilterField}`}>
-          <span>Lọc assignment theo học kỳ</span>
-          <select
-            value={assignmentSemesterFilter}
-            onChange={(event) => setAssignmentSemesterFilter(event.target.value)}
-          >
-            <option value="">Học kỳ active</option>
-            {semesterOptions.map((semesterOption) => (
-              <option key={semesterOption.value} value={semesterOption.value}>
-                {semesterOption.label}
-              </option>
-            ))}
-          </select>
-        </label>
+        <div className={styles.roleFilterField}>
+          <SemesterSelector 
+            allowAll={true} 
+            variant="filter" 
+            showLabel={false} 
+            getPopupContainer={(trigger) => trigger.parentNode} 
+          />
+        </div>
       </div>
 
       <form className={styles.roleAssignForm} onSubmit={handleAssignRole}>
-        <label className="field">
+        <div className="field">
           <span>Vai trò</span>
-          <select
-            value={form.role_id}
-            onChange={(event) =>
-              setForm((currentForm) => ({ ...currentForm, role_id: event.target.value }))
-            }
-          >
-            <option value="">Chọn vai trò</option>
-            {roleOptions.map((roleOption) => (
-              <option key={roleOption.value} value={roleOption.value}>
-                {roleOption.label}
-              </option>
-            ))}
-          </select>
-        </label>
+          <Select
+            className={styles.formSelect}
+            value={form.role_id || undefined}
+            placeholder="Chọn vai trò"
+            onChange={(val) => setForm((f) => ({ ...f, role_id: val }))}
+            options={roleOptions}
+            showSearch
+            optionFilterProp="label"
+            getPopupContainer={(triggerNode) => triggerNode.parentNode}
+          />
+        </div>
 
-        <label className="field">
+        <div className="field">
           <span>Đơn vị</span>
-          <select
-            value={form.unit_id}
-            onChange={(event) =>
-              setForm((currentForm) => ({ ...currentForm, unit_id: event.target.value }))
-            }
-          >
-            <option value="">Chọn đơn vị</option>
-            {unitOptions.map((unitOption) => (
-              <option key={unitOption.value} value={unitOption.value}>
-                {unitOption.label}
-              </option>
-            ))}
-          </select>
-        </label>
+          <Select
+            className={styles.formSelect}
+            value={form.unit_id || undefined}
+            placeholder="Chọn đơn vị"
+            onChange={(val) => setForm((f) => ({ ...f, unit_id: val }))}
+            options={unitOptions}
+            showSearch
+            optionFilterProp="label"
+            getPopupContainer={(triggerNode) => triggerNode.parentNode}
+          />
+        </div>
 
-        <label className="field">
+        <div className="field">
           <span>Học kỳ (tùy chọn)</span>
-          <select
-            value={form.semester_id}
-            onChange={(event) =>
-              setForm((currentForm) => ({ ...currentForm, semester_id: event.target.value }))
+          <SemesterSelector
+            allowAll={true}
+            variant="field"
+            showLabel={false}
+            value={form.semester_id || 'all'}
+            onChange={(id) =>
+              setForm((currentForm) => ({
+                ...currentForm,
+                semester_id: id === 'all' ? '' : id,
+              }))
             }
-          >
-            <option value="">Dùng học kỳ active</option>
-            {semesterOptions.map((semesterOption) => (
-              <option key={semesterOption.value} value={semesterOption.value}>
-                {semesterOption.label}
-              </option>
-            ))}
-          </select>
-        </label>
+            getPopupContainer={(triggerNode) => triggerNode.parentNode}
+          />
+        </div>
 
         <button type="submit" className="primary-button" disabled={isSubmitting}>
           {isSubmitting ? 'Đang gán quyền...' : 'Gán quyền'}

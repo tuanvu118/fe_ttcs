@@ -23,6 +23,7 @@
   letter-spacing: -0.03em;
   background: linear-gradient(135deg, #0c1f45 0%, #2563eb 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -252,4 +253,136 @@
   background: #ef4444;
   color: white;
   transform: translateY(-1px);
+}
+
+/* Overview Section Styles */
+.overviewWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.overviewHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.overviewIdentity {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.overviewLogoBox {
+  padding: 8px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f1f5f9;
+}
+
+.overviewNameBox {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.overviewTitle {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0c1f45;
+  margin: 0.25rem 0 0.5rem;
+}
+
+.overviewQuickStats {
+  display: flex;
+  gap: 1.25rem;
+  align-items: center;
+}
+
+.statItem {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #64748b;
+  background: #f8fafc;
+  padding: 0.35rem 0.75rem;
+  border-radius: 8px;
+  border: 1px solid #f1f5f9;
+}
+
+.statItem svg {
+  color: #2563eb;
+}
+
+.editUnitBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  background: white;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #0c1f45;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.editUnitBtn:hover {
+  border-color: #2563eb;
+  color: #2563eb;
+  background: #eff6ff;
+  transform: translateY(-1px);
+}
+
+.overviewSection {
+  background: #f8fafc;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid #f1f5f9;
+}
+
+.sectionTitle {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #0c1f45;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.introductionContent {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: #334155;
+  white-space: pre-wrap;
+}
+
+.placeholderText {
+  color: #94a3b8;
+  font-style: italic;
+}
+
+.previewInfo {
+  margin-top: -1rem;
+}
+
+.infoAlert {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #eff6ff;
+  padding: 1rem;
+  border-radius: 10px;
+  border: 1px solid #bfdbfe;
+  color: #1e40af;
+  font-size: 0.85rem;
+  font-weight: 600;
 }

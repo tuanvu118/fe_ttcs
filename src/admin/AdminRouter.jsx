@@ -53,7 +53,7 @@ function LegacyUnitContextRedirect() {
   return <Navigate to={nextPath} replace />
 }
 
-function StaffUnitsPanelView({ accessToken, selectedUnitId, staffPanel, onSessionExpired }) {
+function StaffUnitsPanelView({ accessToken, selectedUnitId, role, staffPanel, onSessionExpired }) {
   const activePanel = ['members', 'reports', 'events', 'promotions'].includes(staffPanel) ? staffPanel : 'members'
   if (activePanel === 'reports') {
     return (
@@ -74,6 +74,7 @@ function StaffUnitsPanelView({ accessToken, selectedUnitId, staffPanel, onSessio
     <StaffUnitsWorkspace
       accessToken={accessToken}
       selectedUnitId={selectedUnitId}
+      role={role}
       activePanel={activePanel}
       onSessionExpired={onSessionExpired}
     />
@@ -123,6 +124,7 @@ function AdminStaffRoute({ staffPanel, user, accessToken, onSessionExpired, role
       <StaffUnitsPanelView
         accessToken={accessToken}
         selectedUnitId={unitId}
+        role={scopedRole}
         staffPanel={staffPanel}
         onSessionExpired={onSessionExpired}
       />
@@ -183,6 +185,7 @@ function AdminStaffRoute({ staffPanel, user, accessToken, onSessionExpired, role
     <StaffUnitsPanelView
       accessToken={accessToken}
       selectedUnitId={unitId}
+      role={scopedRole}
       staffPanel={staffPanel}
       onSessionExpired={onSessionExpired}
     />
@@ -317,6 +320,7 @@ function AdminUnitHomeRoute({ user, roleLabel, accessToken, onSessionExpired }) 
       <StaffUnitsPanelView
         accessToken={accessToken}
         selectedUnitId={unitId}
+        role={scopedRole}
         staffPanel="members"
         onSessionExpired={onSessionExpired}
       />

@@ -101,19 +101,19 @@
 }
 
 .inSidebar :global(.ant-select-selection-item) {
-    color: white !important;
-    font-weight: 600;
+  color: white !important;
+  font-weight: 600;
 }
 
 .inSidebar :global(.ant-select-arrow) {
-    color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .inSidebar :global(.ant-select-selector) {
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
 }
 
 /* In-page filter styles */
@@ -136,7 +136,8 @@
 }
 
 /* Bỏ các border màu đặc biệt theo yêu cầu */
-.activeBorder, .inactiveBorder {
+.activeBorder,
+.inactiveBorder {
   border-color: #e2e8f0 !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
 }
@@ -150,7 +151,7 @@
 }
 
 .inPage .label strong {
-    font-weight: 800;
+  font-weight: 800;
 }
 
 /* Form field styles */

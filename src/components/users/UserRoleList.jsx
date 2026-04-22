@@ -63,7 +63,7 @@ function UserRoleList({ roles }) {
             )}
           </div>
           <span className="user-role-unit">
-            Đơn vị: {unitNameById[roleItem.unit_id] || roleItem.unit_id || 'Chưa có đơn vị'}
+            — {unitNameById[roleItem.unit_id] || roleItem.unit_id || 'Chưa có đơn vị'}
           </span>
         </div>
       ))}

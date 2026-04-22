@@ -13,7 +13,12 @@ import styles from './semesterSelector.module.css'
  * @param {boolean} props.showLabel - Có hiện nhãn mô tả không
  * @param {boolean} props.allowAll - Có cho phép chọn "Tất cả học kỳ" không
  */
-export default function SemesterSelector({ variant = 'filter', showLabel = true, allowAll = true }) {
+export default function SemesterSelector({ 
+  variant = 'filter', 
+  showLabel = true, 
+  allowAll = true,
+  getPopupContainer
+}) {
   const isSidebar = variant === 'sidebar'
   const [semester, updateSemester] = useCurrentSemester()
   const [semesters, setSemesters] = useState([])
@@ -88,6 +93,7 @@ export default function SemesterSelector({ variant = 'filter', showLabel = true,
         onChange={handleChange}
         popupClassName="semester-select-dropdown"
         variant="borderless"
+        getPopupContainer={getPopupContainer}
         dropdownStyle={{ minWidth: '220px' }}
       >
         {allowAll && (

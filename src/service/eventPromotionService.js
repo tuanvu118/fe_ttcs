@@ -135,11 +135,12 @@ export async function getAllPromotionsForAdmin(filters = {}) {
   }
 }
 
-export async function getPublicPromotions(skip = 0, limit = 10) {
+export async function getPublicPromotions(skip = 0, limit = 10, unitId = null) {
   try {
     const params = new URLSearchParams()
     params.append('skip', skip)
     params.append('limit', limit)
+    if (unitId) params.append('unit_id', unitId)
     
     return await apiRequest(`/event-promotions/public?${params.toString()}`, {
       method: 'GET',

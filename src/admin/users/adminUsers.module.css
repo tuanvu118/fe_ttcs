@@ -34,6 +34,7 @@
   letter-spacing: -0.03em;
   background: linear-gradient(135deg, #0c1f45 0%, #2563eb 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -251,4 +252,324 @@
   opacity: 0.4;
   cursor: not-allowed;
   background: #f1f5f9;
+}
+
+/* Drawer Styles */
+.drawerBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  justify-content: flex-end;
+  animation: fadeIn 0.25s ease;
+}
+
+.drawer {
+  width: 100%;
+  max-width: 900px;
+  height: 100dvh;
+  background: #ffffff;
+  box-shadow: -10px 0 50px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  outline: none;
+}
+
+.drawerHeader {
+  padding: 1rem 2rem;
+  border-bottom: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.drawerHeader h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.detailContent {
+  padding: 1.25rem 2rem;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.detailHero {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding-bottom: 0.25rem;
+  justify-content: space-between;
+}
+
+.detailHeroInfo {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex: 1;
+}
+
+.detailHero h3 {
+  margin: 0 0 0.15rem 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #1e293b;
+  letter-spacing: -0.01em;
+}
+
+.detailHero p {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.detailEditButton {
+  padding: 0.5rem 1rem !important;
+  font-size: 0.8rem !important;
+  border-radius: 8px !important;
+  flex-shrink: 0;
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  background: #f8fafc;
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+}
+
+.detailGrid>div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.detailGrid span {
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.detailGrid strong {
+  font-size: 0.9rem;
+  color: #334155;
+  font-weight: 700;
+  word-break: break-word;
+}
+
+.roleSection h4 {
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #1e293b;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.roleSection h4::before {
+  content: '';
+  width: 4px;
+  height: 1.1rem;
+  background: #2563eb;
+  border-radius: 2px;
+}
+
+/* RBAC Management Section */
+.roleManagement {
+  margin-top: 1rem;
+  padding-top: 2rem;
+  border-top: 2px dashed #e2e8f0;
+}
+
+.roleManagementHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.roleManagementHeader h4 {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #1e293b;
+}
+
+.roleFilterField {
+  width: 100%;
+  max-width: 300px;
+}
+
+.roleFilterField select {
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: 1.5px solid #e2e8f0;
+  font-size: 0.85rem;
+  width: 100%;
+  background: #f8fafc;
+  font-weight: 500;
+}
+
+.roleAssignForm {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr 2fr 160px;
+  gap: 1rem;
+  background: #f1f5f9;
+  padding: 1rem;
+  border-radius: 10px;
+  margin-bottom: 1.5rem;
+  align-items: flex-end;
+  border: 1px solid #e2e8f0;
+}
+
+.roleAssignForm :global(.field) {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.roleAssignForm :global(.field) span {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.formSelect {
+  width: 100%;
+}
+
+.formSelect :global(.ant-select-selector) {
+  height: 32px !important;
+  border-color: #cbd5e1 !important;
+  border-radius: 6px !important;
+  font-size: 12px !important;
+}
+
+.formSelect :global(.ant-select-selection-item),
+.formSelect :global(.ant-select-selection-placeholder) {
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  line-height: 30px !important;
+}
+
+.formSelect :global(.ant-select-selection-placeholder) {
+  color: #94a3b8 !important;
+  font-weight: 500 !important;
+}
+
+.formSelect:hover :global(.ant-select-selector) {
+  border-color: #94a3b8 !important;
+}
+
+.formSelect:global(.ant-select-focused) :global(.ant-select-selector) {
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+}
+
+.roleAssignForm button {
+  padding: 0 1.5rem !important;
+  font-size: 0.9rem !important;
+  height: 38px;
+  border-radius: 8px !important;
+  font-weight: 700 !important;
+}
+
+.assignmentShell {
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow-x: auto;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.assignmentTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.assignmentTable th {
+  background: #f8fafc;
+  padding: 1rem;
+  text-align: left;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.assignmentTable td {
+  padding: 1.15rem 1rem;
+  border-top: 1px solid #f1f5f9;
+  font-size: 0.95rem;
+  color: #334155;
+  font-weight: 500;
+}
+
+.assignmentTotal {
+  display: block;
+  padding: 1rem;
+  background: #f8fafc;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #475569;
+  text-align: right;
+  border-top: 1px solid #e2e8f0;
+}
+
+.roleRemoveButton {
+  padding: 0.5rem 1rem !important;
+  font-size: 0.85rem !important;
+  border-radius: 8px !important;
+}
+
+.mutedCopy {
+  color: #64748b;
+  font-style: italic;
+  padding: 2.5rem 0;
+  text-align: center;
+  font-size: 1rem;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
 }

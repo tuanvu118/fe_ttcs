@@ -1,0 +1,246 @@
+/* ══════════════════════════════
+   MODERN USER PROFILE & STATS
+   ══════════════════════════════ */
+
+.user-profile-page {
+  max-width: 1200px;
+  margin: 1.5rem auto;
+  padding: 0 2rem;
+  font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+  box-sizing: border-box;
+}
+
+/* ── LAYOUT ── */
+.profile-container {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+/* ── SIDEBAR ── */
+.profile-sidebar {
+  background: white;
+  border-radius: 12px;
+  padding: 2.5rem 1.5rem;
+  border: 1px solid #f1f5f9;
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: sticky;
+  top: 1.5rem;
+}
+
+.profile-avatar-wrapper {
+  position: relative;
+  margin-bottom: 1.5rem;
+  padding: 3px;
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border-radius: 50%;
+}
+
+.profile-name {
+  font-size: 1.5rem;
+  font-weight: 850;
+  color: #0f172a;
+  margin: 0 0 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.profile-email {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-bottom: 2rem;
+}
+
+.profile-basic-info {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  border-top: 1px solid #f8fafc;
+  padding-top: 1.5rem;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.info-label { color: #94a3b8; font-weight: 500; }
+.info-value { color: #1e293b; font-weight: 700; }
+
+.profile-actions {
+  width: 100%;
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* ── MAIN CONTENT ── */
+.profile-main {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #f1f5f9;
+  min-height: 600px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.02);
+  overflow: hidden;
+}
+
+.profile-tabs-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  background: #ffffff;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.tabs-nav {
+  display: flex;
+  gap: 2.5rem;
+}
+
+.tab-btn {
+  padding: 1.25rem 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #94a3b8;
+  background: none;
+  border: none;
+  border-bottom: 2.5px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-btn:hover {
+  color: #64748b;
+}
+
+.tab-btn.active {
+  color: #2563eb;
+  border-bottom-color: #2563eb;
+}
+
+.semester-selector {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.profile-tabs-content {
+  padding: 2rem;
+  flex: 1;
+}
+
+/* ── STATS CARDS ── */
+.stats-overview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  transition: transform 0.2s;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+}
+
+.stat-card.points {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: white;
+  border: none;
+  box-shadow: 0 6px 12px -3px rgba(37, 99, 235, 0.25);
+}
+
+.stat-label { 
+  font-size: 0.7rem; 
+  font-weight: 700; 
+  opacity: 0.85; 
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.stat-value { 
+  font-size: 1.25rem; 
+  font-weight: 900; 
+  line-height: 1.1;
+}
+
+/* ── EVENT LIST ── */
+.events-history {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.event-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1.25rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #f1f5f9;
+}
+
+.event-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.event-info h4 { 
+  margin: 0; 
+  font-size: 0.9rem; 
+  font-weight: 700; 
+  color: #1e293b; 
+}
+
+.event-info span { 
+  font-size: 0.75rem; 
+  color: #94a3b8; 
+}
+
+.event-meta {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.status-tag {
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.point-badge {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: #2563eb;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .profile-container { grid-template-columns: 1fr; }
+  .profile-sidebar { position: static; }
+}

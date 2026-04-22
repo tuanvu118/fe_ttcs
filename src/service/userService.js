@@ -240,3 +240,11 @@ export async function updateUser(userId, form, authToken) {
 
   return mapUserRead(response)
 }
+
+export async function getMyStats(authToken, semesterId = null) {
+  const query = semesterId ? `?semester_id=${semesterId}` : ''
+  return apiRequest(`/users/me/stats${query}`, {
+    method: 'GET',
+    authToken,
+  })
+}

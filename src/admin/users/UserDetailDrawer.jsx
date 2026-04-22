@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom'
 import UserAvatar from '../../components/users/UserAvatar'
 import UserRoleList from '../../components/users/UserRoleList'
 import { USER_ROLES } from '../../utils/routes'
@@ -23,7 +24,7 @@ function UserDetailDrawer({
 
   const isAdmin = role === USER_ROLES.admin
 
-  return (
+  return createPortal(
     <div className={styles.drawerBackdrop} role="presentation" onClick={onClose}>
       <aside
         className={styles.drawer}
@@ -49,11 +50,23 @@ function UserDetailDrawer({
         ) : user ? (
           <div className={styles.detailContent}>
             <div className={styles.detailHero}>
-              <UserAvatar avatarUrl={user.avatar_url} fullName={user.full_name} size="large" />
-              <div>
-                <h3>{user.full_name || 'Chưa cập nhật'}</h3>
-                <p>{user.email || 'Chưa cập nhật'}</p>
+              <div className={styles.detailHeroInfo}>
+                <UserAvatar avatarUrl={user.avatar_url} fullName={user.full_name} size="large" />
+                <div>
+                  <h3>{user.full_name || 'Chưa cập nhật'}</h3>
+                  <p>{user.email || 'Chưa cập nhật'}</p>
+                </div>
               </div>
+
+              {canEdit && (
+                <button
+                  type="button"
+                  className={`primary-button ${styles.detailEditButton}`}
+                  onClick={onEdit}
+                >
+                  Chỉnh sửa người dùng
+                </button>
+              )}
             </div>
 
             <div className={styles.detailGrid}>
@@ -76,15 +89,9 @@ function UserDetailDrawer({
             </div>
 
             <div className={styles.roleSection}>
-              <h4>Quyền gộp theo đơn vị</h4>
+              <h4>Quyền đơn vị</h4>
               <UserRoleList roles={user.roles} />
             </div>
-
-            {canEdit && (
-              <button type="button" className="primary-button" onClick={onEdit}>
-                Chỉnh sửa người dùng
-              </button>
-            )}
 
             {isAdmin && user.id && (
               <UserRoleManagementSection
@@ -99,7 +106,8 @@ function UserDetailDrawer({
           <p className={styles.mutedCopy}>Không tìm thấy người dùng.</p>
         )}
       </aside>
-    </div>
+    </div>,
+    document.body,
   )
 }
 

@@ -58,7 +58,6 @@ function stripHtml(html) {
   if (!html) return ''
   const doc = new DOMParser().parseFromString(html, 'text/html')
   let text = doc.body.textContent || ''
-  // Loại bỏ emoji/icon dải unicode
   text = text.replace(/[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '')
   return text.trim()
 }
@@ -161,10 +160,7 @@ export default function HomePage() {
     const now = new Date()
     const regStart = event.registration_start ? new Date(event.registration_start) : null
     const regEnd = event.registration_end ? new Date(event.registration_end) : null
-    
-    // Nếu không có mốc thời gian, mặc định là Đang mở đơn
     if (!regStart && !regEnd) return { label: 'Đang mở đơn', className: 'status-open' }
-    
     if (regStart && now < regStart) return { label: 'Sắp mở đơn', className: 'status-upcoming' }
     if (regEnd && now > regEnd) return { label: 'Đã đóng đơn', className: 'status-closed' }
     return { label: 'Đang mở đơn', className: 'status-open' }
@@ -223,8 +219,6 @@ export default function HomePage() {
       <div className="home-body">
         <div className="home-grid">
           <div className="home-left">
-
-            {/* Sự kiện sắp tới */}
             <section className="home-section section-upcoming">
               <div className="home-section-header">
                 <div>
@@ -272,7 +266,6 @@ export default function HomePage() {
               )}
             </section>
 
-            {/* CLB & Liên chi */}
             <section className="home-section">
               <div className="home-section-header">
                 <div>
@@ -305,7 +298,6 @@ export default function HomePage() {
               </div>
             </section>
 
-            {/* Tin tức & Thông báo */}
             <section className="home-section">
               <div className="home-section-header">
                 <h2 className="home-section-title">Tin tức & Thông báo</h2>
@@ -371,19 +363,11 @@ export default function HomePage() {
                     ))}
                   </div>
                 )}
-
-                {isAuthenticated && (
-                  <Link to={PATHS.event} className="home-sidebar-view-all">
-                    Xem lịch trình của tôi
-                  </Link>
-                )}
               </div>
             </div>
           </aside>
-
         </div>
       </div>
-
     </div>
   )
 }

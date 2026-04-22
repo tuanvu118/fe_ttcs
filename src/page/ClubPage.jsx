@@ -49,13 +49,19 @@ function ClubPage({ navigate, search = '' }) {
 
   async function loadUnits() {
     setIsLoading(true)
+    const name = query.get('name') || ''
+    const type = query.get('type') || ''
+    const skip = parsePositiveNumber(query.get('skip'), 0)
+    const limit = parsePositiveNumber(query.get('limit'), DEFAULT_LIMIT) || DEFAULT_LIMIT
+
+    console.log('Fetching units with params:', { name, type, skip, limit })
 
     try {
       const response = await getUnits({
-        skip: parsePositiveNumber(query.get('skip'), 0),
-        limit: parsePositiveNumber(query.get('limit'), DEFAULT_LIMIT) || DEFAULT_LIMIT,
-        name: query.get('name') || undefined,
-        type: query.get('type') || undefined,
+        skip,
+        limit,
+        name: name || undefined,
+        type: type || undefined,
       })
 
       setUnits(response.items)
@@ -65,6 +71,7 @@ function ClubPage({ navigate, search = '' }) {
         limit: response.limit || DEFAULT_LIMIT,
       })
     } catch (error) {
+      console.error('Failed to load units:', error)
       setNotice({
         title: 'Không thể tải danh sách đơn vị',
         message: error.message,
@@ -78,6 +85,8 @@ function ClubPage({ navigate, search = '' }) {
     const searchParams = new URLSearchParams()
     const nextSkip = nextValues.skip ?? 0
     const nextLimit = nextValues.limit ?? pagination.limit
+    const name = nextValues.name !== undefined ? nextValues.name : filters.name
+    const type = nextValues.type !== undefined ? nextValues.type : filters.type
 
     if (nextSkip > 0) {
       searchParams.set('skip', String(nextSkip))
@@ -87,12 +96,12 @@ function ClubPage({ navigate, search = '' }) {
       searchParams.set('limit', String(nextLimit))
     }
 
-    if (nextValues.name) {
-      searchParams.set('name', nextValues.name)
+    if (name) {
+      searchParams.set('name', name.trim())
     }
 
-    if (nextValues.type) {
-      searchParams.set('type', nextValues.type)
+    if (type) {
+      searchParams.set('type', type)
     }
 
     const nextQuery = searchParams.toString()
@@ -103,9 +112,18 @@ function ClubPage({ navigate, search = '' }) {
     event.preventDefault()
     updateUrl({
       skip: 0,
-      limit: pagination.limit,
-      name: filters.name.trim(),
+      name: filters.name,
       type: filters.type,
+    })
+  }
+
+  function handleTypeChange(event) {
+    const newType = event.target.value
+    setFilters(prev => ({ ...prev, type: newType }))
+    updateUrl({
+      skip: 0,
+      name: filters.name,
+      type: newType,
     })
   }
 
@@ -116,10 +134,7 @@ function ClubPage({ navigate, search = '' }) {
         : Math.max(pagination.skip - pagination.limit, 0)
 
     updateUrl({
-      skip: nextSkip,
-      limit: pagination.limit,
-      name: filters.name.trim(),
-      type: filters.type,
+      skip: nextSkip
     })
   }
 
@@ -137,15 +152,11 @@ function ClubPage({ navigate, search = '' }) {
         onClose={() => setNotice(null)}
       />
 
-      <div className="club-page-hero">
-        <div className="club-page-copy">
-          <h1>Khám phá Câu lạc bộ & Liên chi đoàn</h1>
-          <p>
-            Kết nối, học hỏi và phát triển bản thân thông qua các cộng đồng sinh viên
-            năng động trong hệ thống.
-          </p>
-        </div>
+      <header className="page-header-container">
+        <h1 className="premium-title">Khám phá Câu lạc bộ & Liên chi đoàn</h1>
+      </header>
 
+      <div className="club-page-hero">
         <form className="club-toolbar" onSubmit={handleSearchSubmit}>
           <label className="field club-search-field">
             <span>Tìm kiếm câu lạc bộ</span>
@@ -158,7 +169,7 @@ function ClubPage({ navigate, search = '' }) {
                   name: event.target.value,
                 }))
               }
-              placeholder="Tìm theo tên đơn vị"
+              placeholder="Tìm theo tên đơn vị..."
             />
           </label>
 
@@ -166,12 +177,7 @@ function ClubPage({ navigate, search = '' }) {
             <span>Lọc theo loại</span>
             <select
               value={filters.type}
-              onChange={(event) =>
-                setFilters((currentState) => ({
-                  ...currentState,
-                  type: event.target.value,
-                }))
-              }
+              onChange={handleTypeChange}
             >
               <option value="">Tất cả</option>
               <option value={UNIT_TYPES.clb}>CLB</option>
