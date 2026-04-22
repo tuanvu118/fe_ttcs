@@ -143,10 +143,6 @@ export default function EUDetailHTTT({ data, unitId, eventId }) {
     <div className={styles.detailRoot}>
       <header className={styles.header}>
         <div className={styles.headerLeft}>
-          <button className={styles.backLink} onClick={handleBack}>
-            <ArrowLeft size={16} weight="bold" />
-            QUAY LẠI DANH SÁCH
-          </button>
           <h1 className={styles.title}>{data.title}</h1>
         </div>
         <div className={styles.actions}>
@@ -194,6 +190,18 @@ export default function EUDetailHTTT({ data, unitId, eventId }) {
                     {data.point || 0} ĐIỂM
                   </span>
                 </div>
+                <div className={styles.infoItem}>
+                  <span className={styles.infoLabel}>THỜI GIAN TẠO</span>
+                  <span className={styles.infoValue}>
+                    {new Date(data.created_at).toLocaleString('vi-VN')}
+                  </span>
+                </div>
+                <div className={styles.infoItem}>
+                  <span className={styles.infoLabel}>HỌC KỲ</span>
+                  <span className={styles.infoValue}>
+                    {semesterObj ? `${semesterObj.name} - ${semesterObj.academic_year}` : 'N/A'}
+                  </span>
+                </div>
               </div>
 
               <div className={styles.descriptionSection}>
@@ -219,9 +227,6 @@ export default function EUDetailHTTT({ data, unitId, eventId }) {
             </button>
           </div>
           <div className={styles.cardBody}>
-            <p className={styles.sectionDesc}>
-              Danh sách các CLB/Khoa tham gia thực hiện yêu cầu này.
-            </p>
             {htttSubmissionsLoading ? (
               <p className={styles.emptyText}>Đang tải phản hồi đơn vị…</p>
             ) : null}
@@ -235,7 +240,7 @@ export default function EUDetailHTTT({ data, unitId, eventId }) {
                     <tr>
                       <th>Đơn vị</th>
                       <th>Trạng thái phản hồi</th>
-                      <th aria-label="Thao tác" />
+                      <th>Thao tác</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -283,36 +288,6 @@ export default function EUDetailHTTT({ data, unitId, eventId }) {
           </div>
         </div>
 
-        <div className={`${styles.card} ${styles.rightCard} ${styles.contextCard}`}>
-          <div className={styles.cardHeader}>
-            <h3 className={styles.cardTitle}>Bối cảnh</h3>
-          </div>
-          <div className={styles.cardBody}>
-            <div className={styles.timeline}>
-              <div className={styles.timePoint}>
-                <div className={styles.timeIcon}>
-                  <Calendar size={20} />
-                </div>
-                <div className={styles.timeContent}>
-                  <span className={styles.timeTitle}>THỜI GIAN TẠO</span>
-                  <span className={styles.timeValue}>
-                    {new Date(data.created_at).toLocaleString('vi-VN')}
-                  </span>
-                </div>
-              </div>
-
-              <div className={styles.timePoint}>
-                <div className={styles.timeIcon}>
-                  <Buildings size={20} />
-                </div>
-                <div className={styles.timeContent}>
-                  <span className={styles.timeTitle}>HỌC KỲ</span>
-                  <span className={styles.timeValue}>{semesterObj ? `${semesterObj.name} - ${semesterObj.academic_year}` : 'N/A'}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
 
       <UnitEventSubmissionDetailModal

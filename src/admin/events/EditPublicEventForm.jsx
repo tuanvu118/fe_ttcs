@@ -14,7 +14,7 @@ import {
   ArrowLeft,
   ListBullets
 } from '@phosphor-icons/react'
-import { DatePicker, InputNumber, Switch, message, Badge, Radio } from 'antd'
+import { DatePicker, InputNumber, Switch, message, Badge, Radio, Select } from 'antd'
 import dayjs from 'dayjs'
 import { updatePublicEvent } from '../../service/apiAdminEvent'
 import { getStoredAuthSession } from '../../service/authSession'
@@ -82,7 +82,7 @@ export default function EditPublicEventForm({ eventData, unitId }) {
 
   const addFormField = () => {
     const newField = {
-      id: crypto.randomUUID(),
+      id: `field_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       label: '',
       type: 'text',
       required: false,

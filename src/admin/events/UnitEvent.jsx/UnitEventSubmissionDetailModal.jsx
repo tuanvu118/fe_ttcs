@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Button, Modal, message } from 'antd'
+import { CheckCircle, Clock, NotePencil, Link as LinkIcon, FileText, CalendarBlank } from '@phosphor-icons/react'
 import { updateHtttSubmissionStatus } from '../../../service/apiAdminEvent'
 import { getHtttSubmissionStatusLabel, normalizeHtttSubmissionStatus } from '../../../utils/unitEventCooperationRows'
 import styles from './UnitEventSubmissionDetailModal.module.css'
@@ -95,7 +96,7 @@ export default function UnitEventSubmissionDetailModal({ open, onClose, row, onA
         <div className={styles.body}>
           <div className={styles.unitRow}>
             {unit?.logo ? (
-              <img src={unit.logo} alt="" className={styles.logo} />
+              <img src={unit.logo.startsWith('http') ? unit.logo : `${import.meta.env.VITE_API_BASE_URL}${unit.logo}`} alt="" className={styles.logo} />
             ) : (
               <div className={styles.logoPlaceholder} aria-hidden />
             )}
@@ -106,27 +107,45 @@ export default function UnitEventSubmissionDetailModal({ open, onClose, row, onA
           </div>
 
           <div className={styles.field}>
-            <span className={styles.label}>Trạng thái phản hồi</span>
+            <span className={styles.label}>
+              <CheckCircle size={14} weight="bold" /> Trạng thái phản hồi
+            </span>
             <span className={styles.statusBadge}>{statusLabel}</span>
           </div>
 
           <div className={styles.field}>
-            <span className={styles.label}>Nội dung phản hồi</span>
-            <p className={styles.blockText}>{sub.content || '—'}</p>
+            <span className={styles.label}>
+              <NotePencil size={14} weight="bold" /> Nội dung phản hồi
+            </span>
+            <div className={styles.blockTextCard}>
+              <p className={styles.blockText}>{sub.content || '—'}</p>
+            </div>
           </div>
 
           <div className={styles.field}>
-            <span className={styles.label}>Minh chứng (URL)</span>
+            <span className={styles.label}>
+              <LinkIcon size={14} weight="bold" /> Minh chứng (URL)
+            </span>
             {evidenceUrlText ? (
-              <p className={`${styles.blockText} ${styles.evidencePlain}`}>{evidenceUrlText}</p>
+              <a 
+                href={evidenceUrlText} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className={styles.evidenceBtnLink}
+              >
+                <FileText size={18} />
+                <span>Mở minh chứng đơn vị gửi</span>
+              </a>
             ) : (
-              <span className={styles.muted}>—</span>
+              <span className={styles.muted}>Chưa có minh chứng</span>
             )}
           </div>
 
           <div className={styles.field}>
-            <span className={styles.label}>Thời gian gửi</span>
-            <span>{formatDate(sub.submittedAt ?? sub.submitted_at)}</span>
+            <span className={styles.label}>
+              <CalendarBlank size={14} weight="bold" /> Thời gian gửi
+            </span>
+            <span className={styles.timeValue}>{formatDate(sub.submittedAt ?? sub.submitted_at)}</span>
           </div>
 
           <div className={styles.statusActions}>
@@ -136,6 +155,7 @@ export default function UnitEventSubmissionDetailModal({ open, onClose, row, onA
             ) : (
               <div className={styles.statusBtnRow}>
                 <Button
+                  className={normalizedStatus === 'PENDING' ? styles.btnPendingActive : ''}
                   type={normalizedStatus === 'PENDING' ? 'primary' : 'default'}
                   disabled={statusSaving || normalizedStatus === 'PENDING'}
                   onClick={() => handleSetStatus('PENDING')}
@@ -143,6 +163,7 @@ export default function UnitEventSubmissionDetailModal({ open, onClose, row, onA
                   Chờ duyệt
                 </Button>
                 <Button
+                  className={normalizedStatus === 'APPROVED' ? styles.btnApprovedActive : ''}
                   type={normalizedStatus === 'APPROVED' ? 'primary' : 'default'}
                   disabled={statusSaving || normalizedStatus === 'APPROVED'}
                   onClick={() => handleSetStatus('APPROVED')}

@@ -373,14 +373,24 @@
 }
 
 .home-clb-icon {
-  width: 56px;
-  height: 56px;
-  background: #eff6ff;
-  border-radius: 8px;
+  width: 64px;
+  height: 64px;
+  background: white;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto 1rem;
+  overflow: hidden;
+  border: 1px solid #f1f5f9;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+}
+
+.home-clb-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 4px;
 }
 
 .home-clb-name {

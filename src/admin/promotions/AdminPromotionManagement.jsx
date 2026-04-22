@@ -23,6 +23,10 @@ import { getSemesters } from '../../service/semesterService'
 import { getStoredAuthSession } from '../../service/authSession'
 import SemesterSelector from '../../components/semesters/SemesterSelector'
 import { useCurrentSemester } from '../../hooks/useCurrentSemester'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+
+dayjs.extend(utc)
 
 const STATUS_OPTIONS = [
   { value: 'CHO_DUYET', label: 'Chờ duyệt' },
@@ -43,9 +47,9 @@ export default function AdminPromotionManagement({ accessToken, onSessionExpired
   const [rejectReason, setRejectReason] = useState('')
 
   const [searchTerm, setSearchTerm] = useState('')
+  const [semester] = useCurrentSemester()
   const [filters, setFilters] = useState({
-    status: 'ALL',
-    semester_id: 'ALL'
+    status: 'ALL'
   })
 
   // Pagination state
@@ -59,7 +63,7 @@ export default function AdminPromotionManagement({ accessToken, onSessionExpired
 
   useEffect(() => {
     loadData(currentPage)
-  }, [filters, currentPage])
+  }, [filters, semester?.id, currentPage])
 
   useEffect(() => {
     setCurrentPage(1)
@@ -83,7 +87,7 @@ export default function AdminPromotionManagement({ accessToken, onSessionExpired
         limit: pageSize
       }
       if (filters.status !== 'ALL') params.status = filters.status
-      if (filters.semester_id !== 'ALL') params.semester_id = filters.semester_id
+      if (semester?.id && semester.id !== 'all') params.semester_id = semester.id
 
       const data = await getAllPromotionsForAdmin(params)
       setPromotions(data.items || [])
@@ -137,8 +141,7 @@ export default function AdminPromotionManagement({ accessToken, onSessionExpired
 
   const formatDate = (dateStr) => {
     if (!dateStr) return 'N/A'
-    const date = new Date(dateStr)
-    return date.toLocaleDateString('vi-VN') + ' ' + date.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
+    return dayjs.utc(dateStr).local().format('DD/MM/YYYY HH:mm')
   }
 
   const getStatusBadge = (status) => {
@@ -160,6 +163,16 @@ export default function AdminPromotionManagement({ accessToken, onSessionExpired
 
       <div className={styles.filterBar}>
         <div className={styles.filterGroup}>
+          <div className={styles.filterSelect}>
+            <MagnifyingGlass size={18} />
+            <input 
+              placeholder="Tìm kiếm bài viết..."
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              style={{ border: 'none', background: 'transparent', fontWeight: 600, outline: 'none', width: '200px' }}
+            />
+          </div>
+
           <SemesterSelector variant="filter" showLabel={false} allowAll={true} />
 
           <div className={styles.filterSelect}>

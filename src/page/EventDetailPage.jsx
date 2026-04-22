@@ -105,10 +105,12 @@ export default function EventDetailPage({ eventId }) {
     setSubmitting(true)
     try {
       // Format answers: [{ field_id, value }]
-      const answers = Object.entries(values).map(([field_id, value]) => ({
-        field_id,
-        value: Array.isArray(value) ? value.join(', ') : String(value)
-      }))
+      const answers = Object.entries(values)
+        .filter(([_, value]) => value !== undefined && value !== null)
+        .map(([field_id, value]) => ({
+          field_id,
+          value: Array.isArray(value) ? value.join(', ') : String(value)
+        }))
 
       await registerPublicEvent(eventId, answers)
       message.success('Gửi đăng ký thành công!')

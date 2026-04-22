@@ -1,8 +1,11 @@
+/* Sự kiện được giao (Staff) — Đồng nhất format với Báo cáo & Truyền thông */
+
 .container {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  padding: 0 1.5rem 0.75rem;
+  gap: 1rem;
+  padding: 0 1.5rem 1.5rem;
+  background: transparent;
   min-height: 100%;
 }
 
@@ -10,7 +13,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-bottom: 0.5rem;
+  padding: 1rem 0 0.75rem;
   border-bottom: 2px solid rgba(226, 232, 240, 0.4);
 }
 
@@ -23,12 +26,13 @@
   background: linear-gradient(135deg, #0c1f45 0%, #2563eb 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .filterBar {
   background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(10px);
-  padding: 0.4rem 1rem;
+  padding: 0.5rem 1.25rem;
   border-radius: 10px;
   border: 1px solid rgba(226, 232, 240, 0.8);
   display: flex;
@@ -39,39 +43,153 @@
 
 .filterGroup {
   display: flex;
+  align-items: center;
   gap: 1rem;
 }
 
+.filterSelect {
+  padding: 0 0.85rem;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #475569;
+  height: 38px;
+  transition: all 0.2s;
+}
+
+.filterSelect:focus-within {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.06);
+}
+
+.filterSelect select,
+.filterSelect input {
+  border: none;
+  background: transparent;
+  font-weight: 600;
+  outline: none;
+  color: #0c1f45;
+  cursor: pointer;
+  font-size: 0.85rem;
+  height: 100%;
+}
+
+/* ── TABLE (Đồng nhất với Truyền thông) ── */
+.tableWrapper {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.02);
+}
+
+.tableHeader {
+  padding: 0.4rem 1.25rem;
+  background: #f8fafc;
+  border-bottom: 2px solid #f1f5f9;
+  display: grid;
+  grid-template-columns: 2.2fr 1fr 100px 1.2fr 130px;
+  align-items: center;
+  color: #64748b;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.tableHeader span:last-child {
+  text-align: center;
+}
+
+.eventRow {
+  padding: 0.4rem 1.25rem;
+  display: grid;
+  grid-template-columns: 2.2fr 1fr 100px 1.2fr 130px;
+  align-items: center;
+  border-bottom: 1px solid #f1f5f9;
+  transition: all 0.2s;
+}
+
+.eventRow > div:last-child {
+  display: flex;
+  justify-content: center;
+}
+
+.eventRow:hover {
+  background: #f8fbff;
+}
+
+.eventInfo strong {
+  display: block;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #0c1f45;
+  line-height: 1.4;
+}
+
+.categoryCell,
+.semesterCell {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+.pointCell {
+  text-align: center;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #2563eb;
+}
+
+.actionBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.85rem;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.8rem;
+  color: #2563eb;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.actionBtn:hover {
+  background: #2563eb;
+  color: white;
+  border-color: #2563eb;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+}
+
 .tableFooter {
-  padding: 0.8rem 1.25rem;
+  padding: 1rem 1.5rem;
   background: #fcfcfd;
   border-top: 1px solid #f1f5f9;
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 1.25rem;
+  gap: 1.5rem;
+  margin-top: 0.5rem;
 }
 
 .paginationInfo {
   font-size: 0.85rem;
   color: #64748b;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.paginationInfo strong {
-  color: #1e293b;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .pageButton {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
-  padding: 0.45rem 0.9rem;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
   border: 1px solid #e2e8f0;
   background: white;
   border-radius: 6px;
@@ -91,146 +209,11 @@
 .pageButton:disabled {
   opacity: 0.4;
   cursor: not-allowed;
-  background: #f1f5f9;
-}
-
-.filterSelect {
-  padding: 0 0.85rem;
-  background: white;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  color: #475569;
-  height: 38px;
-}
-
-.filterSelect select {
-  border: none;
-  background: transparent;
-  font-weight: 600;
-  outline: none;
-  color: #0c1f45;
-  cursor: pointer;
-  font-size: 0.85rem;
-  height: 100%;
-}
-
-.tableWrapper {
-  background: white;
-  border-radius: 16px;
-  border: 1px solid rgba(226, 232, 240, 0.8);
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.02);
-  overflow: hidden;
-}
-
-.tableHeader {
-  padding: 0.65rem 1.25rem;
-  background: #f8fafc;
-  border-bottom: 1px solid #f1f5f9;
-  display: grid;
-  grid-template-columns: 2fr 1fr 1.2fr 120px;
-  align-items: center;
-  color: #64748b;
-  font-size: 0.75rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.tableHeader span:last-child {
-  text-align: center;
-}
-
-.eventRow {
-  padding: 0.6rem 1.25rem;
-  display: grid;
-  grid-template-columns: 2fr 1fr 1.2fr 120px;
-  align-items: center;
-  border-bottom: 1px solid #f1f5f9;
-  transition: all 0.2s;
-}
-
-.eventRow>div:last-child {
-  display: flex;
-  justify-content: center;
-}
-
-.eventRow:hover {
-  background: #f8fbff;
-}
-
-.eventInfo strong {
-  display: block;
-  font-size: 1rem;
-  color: #1e293b;
-}
-
-.eventInfo span {
-  font-size: 0.8rem;
-  color: #64748b;
-}
-
-.categoryCell,
-.timeCell {
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #475569;
-}
-
-.actionBtn {
-  padding: 0.65rem 1rem;
-  background: #f1f5f9;
-  border: none;
-  border-radius: 10px;
-  font-weight: 700;
-  font-size: 0.9rem;
-  cursor: pointer;
-  color: #475569;
-  transition: all 0.2s;
-}
-
-.actionBtn:hover {
-  background: #e2e8f0;
-  color: #0c1f45;
 }
 
 .emptyState {
-  padding: 4rem 2rem;
+  padding: 5rem 2rem;
   text-align: center;
   color: #64748b;
-}
-
-.statusPill {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.45rem 1rem;
-  border-radius: 12px;
-  font-size: 0.85rem;
-  font-weight: 700;
-}
-
-.p_draft {
-  background: #f8fafc;
-  color: #64748b;
-  border: 1px solid #f1f5f9;
-}
-
-.p_submitted {
-  background: #fff7ed;
-  color: #f59e0b;
-  border: 1px solid #ffedd5;
-}
-
-.p_approved {
-  background: #ecfdf5;
-  color: #10b981;
-  border: 1px solid #d1fae5;
-}
-
-.p_rejected {
-  background: #fff1f2;
-  color: #f43f5e;
-  border: 1px solid #ffe4e6;
+  font-weight: 600;
 }

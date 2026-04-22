@@ -312,22 +312,29 @@
 }
 
 .activityTable th {
-  padding: 1rem 1.5rem;
+  padding: 1.25rem 2rem;
   text-align: left;
   background: #f8fafc;
   color: #64748b;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  white-space: nowrap; /* Keep headers single line */
+  white-space: nowrap;
+}
+
+.activityTable th:nth-child(2),
+.activityTable td:nth-child(2),
+.activityTable th:nth-child(4),
+.activityTable td:nth-child(4) {
+  text-align: center;
 }
 
 .activityTable td {
-  padding: 1rem 1.5rem;
+  padding: 1.25rem 2rem;
   border-bottom: 1px solid #f1f5f9;
   font-size: 0.95rem;
-  word-break: break-word; /* Force wrap for long titles */
+  word-break: break-word;
 }
 
 .activityName { font-weight: 700; color: #1e293b; }
@@ -439,4 +446,23 @@
   font-size: 0.8rem;
   font-weight: 700;
   border: 1px dashed #e2e8f0;
+}
+
+.taskStatus {
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+}
+
+.ts_da_duyet {
+  color: #059669; /* Green */
+}
+
+.ts_tu_choi {
+  color: #ef4444; /* Red */
+}
+
+.ts_cho_duyet {
+  color: #f59e0b; /* Orange/Yellow */
 }

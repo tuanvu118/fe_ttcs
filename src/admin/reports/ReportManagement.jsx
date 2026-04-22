@@ -40,11 +40,10 @@ export default function ReportManagement({ accessToken, roleLabel, onSessionExpi
 
   const stats = useMemo(() => ({
     total: reportsData.total,
-    // Note: These stats are now approximated or would need a separate API call if we want accurate global stats while paginating
-    pending: reports.filter((r) => r.status === 'CHO_DUYET').length,
-    approved: reports.filter((r) => r.status === 'DA_DUYET').length,
-    rejected: reports.filter((r) => r.status === 'YEU_CAU_NOP_LAI' || r.status === 'BI_TU_CHOI').length,
-  }), [reports, reportsData.total])
+    pending: reportsData.pending || 0,
+    approved: reportsData.approved || 0,
+    rejected: reportsData.rejected || 0,
+  }), [reportsData])
 
   useEffect(() => {
     loadReports()
@@ -195,22 +194,22 @@ export default function ReportManagement({ accessToken, roleLabel, onSessionExpi
         <div className={`${styles.statCard} ${styles.pending}`}>
           <div className={styles.statIcon}><Clock size={28} weight="fill" /></div>
           <div className={styles.statInfo}>
-             <h3>{stats.pending}+</h3>
-             <span>Chờ duyệt (trang này)</span>
+             <h3>{stats.pending}</h3>
+             <span>Chờ duyệt</span>
           </div>
         </div>
         <div className={`${styles.statCard} ${styles.success}`}>
           <div className={styles.statIcon}><CheckCircle size={28} weight="fill" /></div>
           <div className={styles.statInfo}>
-             <h3>{stats.approved}+</h3>
-             <span>Đã duyệt (trang này)</span>
+             <h3>{stats.approved}</h3>
+             <span>Đã duyệt</span>
           </div>
         </div>
         <div className={`${styles.statCard} ${styles.danger}`}>
           <div className={styles.statIcon}><XCircle size={28} weight="fill" /></div>
           <div className={styles.statInfo}>
-             <h3>{stats.rejected}+</h3>
-             <span>Cần nộp lại (trang này)</span>
+             <h3>{stats.rejected}</h3>
+             <span>Cần nộp lại</span>
           </div>
         </div>
       </div>

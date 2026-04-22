@@ -71,8 +71,11 @@ export default function InternalEventModal({
                 <input 
                   type="number" 
                   className={styles.formInput} 
-                  value={form.participant_count}
-                  onChange={e => setForm({...form, participant_count: parseInt(e.target.value) || 0})}
+                  value={form.participant_count ?? ''}
+                  onChange={e => {
+                    const val = e.target.value;
+                    setForm({...form, participant_count: val === '' ? null : parseInt(val)});
+                  }}
                 />
               </div>
             </div>

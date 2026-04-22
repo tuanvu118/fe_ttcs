@@ -93,15 +93,37 @@ export default function HomePage() {
         getUnits().catch(err => { console.error('Units API Error:', err); return { items: [] }; }),
       ])
 
-      setEvents(Array.isArray(eventsResponse.items) ? eventsResponse.items : [])
-      setNews(Array.isArray(newsData.items) ? newsData.items.slice(0, 3) : [])
+      const eventItems = (Array.isArray(eventsResponse.items) ? eventsResponse.items : []).map(ev => {
+        let imgUrl = ev.image_url;
+        if (imgUrl && !imgUrl.startsWith('http')) {
+          const baseUrl = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '');
+          const path = imgUrl.startsWith('/') ? imgUrl : '/' + imgUrl;
+          imgUrl = baseUrl + path;
+        }
+        return { ...ev, image_url: imgUrl };
+      })
+      setEvents(eventItems)
+      
+      const newsItems = (Array.isArray(newsData.items) ? newsData.items : []).map(item => {
+        let imgUrl = item.image_url;
+        if (imgUrl && !imgUrl.startsWith('http')) {
+          const baseUrl = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '');
+          const path = imgUrl.startsWith('/') ? imgUrl : '/' + imgUrl;
+          imgUrl = baseUrl + path;
+        }
+        return { ...item, image_url: imgUrl };
+      })
+      setNews(newsItems.slice(0, 3))
 
-      const allUnits = (unitsData?.items || []).map(u => ({
-        ...u,
-        logo: u.logo && !u.logo.startsWith('http') 
-          ? `${import.meta.env.VITE_API_BASE_URL || ''}${u.logo}`.replace('//', '/')
-          : u.logo
-      }))
+      const allUnits = (unitsData?.items || []).map(u => {
+        let logoUrl = u.logo;
+        if (logoUrl && !logoUrl.startsWith('http')) {
+          const baseUrl = (import.meta.env.VITE_API_BASE_URL || '').replace(/\/$/, '');
+          const path = logoUrl.startsWith('/') ? logoUrl : '/' + logoUrl;
+          logoUrl = baseUrl + path;
+        }
+        return { ...u, logo: logoUrl };
+      })
       
       let filteredUnits = allUnits
         .filter(u => {

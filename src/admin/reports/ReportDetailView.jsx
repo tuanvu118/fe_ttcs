@@ -47,7 +47,7 @@ export default function ReportDetailView({
     title: '', 
     description: '', 
     location: '', 
-    participant_count: 0, 
+    participant_count: null, 
     event_date: '',
     evidence_url: '' 
   })
@@ -128,7 +128,7 @@ export default function ReportDetailView({
         title: '', 
         description: '', 
         location: '', 
-        participant_count: 0, 
+        participant_count: null, 
         event_date: '', 
         evidence_url: '' 
       })
@@ -151,7 +151,7 @@ export default function ReportDetailView({
         evidence_url: form.evidence_url || null,
         location: form.location || null,
         description: form.description || null,
-        participant_count: form.participant_count || 0
+        participant_count: form.participant_count
       }
 
       await apiRequest(url, {
@@ -398,13 +398,19 @@ export default function ReportDetailView({
                     <tr key={ev.id} className={styles.tableRow} style={{ animationDelay: `${index * 50}ms` }}>
                       <td className={styles.activityName}><strong>{ev.title}</strong></td>
                       <td>
-                        <span className={styles.badge} style={{ background: '#eff6ff', color: '#2563eb' }}>
-                          {ev.type === 'HTSK' ? 'Sự kiện' : 'Tham quan'}
+                        <span className={styles.badge} style={{ 
+                          background: ev.type === 'HTSK' ? '#f0fdf4' : '#eff6ff', 
+                          color: ev.type === 'HTSK' ? '#10b981' : '#2563eb' 
+                        }}>
+                          {ev.type}
                         </span>
                       </td>
                       <td className={styles.dateCell}>{new Date(ev.created_at).toLocaleDateString('vi-VN')}</td>
                       <td>
-                         <span style={{ color: '#059669', fontWeight: 700, fontSize: '0.85rem' }}>✓ Đã hoàn thành hệ thống</span>
+                         <span className={`${styles.taskStatus} ${styles['ts_' + (ev.status?.toLowerCase() || 'cho_duyet')]}`}>
+                           {ev.status === 'DA_DUYET' ? 'Đã duyệt' : 
+                            ev.status === 'TU_CHOI' ? 'Đã từ chối' : 'Đang chờ'}
+                         </span>
                       </td>
                     </tr>
                   ))}

@@ -12,6 +12,7 @@ import SemestersPage from './semesters/SemestersPage'
 import UnitsManagementPage from './units/UnitsManagementPage'
 import EventPromotionListPage from './promotions/EventPromotionListPage'
 import CreateEventPromotionPage from './promotions/CreateEventPromotionPage'
+import EditEventPromotionPage from './promotions/EditEventPromotionPage'
 import AdminPromotionManagement from './promotions/AdminPromotionManagement'
 
 import StaffUnitsWorkspace from './members/StaffUnitsWorkspace'
@@ -114,6 +115,9 @@ function AdminStaffRoute({ staffPanel, user, accessToken, onSessionExpired, role
     }
     if (staffPanel === 'promotion-create') {
       return <CreateEventPromotionPage />
+    }
+    if (staffPanel === 'promotion-edit') {
+      return <EditEventPromotionPage />
     }
     return (
       <StaffUnitsPanelView
@@ -402,6 +406,10 @@ export default function AdminRouter({
       <Route
         path="/staff/:unitId/promotions/create"
         element={<AdminStaffRoute {...shared} staffPanel="promotion-create" />}
+      />
+      <Route
+        path="/staff/:unitId/promotions/edit/:id"
+        element={<AdminStaffRoute {...shared} staffPanel="promotion-edit" />}
       />
       <Route
         path="/staff/:unitId/reports/:reportId"

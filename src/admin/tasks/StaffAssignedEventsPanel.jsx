@@ -105,8 +105,9 @@ export default function StaffAssignedEventsPanel() {
 
       <div className={styles.tableWrapper}>
         <div className={styles.tableHeader}>
-          <span>Tên sự kiện</span>
-          <span>Loại hình / Điểm</span>
+          <span>Sự kiện</span>
+          <span>Loại hình</span>
+          <span style={{ textAlign: 'center' }}>Điểm</span>
           <span>Ngày tạo</span>
           <span>Thao tác</span>
         </div>
@@ -122,17 +123,20 @@ export default function StaffAssignedEventsPanel() {
             <div key={row.id} className={styles.eventRow}>
               <div className={styles.eventInfo}>
                 <strong>{row.title}</strong>
-                <span>ID: {row.id.substring(0, 8)}...</span>
               </div>
               <div className={styles.categoryCell}>
-                {TYPE_LABEL[row.type] || row.type} - {row.point ?? 0} điểm
+                {TYPE_LABEL[row.type] || row.type}
+              </div>
+              <div className={styles.pointCell}>
+                {row.point ?? 0}
               </div>
               <div className={styles.timeCell}>
                 {row.created_at ? new Date(row.created_at).toLocaleDateString('vi-VN') : 'N/A'}
               </div>
               <div className={styles.actionsCell}>
                 <button className={styles.actionBtn} onClick={() => navigate(`/staff/${unitId}/tasks/${row.id}`)}>
-                  <Eye size={18} style={{ marginRight: '6px' }} /> Xem chi tiết
+                  <Eye size={18} />
+                  <span>Chi tiết</span>
                 </button>
               </div>
             </div>

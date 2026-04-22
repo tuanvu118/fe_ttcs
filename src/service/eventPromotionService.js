@@ -10,6 +10,19 @@ function notifyPromotionError(error) {
   }
 }
 
+export async function getPromotion(id) {
+  const token = getStoredAuthSession()?.accessToken
+  try {
+    return await apiRequest(`/event-promotions/${id}`, {
+      method: 'GET',
+      authToken: token,
+    })
+  } catch (error) {
+    notifyPromotionError(error)
+    throw error
+  }
+}
+
 export async function getPromotionsForUnit(unitId, semesterId = null, skip = 0, limit = 10, status = null) {
   const token = getStoredAuthSession()?.accessToken
   try {

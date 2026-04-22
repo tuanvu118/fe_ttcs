@@ -5,6 +5,7 @@
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+  margin-top: 1.5rem;
 }
 
 .loadingBox {
@@ -85,23 +86,27 @@
 }
 
 .editBtn {
-  background: var(--ds-surface);
-  color: var(--ds-text);
+  background: #f1f5f9;
+  color: #0f172a;
+  border-color: #cbd5e1;
 }
 
 .editBtn:hover {
-  background: var(--ds-surface-warm);
-  border-color: var(--ds-border-strong);
+  background: #e2e8f0;
+  border-color: #94a3b8;
+  color: #1e293b;
 }
 
 .deleteBtn {
-  background: var(--ds-surface);
-  color: var(--ds-danger);
-  border-color: var(--ds-danger-border);
+  background: #fef2f2;
+  color: #dc2626;
+  border-color: #fecaca;
 }
 
 .deleteBtn:hover {
-  background: var(--ds-danger-bg);
+  background: #fee2e2;
+  border-color: #f87171;
+  color: #991b1b;
 }
 
 .copyBtn {
@@ -178,19 +183,22 @@
   align-items: center;
   gap: 0.4rem;
   flex-shrink: 0;
-  padding: 0.45rem 0.85rem;
-  border-radius: 4px;
-  border: 1px solid var(--ds-border-strong);
-  background: var(--ds-surface);
-  color: var(--ds-text);
-  font-size: 0.8rem;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: 1px solid #bbf7d0;
+  background: #f0fdf4;
+  color: #15803d;
+  font-size: 0.85rem;
   font-weight: 700;
   cursor: pointer;
+  transition: all 0.2s;
 }
 
-.exportExcelBtn:hover {
-  background: var(--ds-surface-warm);
-  border-color: var(--ds-border-input);
+.exportExcelBtn:hover:not(:disabled) {
+  background: #dcfce7;
+  border-color: #86efac;
+  color: #166534;
+  transform: translateY(-1px);
 }
 
 .exportExcelBtn:disabled {
@@ -204,9 +212,13 @@
 
 .infoGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 1.25rem;
-  margin-bottom: 2.5rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  padding: 1.25rem 1.75rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
 }
 
 .infoItem {
@@ -348,10 +360,10 @@
 
 .coopTable th,
 .coopTable td {
-  padding: 0.65rem 0.75rem;
+  padding: 0.75rem 1rem;
   text-align: left;
-  border-bottom: 1px solid var(--ds-divider);
   vertical-align: middle;
+  border-bottom: 1px solid var(--ds-divider);
 }
 
 .coopTable th {
@@ -361,6 +373,17 @@
   text-transform: uppercase;
   letter-spacing: 0.04em;
   background: var(--ds-surface-subtle);
+}
+
+.coopTable th:not(:first-child),
+.coopTable td:not(:first-child) {
+  text-align: center;
+}
+
+.coopTable th:last-child,
+.coopTable td:last-child {
+  text-align: center;
+  padding-right: 2.5rem;
 }
 
 @media (max-width: 768px) {
@@ -386,28 +409,33 @@
 .coopUnitCell {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
-  min-width: 0;
+  justify-content: flex-start;
+  gap: 0.75rem;
+  width: 100%;
 }
 
 .coopActionCell {
-  width: 1%;
+  width: 120px;
   white-space: nowrap;
+  text-align: center !important;
 }
 
 .coopDetailBtn {
-  border: 1px solid var(--ds-border-strong);
-  background: var(--ds-surface);
-  color: var(--ds-text);
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
+  color: #2563eb;
   font-weight: 700;
-  font-size: 0.75rem;
-  padding: 0.35rem 0.65rem;
-  border-radius: 6px;
+  font-size: 0.8rem;
+  padding: 0.4rem 1rem;
+  border-radius: 8px;
   cursor: pointer;
+  transition: all 0.2s;
 }
 
 .coopDetailBtn:hover:not(:disabled) {
-  background: var(--ds-surface-warm);
+  background: #dbeafe;
+  color: #1e40af;
+  border-color: #93c5fd;
 }
 
 .coopDetailBtn:disabled {
@@ -419,7 +447,7 @@
   display: inline-flex;
   align-items: center;
   padding: 0.25rem 0.6rem;
-  border-radius: var(--ds-radius-pill);
+  border-radius: 6px;
   font-weight: 800;
   font-size: 0.72rem;
   letter-spacing: 0.03em;

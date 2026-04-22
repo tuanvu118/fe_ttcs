@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Trophy } from '@phosphor-icons/react'
+import { Trophy, Clock, CheckCircle, NotePencil, Link as LinkIcon, FileText } from '@phosphor-icons/react'
 import { message } from 'antd'
 import {
   createUnitEventSubmission,
@@ -183,6 +183,14 @@ export default function DetailHTTT({ data, unitId, taskId, semesterDisplay }) {
         <div className={u.cardBody}>
           <div className={u.infoGrid}>
             <div className={u.infoItem}>
+              <span className={u.infoLabel}>Trạng thái</span>
+              <span
+                className={`${styles.statusBadge} ${styles[`statusBadge_${statusVariant}`] || ''}`}
+              >
+                {statusText}
+              </span>
+            </div>
+            <div className={u.infoItem}>
               <span className={u.infoLabel}>Điểm</span>
               <span className={u.infoValue}>
                 <Trophy size={18} weight="fill" color="#ca8a04" aria-hidden />
@@ -191,7 +199,10 @@ export default function DetailHTTT({ data, unitId, taskId, semesterDisplay }) {
             </div>
             <div className={u.infoItem}>
               <span className={u.infoLabel}>Học kỳ</span>
-              <span className={u.infoValue}>{semesterDisplay}</span>
+              <span className={u.infoValue}>
+                <Clock size={18} weight="bold" />
+                {semesterDisplay}
+              </span>
             </div>
           </div>
           {data?.description ? (
@@ -210,14 +221,6 @@ export default function DetailHTTT({ data, unitId, taskId, semesterDisplay }) {
           </h2>
         </div>
         <div className={`${u.cardBody} ${u.submissionStack}`}>
-          <div className={styles.statusRow}>
-            <span className={styles.statusLabel}>Trạng thái phản hồi</span>
-            <span
-              className={`${styles.statusBadge} ${styles[`statusBadge_${statusVariant}`] || ''}`}
-            >
-              {statusText}
-            </span>
-          </div>
 
           {submissionLoading ? (
             <p className={styles.loadingHint}>Đang tải phản hồi…</p>
@@ -287,12 +290,23 @@ export default function DetailHTTT({ data, unitId, taskId, semesterDisplay }) {
 
               {!isEditing && submission ? (
                 <div className={u.readonlyStack}>
+                  <div className={`${u.submissionBanner} ${u.bannerSuccess}`}>
+                    <CheckCircle size={24} weight="fill" />
+                    <span>Đơn vị đã gửi phản hồi nhiệm vụ này thành công.</span>
+                  </div>
+
                   <div className={u.readonlyBlock}>
-                    <div className={u.readonlyLabel}>Nội dung phản hồi</div>
+                    <div className={u.readonlyLabel}>
+                      <NotePencil size={18} weight="bold" />
+                      Nội dung phản hồi
+                    </div>
                     <p className={u.readonlyBody}>{submission?.content?.trim() || '—'}</p>
                   </div>
                   <div className={u.readonlyBlock}>
-                    <div className={u.readonlyLabel}>Minh chứng</div>
+                    <div className={u.readonlyLabel}>
+                      <LinkIcon size={18} weight="bold" />
+                      Minh chứng đính kèm
+                    </div>
                     {evidenceIsLink ? (
                       <a
                         href={evidenceTrimmed}
@@ -300,6 +314,7 @@ export default function DetailHTTT({ data, unitId, taskId, semesterDisplay }) {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
+                        <FileText size={18} />
                         {evidenceTrimmed}
                       </a>
                     ) : evidenceTrimmed ? (

@@ -19,6 +19,10 @@ import { getSemesters } from '../../service/semesterService'
 import { getStoredAuthSession } from '../../service/authSession'
 import { useCurrentSemester } from '../../hooks/useCurrentSemester'
 import SemesterSelector from '../../components/semesters/SemesterSelector'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+
+dayjs.extend(utc)
 
 export default function EventPromotionListPage() {
   const { unitId } = useParams()
@@ -183,7 +187,7 @@ export default function EventPromotionListPage() {
                 {item.status === 'TU_CHOI' && <span className={`${styles.statusBadge} ${styles.statusRejected}`}>Từ chối</span>}
               </div>
               <div className={styles.timeCell}>
-                {new Date(item.created_at).toLocaleDateString('vi-VN')}
+                {dayjs.utc(item.created_at).local().format('DD/MM/YYYY HH:mm')}
               </div>
               <div className={styles.actionsCell}>
                 <button className={styles.actionBtn} onClick={() => navigate(`/staff/${unitId}/promotions/edit/${item.id}`)} title="Sửa">
