@@ -1,13 +1,14 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { 
   ArrowLeft,
   ArrowRight,
 } from '@phosphor-icons/react'
-import { Select, InputNumber, Badge, message } from 'antd'
+import { DatePicker, Select, InputNumber, Switch, message } from 'antd'
 import { getUnits } from '../../service/unitService'
-import { getStoredAuthSession } from '../../service/authSession'
 import SemesterField from '../../components/semesters/SemesterField'
 import styles from './step2UnitEventInfo.module.css'
+
+const { RangePicker } = DatePicker
 
 export default function Step2UnitEventInfo({ type, data, setData, isSubmitting, onBack, onNext }) {
   const [units, setUnits] = useState([])
@@ -32,7 +33,9 @@ export default function Step2UnitEventInfo({ type, data, setData, isSubmitting, 
   }
 
 
-  const isFormValid = data.title && data.description && data.listUnitId?.length > 0 && data.semesterId
+  const isFormValid = data.title && data.description && data.listUnitId?.length > 0 && data.semesterId &&
+    data.registrationPeriod?.[0] && data.registrationPeriod?.[1] &&
+    data.eventPeriod?.[0] && data.eventPeriod?.[1]
 
   const handleNext = () => {
     if ((data.point ?? 0) > 10) {
@@ -53,6 +56,8 @@ export default function Step2UnitEventInfo({ type, data, setData, isSubmitting, 
     }
     setData((prev) => ({ ...prev, point: val }))
   }
+
+  const showRegistrationLimit = type === 'HTSK' && Boolean(data.is_student_registration)
 
   return (
     <div className={styles.container}>
@@ -135,6 +140,81 @@ export default function Step2UnitEventInfo({ type, data, setData, isSubmitting, 
                 />
                 <span className={styles.suffix}>ĐIỂM</span>
               </div>
+            </div>
+          </div>
+
+          {type === 'HTSK' && (
+            <div className={styles.row}>
+              <div className={styles.fieldGroup} style={{ flex: 1 }}>
+                <label className={styles.label}>CHO SINH VIÊN CHỦ ĐỘNG ĐĂNG KÝ?</label>
+                <div style={{ marginTop: 8 }}>
+                  <Switch
+                    checked={Boolean(data.is_student_registration)}
+                    onChange={(checked) =>
+                      setData((prev) => ({
+                        ...prev,
+                        is_student_registration: checked,
+                        limit_student_registration_in_one_unit:
+                          checked && type === 'HTSK'
+                            ? (prev.limit_student_registration_in_one_unit ?? 20)
+                            : null,
+                      }))
+                    }
+                  />
+                </div>
+              </div>
+              {showRegistrationLimit && (
+                <div className={styles.fieldGroup} style={{ flex: 1 }}>
+                  <label className={styles.label}>GIỚI HẠN SV/ĐƠN VỊ</label>
+                  <div className={styles.inputWithSuffix}>
+                    <InputNumber
+                      className={styles.numberInput}
+                      min={1}
+                      value={data.limit_student_registration_in_one_unit}
+                      onChange={(val) =>
+                        setData((prev) => ({
+                          ...prev,
+                          limit_student_registration_in_one_unit: val ?? null,
+                        }))
+                      }
+                    />
+                    <span className={styles.suffix}>SV</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <div className={styles.sectionHeader}>
+          <div className={styles.sectionTitleGroup}>
+            <h3 className={styles.sectionTitle}>Thời gian biểu</h3>
+            <p className={styles.sectionDesc}>Các mốc thời gian bắt buộc cho yêu cầu hỗ trợ.</p>
+          </div>
+        </div>
+        <div className={styles.sectionContent}>
+          <div className={styles.row}>
+            <div className={styles.fieldGroup}>
+              <label className={styles.label}>THỜI GIAN ĐĂNG KÝ</label>
+              <RangePicker
+                showTime
+                className={styles.rangePicker}
+                format="DD/MM/YYYY, HH:mm"
+                value={data.registrationPeriod}
+                onChange={(vals) => setData((prev) => ({ ...prev, registrationPeriod: vals || [null, null] }))}
+              />
+            </div>
+            <div className={styles.fieldGroup}>
+              <label className={styles.label}>THỜI GIAN DIỄN RA</label>
+              <RangePicker
+                showTime
+                className={styles.rangePicker}
+                format="DD/MM/YYYY, HH:mm"
+                value={data.eventPeriod}
+                onChange={(vals) => setData((prev) => ({ ...prev, eventPeriod: vals || [null, null] }))}
+              />
             </div>
           </div>
         </div>

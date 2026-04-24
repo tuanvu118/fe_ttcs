@@ -252,3 +252,84 @@ export async function fetchAllUnitMembersRosterForHtsk(unitId, semesterId, chunk
 
   return { byStudentId, totalReported }
 }
+
+/**
+ * Student view overview cho sự kiện HTSK theo đơn vị.
+ *
+ * GET /unit-event-submissions/HTSK/student/overview?unit_event_id=&unit_id=
+ */
+export async function getStudentHtskOverview(unitEventId, unitId) {
+  const eid = unitEventId ? String(unitEventId).trim() : ''
+  const uid = unitId ? String(unitId).trim() : ''
+  if (!eid || !uid) {
+    throw new Error('Thiếu unit_event_id hoặc unit_id.')
+  }
+  const accessToken = getStoredAuthSession()?.accessToken || ''
+
+  return apiRequest(
+    `/unit-event-submissions/HTSK/student/overview?unit_event_id=${encodeURIComponent(eid)}&unit_id=${encodeURIComponent(uid)}`,
+    {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+      },
+      ...(accessToken ? { authToken: accessToken } : {}),
+    },
+  )
+}
+
+/**
+ * Student đăng ký tham gia HTSK theo đơn vị.
+ *
+ * POST /unit-event-submissions/HTSK/student/register
+ * body: { unit_event_id, unit_id }
+ */
+export async function registerStudentHtskEvent(unitEventId, unitId) {
+  const eid = unitEventId ? String(unitEventId).trim() : ''
+  const uid = unitId ? String(unitId).trim() : ''
+  if (!eid || !uid) {
+    throw new Error('Thiếu unit_event_id hoặc unit_id.')
+  }
+  const accessToken = getStoredAuthSession()?.accessToken || ''
+
+  return apiRequest('/unit-event-submissions/HTSK/student/register', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      unit_event_id: eid,
+      unit_id: uid,
+    }),
+    ...(accessToken ? { authToken: accessToken } : {}),
+  })
+}
+
+/**
+ * Student hủy đăng ký tham gia HTSK theo đơn vị.
+ *
+ * DELETE /unit-event-submissions/HTSK/student/register
+ * body: { unit_event_id, unit_id }
+ */
+export async function cancelStudentHtskEventRegistration(unitEventId, unitId) {
+  const eid = unitEventId ? String(unitEventId).trim() : ''
+  const uid = unitId ? String(unitId).trim() : ''
+  if (!eid || !uid) {
+    throw new Error('Thiếu unit_event_id hoặc unit_id.')
+  }
+  const accessToken = getStoredAuthSession()?.accessToken || ''
+
+  return apiRequest('/unit-event-submissions/HTSK/student/register', {
+    method: 'DELETE',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      unit_event_id: eid,
+      unit_id: uid,
+    }),
+    ...(accessToken ? { authToken: accessToken } : {}),
+  })
+}

@@ -27,7 +27,9 @@ export default function CreateEventPage() {
     location: '',
     max_participants: 200,
     form_fields: [],
-    listUnitId: [] // For Unit Events
+    listUnitId: [], // For Unit Events
+    is_student_registration: false,
+    limit_student_registration_in_one_unit: null,
 
   })
 
@@ -73,6 +75,24 @@ export default function CreateEventPage() {
         formData.append('type', selectedType)
         if (eventData.semesterId) {
           formData.append('semester_id', eventData.semesterId)
+        }
+        if (eventData.registrationPeriod[0] && eventData.registrationPeriod[1]) {
+          formData.append('registration_start', eventData.registrationPeriod[0].toISOString())
+          formData.append('registration_end', eventData.registrationPeriod[1].toISOString())
+        }
+        if (eventData.eventPeriod[0] && eventData.eventPeriod[1]) {
+          formData.append('event_start', eventData.eventPeriod[0].toISOString())
+          formData.append('event_end', eventData.eventPeriod[1].toISOString())
+        }
+        formData.append('is_student_registration', String(Boolean(eventData.is_student_registration)))
+        if (selectedType === 'HTSK' && eventData.is_student_registration) {
+          const limit = eventData.limit_student_registration_in_one_unit
+          formData.append(
+            'limit_student_registration_in_one_unit',
+            limit == null ? '' : String(limit),
+          )
+        } else {
+          formData.append('limit_student_registration_in_one_unit', '')
         }
         formData.append('listUnitId', JSON.stringify(eventData.listUnitId))
         await createUnitEvent(formData)

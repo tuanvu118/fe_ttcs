@@ -51,6 +51,12 @@ function parsePastedMsvLines(raw) {
   return out
 }
 
+function formatDateTime(value) {
+  if (!value) return '—'
+  const d = new Date(value)
+  return Number.isNaN(d.getTime()) ? '—' : d.toLocaleString('vi-VN')
+}
+
 export default function DetailHTSK({ data, unitId, taskId, semesterId, semesterDisplay }) {
   const [submission, setSubmission] = useState(null)
   const [submissionLoading, setSubmissionLoading] = useState(true)
@@ -84,6 +90,7 @@ export default function DetailHTSK({ data, unitId, taskId, semesterId, semesterD
   const [submittedRows, setSubmittedRows] = useState([])
   const [submittedRowsLoading, setSubmittedRowsLoading] = useState(false)
   const [submittedRowsError, setSubmittedRowsError] = useState('')
+  const isWaitingSubmission = submission?.status === 'WAITING'
 
   const loadSubmission = useCallback(async () => {
     if (!taskId || !unitId) {
@@ -299,9 +306,22 @@ export default function DetailHTSK({ data, unitId, taskId, semesterId, semesterD
     finally { setSubmitting(false) }
   }
 
+  const handleCopyStudentRegistrationLink = async () => {
+    const shareUrl = `${window.location.origin}/events/u/${unitId}/${taskId}`
+    try {
+      await navigator.clipboard.writeText(shareUrl)
+      message.success('Đã sao chép link đăng ký cho sinh viên.')
+    } catch {
+      message.error('Không thể sao chép link. Vui lòng thử lại.')
+    }
+  }
+
   const { statusText, statusVariant } = useMemo(() => {
     if (submissionLoading) return { statusText: 'Đang tải…', statusVariant: 'loading' }
     if (!submission) return { statusText: 'Chưa phản hồi', statusVariant: 'empty' }
+    if (submission?.status === 'WAITING') {
+      return { statusText: 'Đang chờ đăng ký', statusVariant: 'pending' }
+    }
     return { statusText: 'Đã phản hồi', statusVariant: 'approved' }
   }, [submission, submissionLoading])
 
@@ -330,7 +350,45 @@ export default function DetailHTSK({ data, unitId, taskId, semesterId, semesterD
               <span className={u.infoLabel}>Điểm</span>
               <span className={u.infoValue}><Trophy size={18} color="#eab308" weight="fill" /> {data?.point ?? 0}</span>
             </div>
+            <div className={u.infoItem}>
+              <span className={u.infoLabel}>Thời gian diễn ra</span>
+              <span className={u.infoValue}>
+                {formatDateTime(data?.event_start)} - {formatDateTime(data?.event_end)}
+              </span>
+            </div>
+            <div className={u.infoItem}>
+              <span className={u.infoLabel}>Thời gian đăng ký</span>
+              <span className={u.infoValue}>
+                {formatDateTime(data?.registration_start)} - {formatDateTime(data?.registration_end)}
+              </span>
+            </div>
+            <div className={u.infoItem}>
+              <span className={u.infoLabel}>SV chủ động đăng ký</span>
+              <span className={u.infoValue}>{data?.is_student_registration ? 'Có' : 'Không'}</span>
+            </div>
+            {data?.is_student_registration ? (
+              <div className={u.infoItem}>
+                <span className={u.infoLabel}>Giới hạn SV/đơn vị</span>
+                <span className={u.infoValue}>
+                  {data?.limit_student_registration_in_one_unit ?? '—'}
+                </span>
+              </div>
+            ) : null}
           </div>
+          {data?.is_student_registration ? (
+            <div
+              className={u.readonlyBlock}
+              style={{ marginBottom: '1.25rem', padding: '1rem 1.25rem' }}
+            >
+              <div className={u.readonlyLabel}>Đăng ký sinh viên theo link</div>
+              <p className={u.descriptionText} style={{ marginBottom: '0.75rem' }}>
+                Hãy gửi link sau cho các thành viên thuộc đơn vị của bạn để họ đăng ký.
+              </p>
+              <button className={u.primaryBtn} onClick={handleCopyStudentRegistrationLink}>
+                Sao chép link đăng ký
+              </button>
+            </div>
+          ) : null}
           {data?.description && (
             <div className={u.descriptionSection}>
               <h2 className={u.sectionHeading}>Mô tả nhiệm vụ</h2>
@@ -343,7 +401,7 @@ export default function DetailHTSK({ data, unitId, taskId, semesterId, semesterD
       <section className={u.surfaceCard}>
         <div className={u.cardHeaderBar}>
           <h2 className={u.cardHeaderTitle}>Phản hồi đơn vị</h2>
-          {submission && !showRespondForm && (
+          {submission && !showRespondForm && !isWaitingSubmission && (
             <button className={u.primaryBtn} onClick={() => handleOpenRespond(true)}>Chỉnh sửa</button>
           )}
         </div>
@@ -352,9 +410,13 @@ export default function DetailHTSK({ data, unitId, taskId, semesterId, semesterD
            submissionError ? <p className={u.errorText}>{submissionError}</p> :
            !showRespondForm && submission ? (
              <div className={u.submissionView}>
-               <div className={`${u.submissionBanner} ${u.bannerSuccess}`}>
+               <div className={`${u.submissionBanner} ${isWaitingSubmission ? u.bannerInfo : u.bannerSuccess}`}>
                  <CheckCircle size={24} weight="fill" />
-                 <span>Đơn vị đã gửi phản hồi nhiệm vụ này thành công.</span>
+                 <span>
+                   {isWaitingSubmission
+                     ? 'Đang trong thời gian đợi sinh viên đăng ký. Danh sách sẽ tự động nộp khi hết thời gian đăng ký sự kiện. Bạn không có quyền sửa danh sách này.'
+                     : 'Đơn vị đã gửi phản hồi nhiệm vụ này thành công.'}
+                 </span>
                </div>
 
                <div className={u.readonlyBlock}>

@@ -66,6 +66,16 @@ export default function EUDetailHTSK({ data, unitId, eventId }) {
     }
   }
 
+  const formatDateTime = (value) => {
+    if (!value) return '—'
+    const parsed = new Date(value)
+    return Number.isNaN(parsed.getTime()) ? '—' : parsed.toLocaleString('vi-VN')
+  }
+
+  const studentRegistrationEnabled = Boolean(data?.is_student_registration)
+  const showLimit =
+    data?.type === 'HTSK' && studentRegistrationEnabled
+
   useEffect(() => {
     if (!eventId) {
       setRegistrations([])
@@ -163,6 +173,32 @@ export default function EUDetailHTSK({ data, unitId, eventId }) {
                     {semesterObj ? `${semesterObj.name} - ${semesterObj.academic_year}` : 'N/A'}
                   </span>
                 </div>
+                <div className={styles.infoItem}>
+                  <span className={styles.infoLabel}>THỜI GIAN DIỄN RA</span>
+                  <span className={styles.infoValue}>
+                    {formatDateTime(data.event_start)} - {formatDateTime(data.event_end)}
+                  </span>
+                </div>
+                <div className={styles.infoItem}>
+                  <span className={styles.infoLabel}>THỜI GIAN ĐĂNG KÝ</span>
+                  <span className={styles.infoValue}>
+                    {formatDateTime(data.registration_start)} - {formatDateTime(data.registration_end)}
+                  </span>
+                </div>
+                <div className={styles.infoItem}>
+                  <span className={styles.infoLabel}>SV CHỦ ĐỘNG ĐĂNG KÝ</span>
+                  <span className={styles.infoValue}>
+                    {studentRegistrationEnabled ? 'Có' : 'Không'}
+                  </span>
+                </div>
+                {showLimit ? (
+                  <div className={styles.infoItem}>
+                    <span className={styles.infoLabel}>GIỚI HẠN SV/ĐƠN VỊ</span>
+                    <span className={styles.infoValue}>
+                      {data.limit_student_registration_in_one_unit ?? '—'}
+                    </span>
+                  </div>
+                ) : null}
               </div>
 
               <div className={styles.descriptionSection}>

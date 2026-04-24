@@ -1,0 +1,156 @@
+.event-unit-student-page {
+  min-height: calc(100vh - 64px);
+  background: #f8fafc;
+  padding: 1.5rem;
+  color: #0f172a;
+}
+
+.eus-hero {
+  max-width: 1100px;
+  margin: 0 auto 1rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+}
+
+.eus-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: none;
+  background: none;
+  color: #334155;
+  font-weight: 700;
+  cursor: pointer;
+  margin-bottom: 0.75rem;
+}
+
+.eus-tag {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #1d4ed8;
+  margin-bottom: 0.5rem;
+}
+
+.eus-hero h1 {
+  margin: 0 0 0.25rem;
+  font-size: 1.5rem;
+}
+
+.eus-hero p {
+  margin: 0;
+  color: #64748b;
+}
+
+.eus-grid {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1rem;
+}
+
+.eus-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.25rem;
+}
+
+.eus-card h2 {
+  margin: 0 0 1rem;
+  font-size: 1.05rem;
+}
+
+.eus-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  border-bottom: 1px dashed #e2e8f0;
+  padding: 0.7rem 0;
+}
+
+.eus-row span {
+  display: inline-flex;
+  gap: 0.35rem;
+  align-items: center;
+  color: #475569;
+}
+
+.eus-row strong {
+  text-align: right;
+}
+
+.eus-desc {
+  margin-top: 1rem;
+}
+
+.eus-desc h3 {
+  margin: 0 0 0.5rem;
+}
+
+.eus-desc p {
+  margin: 0;
+  color: #334155;
+  white-space: pre-wrap;
+}
+
+.eus-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 8px;
+  padding: 0.8rem;
+  font-weight: 700;
+}
+
+.eus-status.ok {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.eus-status.idle {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.eus-note {
+  margin-top: 0.9rem;
+  font-size: 0.92rem;
+  color: #334155;
+}
+
+.eus-note p {
+  margin: 0 0 0.45rem;
+}
+
+.eus-state {
+  max-width: 640px;
+  margin: 4rem auto;
+  text-align: center;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 2rem;
+}
+
+.eus-btn {
+  margin-top: 0.75rem;
+  border: none;
+  background: #1d4ed8;
+  color: #fff;
+  padding: 0.55rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+@media (max-width: 900px) {
+  .eus-grid {
+    grid-template-columns: 1fr;
+  }
+}

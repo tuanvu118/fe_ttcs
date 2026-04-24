@@ -10,6 +10,7 @@ import NewsDetailPage from './page/NewsDetailPage'
 import ClubDetailPage from './page/ClubDetailPage'
 import ClubPage from './page/ClubPage'
 import EventDetailPage from './page/EventDetailPage'
+import EventUnitStudent from './page/EventUnitStudent'
 import EventsPage from './page/EventsPage'
 import HomePage from './page/HomePage'
 import LoginPage from './page/LoginPage'
@@ -43,6 +44,9 @@ function App() {
   const clubUnitId = getClubUnitIdFromPath(pathname)
   const eventIdMatched = pathname.match(/^\/events\/([^/]+)$/)
   const eventId = eventIdMatched?.[1] || ''
+  const unitStudentEventMatch = pathname.match(/^\/events\/u\/([^/]+)\/([^/]+)$/)
+  const unitStudentEventUnitId = unitStudentEventMatch?.[1] || ''
+  const unitStudentEventId = unitStudentEventMatch?.[2] || ''
   const newsIdMatched = pathname.match(/^\/news\/([^/]+)$/)
   const newsId = newsIdMatched?.[1] || ''
   const taskIdMatched = pathname.match(/^\/task\/([^/]+)$/)
@@ -66,7 +70,8 @@ function App() {
   const mustCheckAuth =
     requiresAuthPaths.has(pathname) ||
     isAdminArea ||
-    Boolean(taskId)
+    Boolean(taskId) ||
+    Boolean(unitStudentEventMatch)
 
 
   if (mustCheckAuth && !isAuthenticated) {
@@ -77,6 +82,8 @@ function App() {
     page = <HomePage />
   } else if (pathname === PATHS.event) {
     page = <EventsPage navigate={navigate} />
+  } else if (unitStudentEventMatch) {
+    page = <EventUnitStudent unitId={unitStudentEventUnitId} eventId={unitStudentEventId} />
   } else if (eventId) {
 
     page = <EventDetailPage eventId={eventId} />
