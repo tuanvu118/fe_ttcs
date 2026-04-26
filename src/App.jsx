@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import TopNav from './components/TopNav'
+import MobileBottomNav from './components/MobileBottomNav'
 import { useAuth } from './hooks/useAuth'
 import { useRouter } from './hooks/useRouter'
 import AdminLayout from './admin/AdminLayout'
@@ -116,6 +117,7 @@ function App() {
         onProfileUpdated={refreshUser}
         onSessionExpired={handleSessionExpired}
         navigate={navigate}
+        dashboardPath={dashboardPath}
       />
     )
   } else if (isAdminArea) {
@@ -151,12 +153,19 @@ function App() {
           {page}
         </AdminLayout>
       ) : (
-        <main className={`page-content ${pathname === PATHS.home ? 'page-content-home' : [PATHS.event, PATHS.about, PATHS.club, PATHS.profile].includes(pathname) || clubUnitId ? 'page-content-wide' : (eventId || newsId ? 'page-content-full' : '')}`}>
+        <main className={`page-content page-content--with-mobile-nav ${pathname === PATHS.home ? 'page-content-home' : [PATHS.event, PATHS.about, PATHS.club, PATHS.profile].includes(pathname) || clubUnitId ? 'page-content-wide' : (eventId || newsId ? 'page-content-full' : '')}`}>
           {page}
         </main>
 
 
       )}
+      {!isAdminLayout ? (
+        <MobileBottomNav
+          currentPath={pathname}
+          isAuthenticated={isAuthenticated}
+          navigate={navigate}
+        />
+      ) : null}
 
     </div>
   )

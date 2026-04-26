@@ -200,7 +200,13 @@ export default function HomePage() {
               </Link>
             )}
             <Link to={PATHS.event} className="home-btn-outline">
-              Khám phá thêm
+              Sự kiện
+            </Link>
+            <Link to={PATHS.units} className="home-btn-outline">
+              Đơn vị
+            </Link>
+            <Link to={PATHS.about} className="home-btn-outline">
+              Tin tức
             </Link>
           </div>
         </div>

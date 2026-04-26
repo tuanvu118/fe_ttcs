@@ -63,7 +63,7 @@ function TopNav({ currentPath, isAuthenticated, dashboardPath, navigate }) {
               decoding="async"
             />
           </span>
-          Đoàn Thanh Niên
+          <span className="topnav-brand-text">Đoàn Thanh Niên</span>
         </button>
       </div>
 

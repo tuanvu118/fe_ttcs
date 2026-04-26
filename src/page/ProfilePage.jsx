@@ -17,6 +17,7 @@ function ProfilePage({
   onProfileUpdated,
   onSessionExpired,
   navigate,
+  dashboardPath,
 }) {
   const [profile, setProfile] = useState(null)
   const [stats, setStats] = useState(null)
@@ -145,6 +146,9 @@ function ProfilePage({
 
           <div className="profile-actions">
             <button className="primary-button" onClick={() => setIsEditOpen(true)}>Chỉnh sửa hồ sơ</button>
+            {dashboardPath ? (
+              <button className="secondary-button" onClick={() => navigate(dashboardPath)}>Vào trang quản trị</button>
+            ) : null}
             <button className="secondary-button" onClick={() => setIsDownloadOpen(true)}>Tải ứng dụng</button>
             <button className="secondary-button" onClick={() => navigate(PATHS.logout)}>Đăng xuất</button>
           </div>
