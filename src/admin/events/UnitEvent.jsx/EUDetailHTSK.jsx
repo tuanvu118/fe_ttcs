@@ -7,6 +7,7 @@ import {
   DownloadSimple,
   Link,
   PencilSimple,
+  QrCode,
   Trash,
   Trophy,
 } from '@phosphor-icons/react'
@@ -14,6 +15,7 @@ import { Popconfirm, message } from 'antd'
 import { deleteUnitEvent, getHtskRegistrationsByUnitEvent } from '../../../service/apiAdminEvent'
 import { getStoredCurrentSemester } from '../../../utils/currentSemesterStorage'
 import { downloadUnitEventHtskExcel } from '../../../utils/exportUnitEventHtskExcel'
+import QRModalUnitEvent from '../QR/QRModalUnitEvent'
 import styles from './EUDetail.module.css'
 
 export default function EUDetailHTSK({ data, unitId, eventId }) {
@@ -21,6 +23,7 @@ export default function EUDetailHTSK({ data, unitId, eventId }) {
   const [registrations, setRegistrations] = useState([])
   const [registrationsLoading, setRegistrationsLoading] = useState(false)
   const [registrationsError, setRegistrationsError] = useState('')
+  const [isQrModalOpen, setIsQrModalOpen] = useState(false)
   const currentSemester = getStoredCurrentSemester()
   const semesterObj =
     data && currentSemester?.id === (data.semester_id || data.semesterId) ? currentSemester : null
@@ -119,6 +122,14 @@ export default function EUDetailHTSK({ data, unitId, eventId }) {
         <div className={styles.actions}>
           <button
             className={`${styles.actionBtn} ${styles.copyBtn}`}
+            onClick={() => setIsQrModalOpen(true)}
+            title="Mở QR điểm danh"
+          >
+            <QrCode size={18} />
+            QR Điểm danh
+          </button>
+          <button
+            className={`${styles.actionBtn} ${styles.copyBtn}`}
             onClick={handleCopyUrl}
             title="Sao chép link xem của sinh viên"
           >
@@ -144,6 +155,7 @@ export default function EUDetailHTSK({ data, unitId, eventId }) {
           </Popconfirm>
         </div>
       </header>
+      <QRModalUnitEvent open={isQrModalOpen} onClose={() => setIsQrModalOpen(false)} eventId={eventId} />
 
       <div className={styles.contentGrid}>
         <div className={styles.mainColumn}>

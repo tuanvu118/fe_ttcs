@@ -400,3 +400,29 @@ export async function getEventRegistrations(eventId) {
   }
 }
 
+export async function createUnitEventAttendanceSession(eventId, payload) {
+  const accessToken = getStoredAuthSession()?.accessToken || ''
+  const eid = eventId ? String(eventId).trim() : ''
+  if (!eid) {
+    throw new Error('Thiếu mã sự kiện để tạo phiên điểm danh.')
+  }
+  try {
+    return await apiRequest(`/attendance/unit-events/${encodeURIComponent(eid)}/sessions`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+      ...(accessToken ? { authToken: accessToken } : {}),
+    })
+  } catch (error) {
+    if (error instanceof ApiError) {
+      message.error(error.message || 'Không thể tạo phiên điểm danh QR.')
+    } else {
+      message.error('Không thể kết nối đến máy chủ.')
+    }
+    throw error
+  }
+}
+
