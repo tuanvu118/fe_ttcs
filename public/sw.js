@@ -1,7 +1,8 @@
-const CACHE_NAME = 'ptit-pwa-v2'
+const CACHE_NAME = 'ptit-pwa-v3'
 const PRECACHE_ASSETS = ['/manifest.webmanifest', '/logo-white-circle.png']
 const IS_LOCALHOST =
   self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1'
+const STATIC_FILE_PATTERN = /\.(?:js|css|png|jpg|jpeg|svg|webp|gif|ico|woff2?|ttf|eot|map)$/i
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -40,6 +41,17 @@ self.addEventListener('fetch', (event) => {
   }
 
   if (!isSameOrigin) {
+    return
+  }
+
+  // Never cache API responses in service worker.
+  if (requestUrl.pathname.startsWith('/api/')) {
+    return
+  }
+
+  // Cache only static assets (js/css/images/fonts/etc).
+  const isStaticAsset = STATIC_FILE_PATTERN.test(requestUrl.pathname)
+  if (!isStaticAsset) {
     return
   }
 
