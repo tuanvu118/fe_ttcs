@@ -31,6 +31,27 @@
   justify-content: flex-start;
 }
 
+.qrPreviewSection {
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+  padding: 12px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+.qrPreviewTitle {
+  color: #0f172a;
+}
+
+.qrPreviewCanvasWrap {
+  padding: 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
 .empty {
   margin: 0;
   color: #64748b;
@@ -44,5 +65,9 @@
   .qrValue {
     padding: 10px;
     font-size: 13px;
+  }
+
+  .qrPreviewCanvasWrap {
+    padding: 6px;
   }
 }

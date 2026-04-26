@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Button, Input, InputNumber, Typography, message } from 'antd'
 import { getCurrentCoordinates } from '../utils/geolocation'
 import { scanAttendanceQr } from '../service/apiStudentEvent'
@@ -18,6 +18,107 @@ function QrScanPage() {
   const [loadingLocation, setLoadingLocation] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [scanResult, setScanResult] = useState(null)
+  const [cameraActive, setCameraActive] = useState(false)
+  const [scanError, setScanError] = useState('')
+  const videoRef = useRef(null)
+  const streamRef = useRef(null)
+  const scanFrameRef = useRef(null)
+  const detectorRef = useRef(null)
+
+  function toDateTimeLocalInput(value) {
+    if (!value) return ''
+    const parsed = new Date(value)
+    if (Number.isNaN(parsed.getTime())) return ''
+    const localDate = new Date(parsed.getTime() - parsed.getTimezoneOffset() * 60000)
+    return localDate.toISOString().slice(0, 16)
+  }
+
+  function applyScannedPayload(rawValue) {
+    if (!rawValue) return
+    try {
+      const parsed = JSON.parse(rawValue)
+      const parsedQr = parsed?.qr_value ?? parsed?.qrValue ?? rawValue
+      const parsedFrom = parsed?.valid_from ?? parsed?.validFrom ?? ''
+      const parsedUntil = parsed?.valid_until ?? parsed?.validUntil ?? ''
+
+      setQrValue(String(parsedQr))
+      if (parsedFrom) setValidFrom(toDateTimeLocalInput(parsedFrom))
+      if (parsedUntil) setValidUntil(toDateTimeLocalInput(parsedUntil))
+    } catch {
+      setQrValue(rawValue)
+    }
+  }
+
+  function stopCamera() {
+    if (scanFrameRef.current) {
+      cancelAnimationFrame(scanFrameRef.current)
+      scanFrameRef.current = null
+    }
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop())
+      streamRef.current = null
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null
+    }
+    setCameraActive(false)
+  }
+
+  function scanLoop() {
+    const video = videoRef.current
+    const detector = detectorRef.current
+    if (!video || !detector || !cameraActive) {
+      return
+    }
+
+    detector.detect(video)
+      .then((codes) => {
+        if (Array.isArray(codes) && codes.length > 0) {
+          const qrRawValue = codes[0]?.rawValue || ''
+          if (qrRawValue) {
+            applyScannedPayload(qrRawValue)
+            message.success('Đã quét QR từ camera.')
+            stopCamera()
+            return
+          }
+        }
+        scanFrameRef.current = requestAnimationFrame(scanLoop)
+      })
+      .catch(() => {
+        scanFrameRef.current = requestAnimationFrame(scanLoop)
+      })
+  }
+
+  async function startCameraScan() {
+    setScanError('')
+    if (!('BarcodeDetector' in window)) {
+      setScanError('Thiết bị của bạn không hỗ trợ quét QR. Vui lòng dùng thiết bị khác')
+      return
+    }
+
+    try {
+      if (!detectorRef.current) {
+        detectorRef.current = new window.BarcodeDetector({ formats: ['qr_code'] })
+      }
+
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment' },
+        audio: false,
+      })
+      streamRef.current = stream
+
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream
+        await videoRef.current.play()
+      }
+
+      setCameraActive(true)
+      scanFrameRef.current = requestAnimationFrame(scanLoop)
+    } catch {
+      setScanError('Không thể mở camera để quét QR.')
+      stopCamera()
+    }
+  }
 
   const evaluateAccess = async () => {
     setCheckingAccess(true)
@@ -77,6 +178,12 @@ function QrScanPage() {
       window.removeEventListener('appinstalled', onAppInstalled)
       window.removeEventListener('focus', evaluateAccess)
       document.removeEventListener('visibilitychange', onVisibility)
+    }
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      stopCamera()
     }
   }, [])
 
@@ -181,6 +288,32 @@ function QrScanPage() {
   return (
     <section className="page-card" style={{ display: 'grid', gap: 16 }}>
       <h1>Quét QR điểm danh</h1>
+
+      <div style={{ display: 'grid', gap: 8 }}>
+        <Text strong>Quét QR bằng camera</Text>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <Button onClick={startCameraScan} disabled={cameraActive}>Mở camera quét QR</Button>
+          <Button onClick={stopCamera} disabled={!cameraActive}>Tắt camera</Button>
+        </div>
+        {scanError ? <Text type="danger">{scanError}</Text> : null}
+        <video
+          ref={videoRef}
+          muted
+          playsInline
+          style={{
+            width: '100%',
+            maxWidth: 420,
+            borderRadius: 10,
+            border: '1px solid #e2e8f0',
+            background: '#000',
+            display: cameraActive ? 'block' : 'none',
+          }}
+        />
+        <Text type="secondary">
+          Sau khi quét thành công, hệ thống sẽ tự điền qr_value và thời gian hiệu lực.
+          Bạn kiểm tra lại rồi bấm Gửi điểm danh.
+        </Text>
+      </div>
 
       <div style={{ display: 'grid', gap: 8 }}>
         <Text strong>qr_value</Text>

@@ -1,4 +1,5 @@
 import { Button, Typography } from 'antd'
+import { QRCodeCanvas } from 'qrcode.react'
 import styles from './QR_render.module.css'
 
 const { Paragraph, Text } = Typography
@@ -23,6 +24,12 @@ export default function QRRender({ sessionData, currentWindow, remainingSeconds 
     }
   }
 
+  const qrPayload = JSON.stringify({
+    valid_from: currentWindow.valid_from,
+    valid_until: currentWindow.valid_until,
+    qr_value: currentWindow.qr_value || '',
+  })
+
   return (
     <div className={styles.root}>
       <div className={styles.meta}>
@@ -42,6 +49,13 @@ export default function QRRender({ sessionData, currentWindow, remainingSeconds 
 
       <div className={styles.actions}>
         <Button onClick={copyCurrentQr}>Copy QR value</Button>
+      </div>
+
+      <div className={styles.qrPreviewSection}>
+        <Text strong className={styles.qrPreviewTitle}>Mã QR điểm danh</Text>
+        <div className={styles.qrPreviewCanvasWrap}>
+          <QRCodeCanvas value={qrPayload} size={220} level="M" includeMargin />
+        </div>
       </div>
     </div>
   )
