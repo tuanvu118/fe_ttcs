@@ -88,7 +88,7 @@ function App() {
 
     page = <EventDetailPage eventId={eventId} />
   } else if (pathname === PATHS.qrScan) {
-    page = <QrScanPage />
+    page = <QrScanPage navigate={navigate} />
   } else if (taskId) {
     page = null
   } else if (pathname === PATHS.about) {

@@ -1,4 +1,4 @@
-import { GearSix, UserCircle } from '@phosphor-icons/react'
+import { GearSix, QrCode, UserCircle } from '@phosphor-icons/react'
 import { PATHS, primaryNavigation } from '../utils/routes'
 
 const navIconSize = 18
@@ -86,14 +86,11 @@ function TopNav({ currentPath, isAuthenticated, dashboardPath, navigate }) {
           <>
             <button
               type="button"
-              className={
-                currentPath === PATHS.qrScan
-                  ? 'nav-action-button nav-action-button-light active'
-                  : 'nav-action-button nav-action-button-light'
-              }
+              className={currentPath === PATHS.qrScan ? 'topnav-icon-button active' : 'topnav-icon-button'}
+              aria-label="Quét QR"
               onClick={() => navigate(PATHS.qrScan)}
             >
-              Quet QR
+              <QrCode size={navIconSize} weight="regular" aria-hidden />
             </button>
 
             <button type="button" className="topnav-icon-button" aria-label="Thông báo">

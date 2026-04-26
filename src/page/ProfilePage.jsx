@@ -9,6 +9,7 @@ import SemesterSelector from '../components/semesters/SemesterSelector'
 import { useCurrentSemester } from '../hooks/useCurrentSemester'
 import { PATHS } from '../utils/routes'
 import { formatDateOfBirth, getValidationMessage } from '../utils/userUtils'
+import DownloadModal from './DownloadModal'
 import '../style/ProfileStats.css'
 
 function ProfilePage({
@@ -24,6 +25,7 @@ function ProfilePage({
   const [isLoading, setIsLoading] = useState(true)
   const [isStatsLoading, setIsStatsLoading] = useState(false)
   const [isEditOpen, setIsEditOpen] = useState(false)
+  const [isDownloadOpen, setIsDownloadOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [notice, setNotice] = useState(null)
 
@@ -115,6 +117,7 @@ function ProfilePage({
         onClose={() => setIsEditOpen(false)}
         onSubmit={handleUpdateProfile}
       />
+      <DownloadModal open={isDownloadOpen} onClose={() => setIsDownloadOpen(false)} />
 
       <div className="profile-container">
         {/* ── SIDEBAR ── */}
@@ -142,6 +145,7 @@ function ProfilePage({
 
           <div className="profile-actions">
             <button className="primary-button" onClick={() => setIsEditOpen(true)}>Chỉnh sửa hồ sơ</button>
+            <button className="secondary-button" onClick={() => setIsDownloadOpen(true)}>Tải ứng dụng</button>
             <button className="secondary-button" onClick={() => navigate(PATHS.logout)}>Đăng xuất</button>
           </div>
         </aside>

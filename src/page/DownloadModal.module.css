@@ -1,0 +1,115 @@
+.content {
+  display: grid;
+  gap: 12px;
+}
+
+.title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.description {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.notice {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+.installStatus {
+  margin: 0;
+  font-size: 0.86rem;
+  color: #334155;
+}
+
+.statusInstalled {
+  color: #15803d;
+  font-weight: 700;
+}
+
+.statusPending {
+  color: #b45309;
+  font-weight: 700;
+}
+
+.hint {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 0.82rem;
+}
+
+.permissionList {
+  display: grid;
+  gap: 8px;
+}
+
+.permissionItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.permissionAction {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.permissionState {
+  font-size: 0.78rem;
+  color: #64748b;
+}
+
+.actionRow {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.installed {
+  margin: 0;
+  color: #15803d;
+  font-weight: 600;
+}
+
+.openAppHint {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #bbf7d0;
+  background: #f0fdf4;
+  color: #166534;
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+@media (max-width: 420px) {
+  .description {
+    font-size: 0.85rem;
+  }
+
+  .permissionItem {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

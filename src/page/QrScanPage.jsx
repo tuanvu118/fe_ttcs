@@ -2,11 +2,15 @@ import { useEffect, useState } from 'react'
 import { Button, Input, InputNumber, Typography, message } from 'antd'
 import { getCurrentCoordinates } from '../utils/geolocation'
 import { scanAttendanceQr } from '../service/apiStudentEvent'
+import DownloadModal from './DownloadModal'
 
 const { TextArea } = Input
 const { Paragraph, Text } = Typography
 
 function QrScanPage() {
+  const [accessReady, setAccessReady] = useState(false)
+  const [checkingAccess, setCheckingAccess] = useState(true)
+  const [gateMessage, setGateMessage] = useState('')
   const [qrValue, setQrValue] = useState('')
   const [validFrom, setValidFrom] = useState('')
   const [validUntil, setValidUntil] = useState('')
@@ -15,7 +19,71 @@ function QrScanPage() {
   const [submitting, setSubmitting] = useState(false)
   const [scanResult, setScanResult] = useState(null)
 
+  const evaluateAccess = async () => {
+    setCheckingAccess(true)
+    const standaloneOnIos = window.navigator.standalone === true
+    const standaloneOnOthers = window.matchMedia('(display-mode: standalone)').matches
+    const isInstalled = Boolean(standaloneOnIos || standaloneOnOthers)
+
+    const notifications = Notification.permission
+    let camera = 'prompt'
+    let geolocation = 'prompt'
+
+    if (navigator.permissions?.query) {
+      try {
+        const cameraPermission = await navigator.permissions.query({ name: 'camera' })
+        camera = cameraPermission.state
+      } catch {
+        // Browser does not support querying camera permission.
+      }
+      try {
+        const geoPermission = await navigator.permissions.query({ name: 'geolocation' })
+        geolocation = geoPermission.state
+      } catch {
+        // Browser does not support querying geolocation permission.
+      }
+    }
+
+    const allPermissionsGranted =
+      notifications === 'granted' && camera === 'granted' && geolocation === 'granted'
+    const ready = isInstalled && allPermissionsGranted
+
+    setAccessReady(ready)
+    if (!ready) {
+      const missing = []
+      if (!isInstalled) missing.push('chưa cài đặt ứng dụng')
+      if (notifications !== 'granted') missing.push('chưa cấp quyền thông báo')
+      if (camera !== 'granted') missing.push('chưa cấp quyền camera')
+      if (geolocation !== 'granted') missing.push('chưa cấp quyền vị trí')
+      setGateMessage(`Bạn cần hoàn tất các điều kiện trước khi quét QR: ${missing.join(', ')}.`)
+    } else {
+      setGateMessage('')
+    }
+    setCheckingAccess(false)
+  }
+
   useEffect(() => {
+    evaluateAccess()
+    const onAppInstalled = () => evaluateAccess()
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        evaluateAccess()
+      }
+    }
+    window.addEventListener('appinstalled', onAppInstalled)
+    window.addEventListener('focus', evaluateAccess)
+    document.addEventListener('visibilitychange', onVisibility)
+    return () => {
+      window.removeEventListener('appinstalled', onAppInstalled)
+      window.removeEventListener('focus', evaluateAccess)
+      document.removeEventListener('visibilitychange', onVisibility)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!accessReady) {
+      return undefined
+    }
     let cancelled = false
     async function loadCoordinates() {
       setLoadingLocation(true)
@@ -38,7 +106,7 @@ function QrScanPage() {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [accessReady])
 
   const handleScan = async () => {
     if (!qrValue.trim()) {
@@ -86,6 +154,28 @@ function QrScanPage() {
     } finally {
       setSubmitting(false)
     }
+  }
+
+  if (!accessReady) {
+    return (
+      <>
+        <DownloadModal
+          open
+          onClose={() => {}}
+          noticeMessage={checkingAccess ? 'Đang kiểm tra điều kiện truy cập tính năng quét QR…' : gateMessage}
+          closable={false}
+          maskClosable={false}
+        />
+        <section className="page-card" style={{ display: 'grid', gap: 12 }}>
+          <h1>Quét QR điểm danh</h1>
+          <Text type="secondary">
+            {checkingAccess
+              ? 'Đang kiểm tra trạng thái cài đặt ứng dụng và quyền truy cập...'
+              : 'Vui lòng hoàn tất yêu cầu trong modal để tiếp tục quét QR.'}
+          </Text>
+        </section>
+      </>
+    )
   }
 
   return (
