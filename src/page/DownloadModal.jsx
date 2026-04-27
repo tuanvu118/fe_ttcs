@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Button, Modal, message } from 'antd'
 import styles from './DownloadModal.module.css'
+import {
+  getPwaInstallEventName,
+  initializePwaInstallLifecycle,
+  isInstallPromptAvailable,
+  requestNotificationAndInstall,
+} from '../service/pwaService'
 
 const INSTALL_FLAG_KEY = 'ptit_pwa_installed'
 const INSTALL_FLAG_COOKIE = 'ptit_pwa_installed'
@@ -29,9 +35,9 @@ export default function DownloadModal({
   closable = true,
   maskClosable = true,
 }) {
-  const [deferredPrompt, setDeferredPrompt] = useState(null)
   const [isInstalled, setIsInstalled] = useState(false)
   const [installing, setInstalling] = useState(false)
+  const [isInstallAvailable, setIsInstallAvailable] = useState(isInstallPromptAvailable())
   const [permissions, setPermissions] = useState({
     notifications: 'prompt',
     camera: 'prompt',
@@ -53,27 +59,28 @@ export default function DownloadModal({
   }
 
   useEffect(() => {
+    initializePwaInstallLifecycle()
     setIsInstalled(getInstalledState())
-
-    function handleBeforeInstallPrompt(event) {
-      event.preventDefault()
-      setDeferredPrompt(event)
-      // If install prompt is available again, the app is likely not installed.
-      writeInstallMarkers('0')
-      setIsInstalled(false)
+    const eventName = getPwaInstallEventName()
+    function handleInstallEvent(event) {
+      const available = Boolean(event?.detail?.available)
+      setIsInstallAvailable(available)
+      if (available) {
+        // If install prompt is available again, the app is likely not installed.
+        writeInstallMarkers('0')
+        setIsInstalled(false)
+      }
     }
-
     function handleAppInstalled() {
       setIsInstalled(true)
-      setDeferredPrompt(null)
       writeInstallMarkers('1')
       message.success('Ứng dụng đã được cài đặt.')
     }
 
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+    window.addEventListener(eventName, handleInstallEvent)
     window.addEventListener('appinstalled', handleAppInstalled)
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+      window.removeEventListener(eventName, handleInstallEvent)
       window.removeEventListener('appinstalled', handleAppInstalled)
     }
   }, [])
@@ -156,7 +163,7 @@ export default function DownloadModal({
     permissions.camera === 'granted' &&
     permissions.geolocation === 'granted'
 
-  const installSupported = Boolean(deferredPrompt) && !isInstalled
+  const installSupported = isInstallAvailable && !isInstalled
   const canInstall = allPermissionsGranted && !isInstalled
 
   async function requestNotificationPermission() {
@@ -198,25 +205,21 @@ export default function DownloadModal({
   }
 
   async function handleInstall() {
-    if (!deferredPrompt) {
-      message.info('Trình duyệt chưa hỗ trợ cài đặt trực tiếp. Hãy dùng menu "Install app" hoặc "Thêm vào màn hình chính".')
-      return
-    }
-
     setInstalling(true)
     try {
-      deferredPrompt.prompt()
-      const choice = await deferredPrompt.userChoice
-      if (choice?.outcome === 'accepted') {
-        message.success('Đang tiến hành cài đặt ứng dụng.')
+      const result = await requestNotificationAndInstall()
+      if (result.ok) {
+        message.success(result.message)
+        setIsInstalled(getInstalledState())
       } else {
-        message.info('Bạn đã hủy cài đặt ứng dụng.')
+        message.warning(result.message)
       }
-      setDeferredPrompt(null)
-    } catch {
-      message.error('Không thể mở hộp thoại cài đặt ứng dụng.')
+    } catch (error) {
+      console.error(error)
+      message.error('Cài đặt ứng dụng thất bại. Vui lòng thử lại.')
     } finally {
       setInstalling(false)
+      setIsInstallAvailable(isInstallPromptAvailable())
     }
   }
 
