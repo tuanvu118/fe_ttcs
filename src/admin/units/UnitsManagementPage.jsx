@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { CaretLeft, CaretRight, Eye, Funnel, MagnifyingGlass, Pencil, Plus, Trash } from '@phosphor-icons/react'
 import ConfirmDialog from '../../components/ConfirmDialog'
 import NotificationPopup from '../../components/NotificationPopup'
 import UnitFormModal from '../../components/units/UnitFormModal'
@@ -12,10 +13,9 @@ import {
   updateUnit,
 } from '../../service/unitService'
 import { UNIT_TYPES, USER_ROLES } from '../../utils/routes'
+import { isSystemUnit } from '../../utils/unitUtils'
 import { getValidationMessage } from '../../utils/userUtils'
-import UnitDetailModal from './UnitDetailModal'
 import styles from './adminUnits.module.css'
-import { Plus, MagnifyingGlass, Funnel, Pencil, Trash, Eye, CaretLeft, CaretRight } from '@phosphor-icons/react'
 
 const DEFAULT_LIMIT = 10
 const STAFF_FETCH_LIMIT = 100
@@ -24,8 +24,9 @@ const EMPTY_ARRAY = []
 export default function UnitsManagementPage({
   accessToken,
   role,
-  roleLabel,
   user,
+  navigate,
+  selectedAdminUnitId,
   onSessionExpired,
 }) {
   const [result, setResult] = useState({
@@ -35,36 +36,31 @@ export default function UnitsManagementPage({
     limit: DEFAULT_LIMIT,
   })
   const [memberTotals, setMemberTotals] = useState({})
-  const [query, setQuery] = useState({ skip: 0, limit: 10, name: '', type: '' })
+  const [query, setQuery] = useState({ skip: 0, limit: DEFAULT_LIMIT, name: '', type: '' })
   const [filters, setFilters] = useState({ name: '', type: '' })
-
-  useEffect(() => {
-    // Tránh chạy lúc mount nếu giá trị giống hệt query mặc định
-    if (filters.name === query.name && filters.type === query.type) return
-
-    const timer = setTimeout(() => {
-      setQuery(prev => ({ ...prev, skip: 0, name: filters.name, type: filters.type }))
-    }, 400)
-    return () => clearTimeout(timer)
-  }, [filters, query.name, query.type])
-
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [notice, setNotice] = useState(null)
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const [editingUnit, setEditingUnit] = useState(null)
   const [deletingUnit, setDeletingUnit] = useState(null)
-  const [viewingUnit, setViewingUnit] = useState(null)
 
   const isAdmin = role === USER_ROLES.admin
   const isStaff = role === USER_ROLES.staff
   const staffManagedUnitIds = useMemo(() => {
-    if (!isStaff) return EMPTY_ARRAY
+    if (!isStaff) {
+      return EMPTY_ARRAY
+    }
+
     return [
       ...new Set(
         (user?.roles || [])
-          .filter(r => r?.unit_id && (r?.roles || []).some(rn => rn.toUpperCase() === 'STAFF'))
-          .map(r => r.unit_id)
+          .filter(
+            (roleItem) =>
+              roleItem?.unit_id &&
+              (roleItem?.roles || []).some((roleName) => roleName.toUpperCase() === 'STAFF'),
+          )
+          .map((roleItem) => roleItem.unit_id),
       ),
     ]
   }, [isStaff, JSON.stringify(user?.roles)])
@@ -73,10 +69,23 @@ export default function UnitsManagementPage({
   const totalPages = Math.max(Math.ceil(result.total / Math.max(result.limit, 1)), 1)
   const canGoPrevious = result.skip > 0
   const canGoNext = result.skip + result.limit < result.total
-  const showingFrom = result.total ? result.skip + 1 : 0
-  const showingTo = result.total ? Math.min(result.skip + result.items.length, result.total) : 0
 
-  const pageTitle = 'Quản lý đơn vị / CLB'
+  useEffect(() => {
+    if (filters.name === query.name && filters.type === query.type) {
+      return
+    }
+
+    const timer = setTimeout(() => {
+      setQuery((currentQuery) => ({
+        ...currentQuery,
+        skip: 0,
+        name: filters.name,
+        type: filters.type,
+      }))
+    }, 400)
+
+    return () => clearTimeout(timer)
+  }, [filters, query.name, query.type])
 
   useEffect(() => {
     loadUnits(query)
@@ -91,7 +100,9 @@ export default function UnitsManagementPage({
     try {
       if (isStaff) {
         const items = await getAllUnitsForStaff(nextQuery)
-        const filteredItems = items.filter(unit => staffManagedUnitIds.includes(unit.id))
+        const filteredItems = items.filter(
+          (unit) => staffManagedUnitIds.includes(unit.id) && !isSystemUnit(unit),
+        )
         const start = nextQuery.skip || 0
         const end = start + (nextQuery.limit || DEFAULT_LIMIT)
         setResult({
@@ -102,10 +113,13 @@ export default function UnitsManagementPage({
         })
         return
       }
+
       const response = await getManagedUnits(nextQuery, accessToken)
+      const visibleItems = response.items.filter((unit) => !isSystemUnit(unit))
+      const hiddenCount = response.items.length - visibleItems.length
       setResult({
-        items: response.items,
-        total: response.total,
+        items: visibleItems,
+        total: Math.max(response.total - hiddenCount, visibleItems.length),
         skip: response.skip,
         limit: response.limit || DEFAULT_LIMIT,
       })
@@ -117,27 +131,45 @@ export default function UnitsManagementPage({
   }
 
   async function getAllUnitsForStaff(nextQuery) {
-    const baseQuery = { skip: 0, limit: STAFF_FETCH_LIMIT, name: nextQuery.name, type: nextQuery.type }
+    const baseQuery = {
+      skip: 0,
+      limit: STAFF_FETCH_LIMIT,
+      name: nextQuery.name,
+      type: nextQuery.type,
+    }
     const firstPage = await getManagedUnits(baseQuery, accessToken)
     const allItems = [...firstPage.items]
     let loaded = firstPage.items.length
+
     while (loaded < firstPage.total) {
       const nextPage = await getManagedUnits({ ...baseQuery, skip: loaded }, accessToken)
-      if (!nextPage.items.length) break
+      if (!nextPage.items.length) {
+        break
+      }
       allItems.push(...nextPage.items)
       loaded += nextPage.items.length
     }
+
     return allItems
   }
 
   async function loadMemberTotals(units) {
-    if (!units.length) { setMemberTotals({}); return; }
-    const pairs = await Promise.all(units.map(async (unit) => {
-      try {
-        const response = await getUnitMembers(unit.id, { skip: 0, limit: 1 }, accessToken)
-        return [unit.id, response.total]
-      } catch { return [unit.id, null] }
-    }))
+    if (!units.length) {
+      setMemberTotals({})
+      return
+    }
+
+    const pairs = await Promise.all(
+      units.map(async (unit) => {
+        try {
+          const response = await getUnitMembers(unit.id, { skip: 0, limit: 1 }, accessToken)
+          return [unit.id, response.total]
+        } catch {
+          return [unit.id, null]
+        }
+      }),
+    )
+
     setMemberTotals(Object.fromEntries(pairs))
   }
 
@@ -146,15 +178,21 @@ export default function UnitsManagementPage({
     try {
       await createUnit(form, accessToken)
       setIsCreateOpen(false)
-      setQuery({ ...query, skip: 0 })
-      await loadUnits({ ...query, skip: 0 })
+      const nextQuery = { ...query, skip: 0 }
+      setQuery(nextQuery)
+      await loadUnits(nextQuery)
     } catch (error) {
       handleApiError(error, getValidationMessage(error, 'Tạo đơn vị thất bại.'))
-    } finally { setIsSubmitting(false) }
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   async function handleEditUnit(form) {
-    if (!editingUnit?.id) return
+    if (!editingUnit?.id) {
+      return
+    }
+
     setIsSubmitting(true)
     try {
       await updateUnit(editingUnit.id, form, accessToken)
@@ -162,34 +200,56 @@ export default function UnitsManagementPage({
       await loadUnits(query)
     } catch (error) {
       handleApiError(error, getValidationMessage(error, 'Cập nhật đơn vị thất bại.'))
-    } finally { setIsSubmitting(false) }
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   async function handleDeleteUnit() {
-    if (!deletingUnit?.id) return
+    if (!deletingUnit?.id) {
+      return
+    }
+
     setIsSubmitting(true)
     try {
       await deleteUnit(deletingUnit.id, accessToken)
       setDeletingUnit(null)
-      const fallbackSkip = result.items.length <= 1 && query.skip > 0 ? Math.max(query.skip - query.limit, 0) : query.skip
-      setQuery({ ...query, skip: fallbackSkip })
-      await loadUnits({ ...query, skip: fallbackSkip })
+      const fallbackSkip =
+        result.items.length <= 1 && query.skip > 0
+          ? Math.max(query.skip - query.limit, 0)
+          : query.skip
+      const nextQuery = { ...query, skip: fallbackSkip }
+      setQuery(nextQuery)
+      await loadUnits(nextQuery)
     } catch (error) {
       handleApiError(error, 'Xóa đơn vị thất bại.')
-    } finally { setIsSubmitting(false) }
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   function handleApiError(error, fallbackMessage) {
     if (error?.status === 401) {
-      setNotice({ title: 'Phiên đăng nhập hết hạn', message: 'Vui lòng đăng nhập lại.', onClose: onSessionExpired })
+      setNotice({
+        title: 'Phiên đăng nhập hết hạn',
+        message: 'Vui lòng đăng nhập lại.',
+        onClose: onSessionExpired,
+      })
       return
     }
-    setNotice({ title: 'Có lỗi xảy ra', message: error?.message || fallbackMessage })
+
+    setNotice({
+      title: 'Có lỗi xảy ra',
+      message: error?.message || fallbackMessage,
+    })
   }
 
   function handlePageChange(direction) {
-    const nextSkip = direction === 'next' ? query.skip + query.limit : Math.max(query.skip - query.limit, 0)
-    setQuery(prev => ({ ...prev, skip: nextSkip }))
+    const nextSkip =
+      direction === 'next'
+        ? query.skip + query.limit
+        : Math.max(query.skip - query.limit, 0)
+    setQuery((currentQuery) => ({ ...currentQuery, skip: nextSkip }))
   }
 
   return (
@@ -198,7 +258,11 @@ export default function UnitsManagementPage({
         isOpen={Boolean(notice?.message)}
         title={notice?.title}
         message={notice?.message}
-        onClose={() => setNotice(null)}
+        onClose={() => {
+          const callback = notice?.onClose
+          setNotice(null)
+          callback?.()
+        }}
       />
 
       <UnitFormModal
@@ -233,22 +297,9 @@ export default function UnitsManagementPage({
         onConfirm={handleDeleteUnit}
       />
 
-      {viewingUnit?.id && (
-        <UnitDetailModal
-          unitId={viewingUnit.id}
-          accessToken={accessToken}
-          role={role}
-          roleLabel={roleLabel}
-          user={user}
-          onClose={() => setViewingUnit(null)}
-          onSessionExpired={onSessionExpired}
-          onUnitDeleted={() => loadUnits(query)}
-        />
-      )}
-
       <header className={styles.header}>
         <div className={styles.titleArea}>
-          <h1>{pageTitle}</h1>
+          <h1>Quản lý đơn vị / CLB</h1>
         </div>
         {isAdmin && (
           <button className={styles.createBtn} onClick={() => setIsCreateOpen(true)}>
@@ -261,28 +312,29 @@ export default function UnitsManagementPage({
         <div className={styles.filterGroup}>
           <div className={styles.filterSelect}>
             <MagnifyingGlass size={16} />
-            <input 
-              placeholder="Tìm theo tên..." 
+            <input
+              placeholder="Tìm theo tên..."
               value={filters.name}
-              onChange={e => setFilters(p => ({ ...p, name: e.target.value }))}
+              onChange={(event) =>
+                setFilters((currentFilters) => ({ ...currentFilters, name: event.target.value }))
+              }
             />
           </div>
           <div className={styles.filterSelect}>
             <Funnel size={16} />
-            <select 
-              value={filters.type} 
-              onChange={e => setFilters(p => ({ ...p, type: e.target.value }))}
+            <select
+              value={filters.type}
+              onChange={(event) =>
+                setFilters((currentFilters) => ({ ...currentFilters, type: event.target.value }))
+              }
             >
               <option value="">Tất cả loại hình</option>
               <option value={UNIT_TYPES.lck}>Liên chi khoa</option>
               <option value={UNIT_TYPES.clb}>Câu lạc bộ</option>
-              <option value={UNIT_TYPES.system}>Hệ thống</option>
             </select>
           </div>
         </div>
-        <span className={styles.filterSummary}>
-          Hiển thị {result.items.length} đơn vị
-        </span>
+        <span className={styles.filterSummary}>Hiển thị {result.items.length} đơn vị</span>
       </div>
 
       <div className={styles.tableWrapper}>
@@ -308,19 +360,29 @@ export default function UnitsManagementPage({
               <div className={styles.typeCell}>
                 <UnitTypeBadge type={unit.type} />
               </div>
-              <div className={styles.membersCell}>
-                {memberTotals[unit.id] ?? '-'}
-              </div>
+              <div className={styles.membersCell}>{memberTotals[unit.id] ?? '-'}</div>
               <div className={styles.actionsCell}>
-                <button className={`${styles.actionBtn} ${styles.viewBtn}`} onClick={() => setViewingUnit(unit)} title="Xem chi tiết">
+                <button
+                  className={`${styles.actionBtn} ${styles.viewBtn}`}
+                  onClick={() => navigate(`/admin/${selectedAdminUnitId}/units/${unit.id}`)}
+                  title="Mở trang quản lý đơn vị"
+                >
                   <Eye size={18} />
                 </button>
                 {isAdmin && (
                   <>
-                    <button className={`${styles.actionBtn} ${styles.editBtn}`} onClick={() => setEditingUnit(unit)} title="Chỉnh sửa">
+                    <button
+                      className={`${styles.actionBtn} ${styles.editBtn}`}
+                      onClick={() => setEditingUnit(unit)}
+                      title="Chỉnh sửa"
+                    >
                       <Pencil size={18} />
                     </button>
-                    <button className={`${styles.actionBtn} ${styles.deleteBtn}`} onClick={() => setDeletingUnit(unit)} title="Xóa">
+                    <button
+                      className={`${styles.actionBtn} ${styles.deleteBtn}`}
+                      onClick={() => setDeletingUnit(unit)}
+                      title="Xóa"
+                    >
                       <Trash size={18} />
                     </button>
                   </>
@@ -357,4 +419,3 @@ export default function UnitsManagementPage({
     </div>
   )
 }
-

@@ -9,6 +9,7 @@ import {
 import { getSemesters } from '../../service/semesterService'
 import { getUnits } from '../../service/unitService'
 import { formatDateTime, getValidationMessage } from '../../utils/userUtils'
+import { isSystemUnit } from '../../utils/unitUtils'
 
 const INITIAL_ASSIGN_FORM = {
   role_id: '',
@@ -21,20 +22,42 @@ function UserRoleManagementSection({ userId, accessToken, onError, onRoleChanged
   const [units, setUnits] = useState([])
   const [semesters, setSemesters] = useState([])
   const [assignments, setAssignments] = useState([])
-  const [totalAssignments, setTotalAssignments] = useState(0)
   const [assignmentSemesterFilter, setAssignmentSemesterFilter] = useState('')
   const [form, setForm] = useState(INITIAL_ASSIGN_FORM)
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [assignmentToRemove, setAssignmentToRemove] = useState(null)
+  const visibleUnits = useMemo(
+    () => units.filter((unitItem) => !isSystemUnit(unitItem)),
+    [units],
+  )
+  const hiddenUnitIds = useMemo(
+    () => new Set(units.filter((unitItem) => isSystemUnit(unitItem)).map((unitItem) => unitItem.id)),
+    [units],
+  )
+  const visibleAssignments = useMemo(
+    () => assignments.filter((assignmentItem) => !hiddenUnitIds.has(assignmentItem.unit_id)),
+    [assignments, hiddenUnitIds],
+  )
 
   const roleOptions = useMemo(
-    () => roles.map((roleItem) => ({ value: roleItem.id, label: roleItem.code })),
+    () => {
+      const seenRoleCodes = new Set()
+      return roles
+        .map((roleItem) => ({ value: roleItem.id, label: roleItem.code }))
+        .filter((roleOption) => {
+          if (seenRoleCodes.has(roleOption.label)) {
+            return false
+          }
+          seenRoleCodes.add(roleOption.label)
+          return true
+        })
+    },
     [roles],
   )
   const unitOptions = useMemo(
-    () => units.map((unitItem) => ({ value: unitItem.id, label: unitItem.name || unitItem.id })),
-    [units],
+    () => visibleUnits.map((unitItem) => ({ value: unitItem.id, label: unitItem.name || unitItem.id })),
+    [visibleUnits],
   )
   const semesterOptions = useMemo(
     () =>
@@ -47,8 +70,8 @@ function UserRoleManagementSection({ userId, accessToken, onError, onRoleChanged
     [semesters],
   )
   const unitNameById = useMemo(
-    () => Object.fromEntries(units.map((unitItem) => [unitItem.id, unitItem.name || unitItem.id])),
-    [units],
+    () => Object.fromEntries(visibleUnits.map((unitItem) => [unitItem.id, unitItem.name || unitItem.id])),
+    [visibleUnits],
   )
   const semesterNameById = useMemo(
     () =>
@@ -101,9 +124,8 @@ function UserRoleManagementSection({ userId, accessToken, onError, onRoleChanged
         assignmentSemesterFilter || undefined,
       )
       setAssignments(assignmentResponse.items)
-      setTotalAssignments(assignmentResponse.total)
     } catch (error) {
-      onError?.(error, 'Không thể tải danh sách assignment quyền.')
+      onError?.(error, 'Không thể tải danh sách phân quyền.')
     } finally {
       setIsLoading(false)
     }
@@ -163,7 +185,7 @@ function UserRoleManagementSection({ userId, accessToken, onError, onRoleChanged
       <ConfirmDialog
         isOpen={Boolean(assignmentToRemove)}
         title="Gỡ quyền"
-        message={`Bạn có chắc muốn gỡ assignment "${assignmentToRemove?.role_code || ''}" không?`}
+        message={`Bạn có chắc muốn gỡ phân quyền "${assignmentToRemove?.role_code || ''}" không?`}
         confirmLabel="Gỡ quyền"
         danger
         isSubmitting={isSubmitting}
@@ -172,14 +194,14 @@ function UserRoleManagementSection({ userId, accessToken, onError, onRoleChanged
       />
 
       <div className="user-role-management-header">
-        <h4>Quản lý phân quyền (RBAC)</h4>
+        <h4>Quản lý phân quyền</h4>
         <label className="field user-role-filter-field">
-          <span>Lọc assignment theo học kỳ</span>
+          <span>Lọc phân quyền theo học kỳ</span>
           <select
             value={assignmentSemesterFilter}
             onChange={(event) => setAssignmentSemesterFilter(event.target.value)}
           >
-            <option value="">Học kỳ active</option>
+            <option value="">Học kỳ hiện hành</option>
             {semesterOptions.map((semesterOption) => (
               <option key={semesterOption.value} value={semesterOption.value}>
                 {semesterOption.label}
@@ -232,7 +254,7 @@ function UserRoleManagementSection({ userId, accessToken, onError, onRoleChanged
               setForm((currentForm) => ({ ...currentForm, semester_id: event.target.value }))
             }
           >
-            <option value="">Dùng học kỳ active</option>
+            <option value="">Dùng học kỳ hiện hành</option>
             {semesterOptions.map((semesterOption) => (
               <option key={semesterOption.value} value={semesterOption.value}>
                 {semesterOption.label}
@@ -247,13 +269,13 @@ function UserRoleManagementSection({ userId, accessToken, onError, onRoleChanged
       </form>
 
       {isLoading ? (
-        <p className="user-muted-copy">Đang tải assignment quyền...</p>
-      ) : assignments.length ? (
+        <p className="user-muted-copy">Đang tải danh sách phân quyền...</p>
+      ) : visibleAssignments.length ? (
         <div className="user-role-assignment-shell">
           <table className="user-role-assignment-table">
             <thead>
               <tr>
-                <th>Role</th>
+                <th>Vai trò</th>
                 <th>Đơn vị</th>
                 <th>Học kỳ</th>
                 <th>Tạo lúc</th>
@@ -261,13 +283,13 @@ function UserRoleManagementSection({ userId, accessToken, onError, onRoleChanged
               </tr>
             </thead>
             <tbody>
-              {assignments.map((assignmentItem) => (
+              {visibleAssignments.map((assignmentItem) => (
                 <tr key={assignmentItem.id}>
                   <td>
                     <span className="user-role-badge">{assignmentItem.role_code || 'USER'}</span>
                   </td>
                   <td>{unitNameById[assignmentItem.unit_id] || 'Chưa cập nhật'}</td>
-                  <td>{semesterNameById[assignmentItem.semester_id] || 'Học kỳ đang active'}</td>
+                  <td>{semesterNameById[assignmentItem.semester_id] || 'Học kỳ hiện hành'}</td>
                   <td>{formatDateTime(assignmentItem.created_at)}</td>
                   <td>
                     <button
@@ -282,10 +304,10 @@ function UserRoleManagementSection({ userId, accessToken, onError, onRoleChanged
               ))}
             </tbody>
           </table>
-          <span className="user-role-assignment-total">Tổng assignment: {totalAssignments}</span>
+          <span className="user-role-assignment-total">Tổng phân quyền: {visibleAssignments.length}</span>
         </div>
       ) : (
-        <p className="user-muted-copy">Không có assignment quyền.</p>
+        <p className="user-muted-copy">Không có phân quyền nào.</p>
       )}
     </section>
   )

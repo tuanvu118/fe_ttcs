@@ -128,7 +128,7 @@ function UserFormModal({
   }
 
   return (
-    <div className="user-modal-backdrop" role="presentation">
+    <div className="user-modal-backdrop" role="presentation" onClick={onClose}>
       <NotificationPopup
         isOpen={Boolean(notice)}
         title="Lỗi biểu mẫu"
@@ -141,6 +141,7 @@ function UserFormModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="user-form-title"
+        onClick={(event) => event.stopPropagation()}
       >
         <div className="user-modal-header">
           <h2 id="user-form-title" style={{ fontSize: '1.25rem', fontWeight: 700, color: '#0c1f45', margin: 0 }}>{title}</h2>

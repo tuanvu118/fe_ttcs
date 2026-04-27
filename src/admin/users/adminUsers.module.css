@@ -254,7 +254,7 @@
   background: #f1f5f9;
 }
 
-/* Drawer Styles */
+/* User Detail Modal */
 .drawerBackdrop {
   position: fixed;
   inset: 0;
@@ -262,25 +262,29 @@
   backdrop-filter: blur(8px);
   z-index: 9999;
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
   animation: fadeIn 0.25s ease;
 }
 
 .drawer {
-  width: 100%;
-  max-width: 900px;
-  height: 100dvh;
+  width: min(1120px, calc(100vw - 2rem));
+  max-height: calc(100dvh - 2rem);
   background: #ffffff;
-  box-shadow: -10px 0 50px rgba(0, 0, 0, 0.2);
+  border-radius: 24px;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  box-shadow: 0 30px 80px rgba(15, 23, 42, 0.22);
   display: flex;
   flex-direction: column;
-  animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  animation: popIn 0.28s cubic-bezier(0.16, 1, 0.3, 1);
   position: relative;
   outline: none;
 }
 
 .drawerHeader {
-  padding: 1rem 2rem;
+  padding: 1.25rem 2rem;
   border-bottom: 1px solid #f1f5f9;
   display: flex;
   justify-content: space-between;
@@ -574,12 +578,84 @@
   }
 }
 
-@keyframes slideInRight {
+@keyframes popIn {
   from {
-    transform: translateX(100%);
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
   }
 
   to {
-    transform: translateX(0);
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 960px) {
+  .drawerBackdrop {
+    padding: 0.75rem;
+  }
+
+  .drawer {
+    width: min(100%, calc(100vw - 1.5rem));
+    max-height: calc(100dvh - 1.5rem);
+    border-radius: 20px;
+  }
+
+  .drawerHeader {
+    padding: 1rem 1.25rem;
+  }
+
+  .detailContent {
+    padding: 1rem 1.25rem 1.25rem;
+  }
+
+  .detailHero {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .detailGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .roleManagementHeader {
+    align-items: stretch;
+  }
+
+  .roleFilterField {
+    max-width: none;
+  }
+
+  .roleAssignForm {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .drawerBackdrop {
+    padding: 0.5rem;
+  }
+
+  .drawer {
+    width: calc(100vw - 1rem);
+    max-height: calc(100dvh - 1rem);
+    border-radius: 18px;
+  }
+
+  .drawerHeader h2 {
+    font-size: 1.1rem;
+  }
+
+  .detailHeroInfo {
+    align-items: flex-start;
+  }
+
+  .detailGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .assignmentTable th,
+  .assignmentTable td {
+    white-space: nowrap;
   }
 }

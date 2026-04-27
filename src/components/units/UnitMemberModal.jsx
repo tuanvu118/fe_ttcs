@@ -46,7 +46,7 @@ function UnitMemberModal({ isOpen, isSubmitting, onClose, onSubmit }) {
   }
 
   return (
-    <div className="user-modal-backdrop" role="presentation">
+    <div className="user-modal-backdrop" role="presentation" onClick={onClose}>
       <NotificationPopup
         isOpen={Boolean(notice)}
         title="Lỗi biểu mẫu"
@@ -59,6 +59,7 @@ function UnitMemberModal({ isOpen, isSubmitting, onClose, onSubmit }) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="unit-member-form-title"
+        onClick={(event) => event.stopPropagation()}
       >
         <div className="user-modal-header">
           <div>

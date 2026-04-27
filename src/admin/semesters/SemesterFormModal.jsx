@@ -93,7 +93,7 @@ function SemesterFormModal({ isOpen, mode, initialValues, isSubmitting, onClose,
   }
 
   return (
-    <div className="user-modal-backdrop" role="presentation">
+    <div className="user-modal-backdrop" role="presentation" onClick={onClose}>
       <NotificationPopup
         isOpen={Boolean(notice)}
         title="Lỗi biểu mẫu"
@@ -101,7 +101,13 @@ function SemesterFormModal({ isOpen, mode, initialValues, isSubmitting, onClose,
         onClose={() => setNotice('')}
       />
 
-      <section className="user-modal" role="dialog" aria-modal="true" aria-labelledby="semester-form-title">
+      <section
+        className="user-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="semester-form-title"
+        onClick={(event) => event.stopPropagation()}
+      >
         <div className="user-modal-header">
           <div>
             <h2 id="semester-form-title">

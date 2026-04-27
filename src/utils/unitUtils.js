@@ -6,7 +6,9 @@ const UNIT_TYPE_LABELS = {
   [UNIT_TYPES.system]: 'Hệ thống',
 }
 
-export const unitTypeOptions = Object.values(UNIT_TYPES)
+export const unitTypeOptions = Object.values(UNIT_TYPES).filter(
+  (type) => type !== UNIT_TYPES.system,
+)
 
 export function formatUnitType(type) {
   return UNIT_TYPE_LABELS[type] || 'Chưa cập nhật'
@@ -31,6 +33,17 @@ export function getSearchableUnitText(unit) {
 
 export function getUnitIntroduction(unit) {
   return unit?.introduction?.trim() || 'Chưa có thông tin giới thiệu'
+}
+
+export function isSystemUnit(unit) {
+  const normalizedType = String(unit?.type || '').trim().toUpperCase()
+  const normalizedName = String(unit?.name || '').trim().toUpperCase()
+
+  return normalizedType === UNIT_TYPES.system || normalizedName === 'DEFAULT'
+}
+
+export function isPublicVisibleUnit(unit) {
+  return !isSystemUnit(unit)
 }
 
 export function isStaffOfUnit(user, unitId) {

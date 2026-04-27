@@ -33,7 +33,7 @@ function AdminUserManagementView({ accessToken, role, roleLabel, onSessionExpire
       role={role}
       roleLabel={roleLabel}
       pageTitle="Quản trị người dùng"
-      pageDescription="ADMIN có thể xem toàn bộ user, tạo user mới, chỉnh sửa user khác và phân quyền RBAC."
+      pageDescription="ADMIN có thể xem toàn bộ người dùng, tạo người dùng mới, chỉnh sửa người dùng khác và phân quyền."
       onSessionExpired={onSessionExpired}
     />
   )
@@ -227,6 +227,30 @@ function AdminManagerUnitsRoute({ navigate, user, roleLabel, accessToken, onSess
       roleLabel={roleLabel}
       user={user}
       navigate={navigate}
+      selectedAdminUnitId={unitId}
+      onSessionExpired={onSessionExpired}
+    />
+  )
+}
+
+function AdminManagedUnitDetailRoute({ user, accessToken, onSessionExpired }) {
+  const { unitId, managedUnitId } = useParams()
+  const scopedRole = getManageRoleForUnit(user, unitId)
+  if (scopedRole === USER_ROLES.staff) {
+    return <NotFoundPage />
+  }
+  if (scopedRole !== USER_ROLES.admin && scopedRole !== USER_ROLES.manager) {
+    return <ForbiddenPage requiredRoleLabel={FORBIDDEN_UNIT} />
+  }
+  if (!managedUnitId) {
+    return <NotFoundPage />
+  }
+  return (
+    <StaffUnitsWorkspace
+      accessToken={accessToken}
+      selectedUnitId={managedUnitId}
+      role={scopedRole}
+      activePanel="members"
       onSessionExpired={onSessionExpired}
     />
   )
@@ -390,6 +414,7 @@ export default function AdminRouter({
       />
       <Route path="/admin/:unitId/users" element={<AdminManagerUsersRoute {...shared} />} />
       <Route path="/admin/:unitId/units" element={<AdminManagerUnitsRoute {...shared} />} />
+      <Route path="/admin/:unitId/units/:managedUnitId" element={<AdminManagedUnitDetailRoute {...shared} />} />
       <Route path="/admin/:unitId/semesters" element={<AdminManagerSemestersRoute {...shared} />} />
       <Route path="/admin/:unitId/reports" element={<AdminStaffRoute {...shared} staffPanel="reports" />} />
       <Route path="/admin/:unitId/reports/:reportId" element={<AdminStaffRoute {...shared} staffPanel="report-detail" />} />

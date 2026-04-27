@@ -63,7 +63,7 @@ function UnitFormModal({
   }
 
   return (
-    <div className="user-modal-backdrop" role="presentation">
+    <div className="user-modal-backdrop" role="presentation" onClick={onClose}>
       <NotificationPopup
         isOpen={Boolean(notice)}
         title="Lỗi biểu mẫu"
@@ -77,6 +77,7 @@ function UnitFormModal({
         aria-modal="true"
         aria-labelledby="unit-form-title"
         style={{ maxWidth: '520px' }}
+        onClick={(event) => event.stopPropagation()}
       >
         {/* Header */}
         <div className="user-modal-header">

@@ -1,41 +1,19 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import ConfirmDialog from '../../components/ConfirmDialog'
 import NotificationPopup from '../../components/NotificationPopup'
 import UserAvatar from '../../components/users/UserAvatar'
-import UnitFormModal from '../../components/units/UnitFormModal'
 import UnitLogo from '../../components/units/UnitLogo'
 import UnitMemberModal from '../../components/units/UnitMemberModal'
 import UnitTypeBadge from '../../components/units/UnitTypeBadge'
-import {
-  addUnitMember,
-  deleteUnit,
-  getUnitById,
-  getUnitMembers,
-  removeUnitMember,
-  updateUnit,
-} from '../../service/unitService'
-import { USER_ROLES } from '../../utils/routes'
+import { getSemesters } from '../../service/semesterService'
+import { addUnitMember, getUnitById, getUnitMembers, removeUnitMember } from '../../service/unitService'
 import { getValidationMessage } from '../../utils/userUtils'
-import {
-  canManageUnitMembers,
-  canViewUnitMembers,
-  formatJoinedAt,
-  getUnitIntroduction,
-} from '../../utils/unitUtils'
+import { canManageUnitMembers, canViewUnitMembers, formatJoinedAt } from '../../utils/unitUtils'
 import styles from './adminUnits.module.css'
 
 const DEFAULT_MEMBER_LIMIT = 10
 
-function UnitDetailModal({
-  unitId,
-  accessToken,
-  role,
-  roleLabel,
-  user,
-  onClose,
-  onSessionExpired,
-  onUnitDeleted,
-}) {
+function UnitDetailModal({ unitId, accessToken, role, user, onClose, onSessionExpired }) {
   const [unit, setUnit] = useState(null)
   const [membersResult, setMembersResult] = useState({
     items: [],
@@ -57,20 +35,27 @@ function UnitDetailModal({
     student_id: '',
     class_name: '',
   })
+  const [semesters, setSemesters] = useState([])
   const [isLoadingUnit, setIsLoadingUnit] = useState(true)
   const [isLoadingMembers, setIsLoadingMembers] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [notice, setNotice] = useState(null)
-  const [isEditOpen, setIsEditOpen] = useState(false)
   const [isAddMemberOpen, setIsAddMemberOpen] = useState(false)
   const [memberToRemove, setMemberToRemove] = useState(null)
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false)
 
-  const isAdmin = role === USER_ROLES.admin
   const canManageMembers = canManageUnitMembers(role, user, unitId)
   const canViewMembers = canViewUnitMembers(role, user, unitId)
-  const canEditUnit = isAdmin
-  const canDeleteUnit = isAdmin
+
+  const semesterNameById = useMemo(
+    () =>
+      Object.fromEntries(
+        semesters.map((semester) => [
+          semester.id,
+          semester.name ? `${semester.name} (${semester.academic_year})` : semester.id,
+        ]),
+      ),
+    [semesters],
+  )
 
   const memberCurrentPage = Math.floor(membersResult.skip / Math.max(membersResult.limit, 1)) + 1
   const memberTotalPages = Math.max(
@@ -84,7 +69,8 @@ function UnitDetailModal({
     if (!unitId) {
       return
     }
-    loadUnit()
+
+    loadCatalog()
   }, [accessToken, unitId])
 
   useEffect(() => {
@@ -105,11 +91,15 @@ function UnitDetailModal({
     loadMembers(memberQuery)
   }, [accessToken, canViewMembers, memberQuery, unitId])
 
-  async function loadUnit() {
+  async function loadCatalog() {
     setIsLoadingUnit(true)
     try {
-      const nextUnit = await getUnitById(unitId, accessToken)
+      const [nextUnit, semesterResponse] = await Promise.all([
+        getUnitById(unitId, accessToken),
+        getSemesters({ skip: 0, limit: 100 }, accessToken),
+      ])
       setUnit(nextUnit)
+      setSemesters(semesterResponse.items)
     } catch (error) {
       handleApiError(error, 'Không thể tải chi tiết đơn vị.', true)
     } finally {
@@ -131,33 +121,6 @@ function UnitDetailModal({
       handleApiError(error, 'Không thể tải danh sách thành viên.')
     } finally {
       setIsLoadingMembers(false)
-    }
-  }
-
-  async function handleEditUnit(form) {
-    setIsSubmitting(true)
-    try {
-      const nextUnit = await updateUnit(unitId, form, accessToken)
-      setUnit(nextUnit)
-      setIsEditOpen(false)
-    } catch (error) {
-      handleApiError(error, getValidationMessage(error, 'Cập nhật đơn vị thất bại.'))
-    } finally {
-      setIsSubmitting(false)
-    }
-  }
-
-  async function handleDeleteUnit() {
-    setIsSubmitting(true)
-    try {
-      await deleteUnit(unitId, accessToken)
-      setIsDeleteOpen(false)
-      onUnitDeleted?.(unitId)
-      onClose()
-    } catch (error) {
-      handleApiError(error, 'Xóa đơn vị thất bại.')
-    } finally {
-      setIsSubmitting(false)
     }
   }
 
@@ -186,7 +149,7 @@ function UnitDetailModal({
       if (error?.status === 403) {
         setNotice({
           title: 'Không có quyền',
-          message: 'Bạn không có quyền thực hiện thao tác này',
+          message: 'Bạn không có quyền thực hiện thao tác này.',
         })
         return
       }
@@ -194,7 +157,7 @@ function UnitDetailModal({
       if (error?.status === 404 && isActiveSemesterMissing) {
         setNotice({
           title: 'Chưa có kỳ hoạt động',
-          message: 'Hiện chưa có kỳ đang hoạt động',
+          message: 'Hiện chưa có kỳ đang hoạt động.',
         })
         return
       }
@@ -202,7 +165,7 @@ function UnitDetailModal({
       if (error?.status === 404) {
         setNotice({
           title: 'Không tìm thấy sinh viên',
-          message: 'Không tìm thấy sinh viên với mã này',
+          message: 'Không tìm thấy sinh viên với mã này.',
         })
         return
       }
@@ -210,7 +173,7 @@ function UnitDetailModal({
       if (error?.status === 400 && isAlreadyInUnit) {
         setNotice({
           title: 'Thành viên đã tồn tại',
-          message: 'Sinh viên đã thuộc đơn vị trong kỳ hiện tại',
+          message: 'Sinh viên đã thuộc đơn vị trong kỳ hiện tại.',
         })
         return
       }
@@ -311,6 +274,7 @@ function UnitDetailModal({
       student_id: '',
       class_name: '',
     }
+
     setMemberFilters(emptyFilters)
     setMemberQuery({
       skip: 0,
@@ -324,7 +288,16 @@ function UnitDetailModal({
       direction === 'next'
         ? memberQuery.skip + memberQuery.limit
         : Math.max(memberQuery.skip - memberQuery.limit, 0)
+
     setMemberQuery((currentQuery) => ({ ...currentQuery, skip: nextSkip }))
+  }
+
+  function formatSemesterLabel(semesterId) {
+    if (!semesterId) {
+      return 'Học kỳ hiện hành'
+    }
+
+    return semesterNameById[semesterId] || 'Học kỳ hiện hành'
   }
 
   return (
@@ -338,17 +311,6 @@ function UnitDetailModal({
           setNotice(null)
           callback?.()
         }}
-      />
-
-      <UnitFormModal
-        isOpen={isEditOpen}
-        mode="edit"
-        title="Cập nhật đơn vị"
-        submitLabel="Lưu thay đổi"
-        initialValues={unit}
-        isSubmitting={isSubmitting}
-        onClose={() => setIsEditOpen(false)}
-        onSubmit={handleEditUnit}
       />
 
       <UnitMemberModal
@@ -367,17 +329,6 @@ function UnitDetailModal({
         isSubmitting={isSubmitting}
         onClose={() => setMemberToRemove(null)}
         onConfirm={handleRemoveMember}
-      />
-
-      <ConfirmDialog
-        isOpen={isDeleteOpen}
-        title="Xóa đơn vị"
-        message={`Bạn có chắc muốn xóa đơn vị "${unit?.name || ''}" không?`}
-        confirmLabel="Xóa đơn vị"
-        danger
-        isSubmitting={isSubmitting}
-        onClose={() => setIsDeleteOpen(false)}
-        onConfirm={handleDeleteUnit}
       />
 
       <section
@@ -413,37 +364,12 @@ function UnitDetailModal({
                 <div className="unit-detail-hero">
                   <UnitLogo logo={unit.logo} name={unit.name} size="large" />
                   <div className="unit-detail-copy">
-                    <span className="dashboard-badge">{roleLabel}</span>
                     <h1>{unit.name || 'Chưa cập nhật'}</h1>
                     <div className="unit-detail-meta">
                       <UnitTypeBadge type={unit.type} />
                     </div>
-                    <p>{getUnitIntroduction(unit)}</p>
                   </div>
                 </div>
-
-                {(canEditUnit || canDeleteUnit) && (
-                  <div className="unit-detail-actions">
-                    {canEditUnit && (
-                      <button
-                        type="button"
-                        className="primary-button"
-                        onClick={() => setIsEditOpen(true)}
-                      >
-                        Chỉnh sửa đơn vị
-                      </button>
-                    )}
-                    {canDeleteUnit && (
-                      <button
-                        type="button"
-                        className="danger-button"
-                        onClick={() => setIsDeleteOpen(true)}
-                      >
-                        Xóa đơn vị
-                      </button>
-                    )}
-                  </div>
-                )}
               </div>
 
               {canViewMembers ? (
@@ -451,7 +377,7 @@ function UnitDetailModal({
                   <div className="unit-members-header">
                     <div>
                       <h2>Danh sách thành viên đơn vị</h2>
-                      <p>Đang dùng học kỳ active của backend.</p>
+                      <p>Đang hiển thị theo học kỳ hiện hành của hệ thống.</p>
                     </div>
                     {canManageMembers && (
                       <button
@@ -544,19 +470,27 @@ function UnitDetailModal({
                   ) : membersResult.items.length ? (
                     <div className="unit-member-table-shell">
                       <table className="unit-member-table">
+                        <colgroup>
+                          <col style={{ width: '30%' }} />
+                          <col style={{ width: '14%' }} />
+                          <col style={{ width: '13%' }} />
+                          <col style={{ width: '19%' }} />
+                          <col style={{ width: '12%' }} />
+                          {canManageMembers && <col style={{ width: '12%' }} />}
+                        </colgroup>
                         <thead>
                           <tr>
                             <th>Thành viên</th>
                             <th>Mã sinh viên</th>
                             <th>Lớp</th>
-                            <th>Semester ID</th>
+                            <th>Học kỳ</th>
                             <th>Tham gia lúc</th>
                             {canManageMembers && <th>Thao tác</th>}
                           </tr>
                         </thead>
                         <tbody>
                           {membersResult.items.map((member) => (
-                            <tr key={`${member.user_id}-${member.semester_id}`}>
+                            <tr key={`${member.user_id}-${member.semester_id || 'current'}`}>
                               <td>
                                 <div className="unit-member-name">
                                   <UserAvatar
@@ -570,12 +504,12 @@ function UnitDetailModal({
                                   </div>
                                 </div>
                               </td>
-                              <td>{member.student_id || 'Chưa cập nhật'}</td>
-                              <td>{member.class_name || 'Chưa cập nhật'}</td>
-                              <td>{member.semester_id || 'Active'}</td>
-                              <td>{formatJoinedAt(member.joined_at)}</td>
+                              <td className="unit-member-code">{member.student_id || 'Chưa cập nhật'}</td>
+                              <td className="unit-member-code">{member.class_name || 'Chưa cập nhật'}</td>
+                              <td className="unit-member-semester">{formatSemesterLabel(member.semester_id)}</td>
+                              <td className="unit-member-date">{formatJoinedAt(member.joined_at)}</td>
                               {canManageMembers && (
-                                <td>
+                                <td className="unit-member-actions">
                                   <button
                                     type="button"
                                     className="danger-button unit-action-button"
@@ -622,10 +556,7 @@ function UnitDetailModal({
               ) : (
                 <section className="page-card unit-content-note">
                   <h2>Thông tin đơn vị</h2>
-                  <p>
-                    Danh sách thành viên chỉ hiển thị cho tài khoản có quyền theo quy định của hệ
-                    thống.
-                  </p>
+                  <p>Danh sách thành viên chỉ hiển thị cho tài khoản có quyền theo quy định của hệ thống.</p>
                 </section>
               )}
             </>

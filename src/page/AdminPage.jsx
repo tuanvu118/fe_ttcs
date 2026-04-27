@@ -7,7 +7,7 @@ function AdminPage({ accessToken, role, roleLabel, onSessionExpired }) {
       role={role}
       roleLabel={roleLabel}
       pageTitle="Quản trị người dùng"
-      pageDescription="ADMIN có thể xem toàn bộ user, tạo user mới, chỉnh sửa user khác và phân quyền RBAC."
+      pageDescription="ADMIN có thể xem toàn bộ người dùng, tạo người dùng mới, chỉnh sửa người dùng khác và phân quyền."
       onSessionExpired={onSessionExpired}
     />
   )

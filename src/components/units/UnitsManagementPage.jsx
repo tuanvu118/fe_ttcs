@@ -9,6 +9,7 @@ import {
   updateUnit,
 } from '../../service/unitService'
 import { buildUnitDetailPath, UNIT_TYPES, USER_ROLES } from '../../utils/routes'
+import { isSystemUnit } from '../../utils/unitUtils'
 import { getValidationMessage } from '../../utils/userUtils'
 import UnitFormModal from './UnitFormModal'
 import UnitLogo from './UnitLogo'
@@ -150,7 +151,9 @@ function UnitsManagementPage({
     try {
       if (isStaff) {
         const items = await getAllUnitsForStaff(nextQuery)
-        const filteredItems = items.filter((unit) => staffManagedUnitIds.includes(unit.id))
+        const filteredItems = items.filter(
+          (unit) => staffManagedUnitIds.includes(unit.id) && !isSystemUnit(unit),
+        )
         const start = nextQuery.skip || 0
         const end = start + (nextQuery.limit || DEFAULT_LIMIT)
 
@@ -164,9 +167,11 @@ function UnitsManagementPage({
       }
 
       const response = await getManagedUnits(nextQuery, accessToken)
+      const visibleItems = response.items.filter((unit) => !isSystemUnit(unit))
+      const hiddenCount = response.items.length - visibleItems.length
       setResult({
-        items: response.items,
-        total: response.total,
+        items: visibleItems,
+        total: Math.max(response.total - hiddenCount, visibleItems.length),
         skip: response.skip,
         limit: response.limit || DEFAULT_LIMIT,
       })
@@ -451,7 +456,6 @@ function UnitsManagementPage({
             <option value="">Tất cả loại hình</option>
             <option value={UNIT_TYPES.lck}>LCK</option>
             <option value={UNIT_TYPES.clb}>CLB</option>
-            <option value={UNIT_TYPES.system}>SYSTEM</option>
           </select>
         </label>
 
