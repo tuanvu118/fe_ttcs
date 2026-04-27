@@ -203,7 +203,7 @@ export default function DownloadModal({
       maskClosable={maskClosable}
     >
       <div className={styles.content}>
-        <h3 className={styles.title}>Cài PTIT dưới dạng ứng dụng - V8</h3>
+        <h3 className={styles.title}>Cài PTIT dưới dạng ứng dụng - V9</h3>
         <p className={styles.description}>
           Cài đặt ứng dụng để mở nhanh từ màn hình chính, trải nghiệm toàn màn hình và dùng ổn định hơn.
         </p>

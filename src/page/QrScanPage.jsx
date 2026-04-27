@@ -25,6 +25,7 @@ function QrScanPage() {
   const scanFrameRef = useRef(null)
   const detectorRef = useRef(null)
   const scanTimeoutRef = useRef(null)
+  const cameraActiveRef = useRef(false)
 
   function toDateTimeLocalInput(value) {
     if (!value) return ''
@@ -51,6 +52,7 @@ function QrScanPage() {
   }
 
   function stopCamera() {
+    cameraActiveRef.current = false
     if (scanTimeoutRef.current) {
       clearTimeout(scanTimeoutRef.current)
       scanTimeoutRef.current = null
@@ -72,7 +74,12 @@ function QrScanPage() {
   function scanLoop() {
     const video = videoRef.current
     const detector = detectorRef.current
-    if (!video || !detector || !cameraActive) {
+    if (!video || !detector || !cameraActiveRef.current) {
+      return
+    }
+
+    if (video.readyState < 2) {
+      scanFrameRef.current = requestAnimationFrame(scanLoop)
       return
     }
 
@@ -135,6 +142,7 @@ function QrScanPage() {
         await videoRef.current.play()
       }
 
+      cameraActiveRef.current = true
       setCameraActive(true)
       scanTimeoutRef.current = setTimeout(() => {
         if (scanFrameRef.current) {
