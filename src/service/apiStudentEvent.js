@@ -65,12 +65,31 @@ export async function getMyEventRegistrationDetail(eventId) {
 /**
  * Register for a public event
  */
-export async function registerPublicEvent(eventId, answers = []) {
+export async function registerPublicEvent(eventId, answers = [], idempotencyKey = null) {
   const accessToken = getStoredAuthSession()?.accessToken || ''
   return apiRequest(`/events/${eventId}/register_public_event`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 
+      'Content-Type': 'application/json',
+      ...(idempotencyKey ? { 'X-Idempotency-Key': idempotencyKey } : {})
+    },
     body: JSON.stringify({ answers }),
+    authToken: accessToken,
+  })
+}
+
+/**
+ * Register for a unit-restricted event
+ */
+export async function registerUnitEvent(eventId, unitId, idempotencyKey = null) {
+  const accessToken = getStoredAuthSession()?.accessToken || ''
+  return apiRequest(`/events/${eventId}/register_unit_event`, {
+    method: 'POST',
+    headers: { 
+      'Accept': 'application/json',
+      'X-Unit-Id': unitId,
+      ...(idempotencyKey ? { 'X-Idempotency-Key': idempotencyKey } : {})
+    },
     authToken: accessToken,
   })
 }

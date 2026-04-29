@@ -259,12 +259,12 @@ export default function EditPublicEventForm({ eventData, unitId }) {
               <label className={styles.label}>Số lượng đăng ký</label>
               <div className={styles.inputWithSuffix}>
                 <InputNumber 
-                  min={0} 
+                  min={1} 
                   className={styles.numberInput} 
                   value={formData.max_participants}
                   onChange={(val) => handleChange('max_participants', val)}
                 />
-                <span className={styles.suffix} style={{ fontSize: '10px' }}>NGƯỜI (0 = Không giới hạn)</span>
+                <span className={styles.suffix} style={{ fontSize: '10px' }}>NGƯỜI</span>
               </div>
             </div>
           </div>

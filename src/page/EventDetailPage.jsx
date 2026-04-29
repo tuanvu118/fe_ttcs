@@ -90,8 +90,10 @@ export default function EventDetailPage({ eventId }) {
 
     // Otherwise, fast register
     setSubmitting(true)
+    const idempotencyKey = crypto.randomUUID?.() || Math.random().toString(36).substring(2)
+    
     try {
-      await registerPublicEvent(eventId)
+      await registerPublicEvent(eventId, [], idempotencyKey)
       message.success('Đăng ký tham gia thành công!')
       await loadData() // Refresh status
     } catch (err) {
@@ -103,6 +105,8 @@ export default function EventDetailPage({ eventId }) {
 
   const handleModalSubmit = async (values) => {
     setSubmitting(true)
+    const idempotencyKey = crypto.randomUUID?.() || Math.random().toString(36).substring(2)
+
     try {
       // Format answers: [{ field_id, value }]
       const answers = Object.entries(values)
@@ -112,7 +116,7 @@ export default function EventDetailPage({ eventId }) {
           value: Array.isArray(value) ? value.join(', ') : String(value)
         }))
 
-      await registerPublicEvent(eventId, answers)
+      await registerPublicEvent(eventId, answers, idempotencyKey)
       message.success('Gửi đăng ký thành công!')
       setIsRegModalOpen(false)
       regForm.resetFields()

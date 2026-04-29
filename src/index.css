@@ -644,6 +644,7 @@ select:disabled {
   display: -webkit-box;
   overflow: hidden;
   -webkit-line-clamp: 4;
+  line-clamp: 4;
   -webkit-box-orient: vertical;
   min-height: calc(1.75em * 4);
 }
@@ -1876,6 +1877,7 @@ select:disabled {
   .club-card-catalog .club-card-body p {
     min-height: 0;
     -webkit-line-clamp: 3;
+    line-clamp: 3;
   }
 
   .club-card-footer {
