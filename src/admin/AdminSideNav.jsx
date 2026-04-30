@@ -25,6 +25,17 @@ function unitTypePrefixLabel(type) {
   return formatUnitType(type.trim().toUpperCase())
 }
 
+function unitDisplayName(name, fallbackText) {
+  const normalizedName = typeof name === 'string' ? name.trim() : ''
+  if (!normalizedName) {
+    return fallbackText
+  }
+  if (normalizedName.toLowerCase() === 'default') {
+    return 'Văn phòng đoàn'
+  }
+  return normalizedName
+}
+
 function unitLogoSrc(unitId, unitLogoById, manageableUnits, unitRecord) {
   if (!unitId) {
     return DEFAULT_UNIT_LOGO
@@ -102,7 +113,7 @@ export default function AdminSideNav({
                   <span className={styles.unitTypePrefix}>{unitTypePrefixLabel(selectedUnit.type)}</span>
                 ) : null}
                 <span className={styles.unitNameCore}>
-                  {selectedUnit?.name || 'Chọn đơn vị quản trị'}
+                  {unitDisplayName(selectedUnit?.name, 'Chọn đơn vị quản trị')}
                 </span>
               </strong>
               <span>
@@ -154,7 +165,7 @@ export default function AdminSideNav({
                           </span>
                         ) : null}
                         <span className={styles.unitNameCore}>
-                          {unitItem?.name || optionItem.unitId}
+                          {unitDisplayName(unitItem?.name, optionItem.unitId)}
                         </span>
                       </strong>
                       <span>{getRoleLabelVi(optionItem.role)}</span>
