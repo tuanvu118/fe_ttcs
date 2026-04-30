@@ -41,6 +41,9 @@
   font-weight: 800;
   color: var(--ds-text);
   letter-spacing: -0.02em;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .wizardSubtitle {
@@ -276,4 +279,227 @@
 .nextButton:focus-visible {
   outline: 2px solid var(--ds-focus);
   outline-offset: 2px;
+}
+
+@media (max-width: 1024px) {
+  .wizardHeader {
+    padding: 0.55rem 1rem;
+  }
+
+  .backLink {
+    margin-bottom: 0.32rem;
+    font-size: 0.66rem;
+    gap: 0.35rem;
+  }
+
+  .wizardTitle {
+    font-size: 1.05rem;
+    line-height: 1.32;
+  }
+
+  .wizardSubtitle {
+    font-size: 0.68rem;
+  }
+
+  .wizardContent {
+    padding: 0.8rem 1rem;
+  }
+
+  .container {
+    gap: 0.8rem;
+    padding-bottom: 1rem;
+  }
+
+  .sectionHeader {
+    padding: 0.8rem 1rem;
+  }
+
+  .sectionTitle {
+    font-size: 0.84rem;
+  }
+
+  .sectionDesc {
+    font-size: 0.68rem;
+    line-height: 1.4;
+  }
+
+  .sectionContent {
+    padding: 0.9rem 1rem;
+    gap: 0.8rem;
+  }
+
+  .label {
+    font-size: 0.56rem;
+  }
+
+  .input,
+  .textarea {
+    min-width: 0;
+    box-sizing: border-box;
+    font-size: 0.78rem;
+    padding: 0.55rem 0.66rem;
+  }
+
+  .textarea {
+    min-height: 8.5rem;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .select {
+    min-width: 0;
+  }
+
+  .select :global(.ant-select-selector) {
+    min-height: 36px;
+    font-size: 0.76rem !important;
+  }
+
+  .inputWithSuffix {
+    height: 36px;
+  }
+
+  .suffix {
+    padding: 0 0.65rem;
+    font-size: 0.56rem;
+  }
+
+  .footer {
+    margin-top: 0.65rem;
+    padding: 0.8rem 1rem;
+    gap: 0.55rem;
+    align-items: stretch;
+    flex-wrap: wrap;
+  }
+
+  .footerRight {
+    width: 100%;
+    justify-content: flex-end;
+    gap: 0.55rem;
+  }
+
+  .backButton,
+  .nextButton {
+    font-size: 0.72rem;
+    padding: 0.48rem 0.72rem;
+    gap: 0.35rem;
+  }
+}
+
+@media (max-width: 780px) {
+  .wizardHeader {
+    padding: 0.45rem 0.56rem;
+  }
+
+  .headerInfo {
+    gap: 0.15rem;
+    min-width: 0;
+  }
+
+  .backLink {
+    margin-bottom: 0.2rem;
+    font-size: 0.6rem;
+    line-height: 1.3;
+  }
+
+  .wizardTitle {
+    font-size: 0.84rem;
+    line-height: 1.35;
+  }
+
+  .wizardSubtitle {
+    font-size: 0.6rem;
+    line-height: 1.35;
+  }
+
+  .wizardContent {
+    padding: 0.5rem 0.45rem;
+    overflow-x: hidden;
+  }
+
+  .container {
+    gap: 0.56rem;
+    padding-bottom: 0.62rem;
+  }
+
+  .section {
+    border-radius: 10px;
+  }
+
+  .sectionHeader {
+    padding: 0.56rem;
+  }
+
+  .sectionTitle {
+    font-size: 0.74rem;
+  }
+
+  .sectionDesc {
+    font-size: 0.6rem;
+  }
+
+  .sectionContent {
+    padding: 0.56rem;
+    gap: 0.56rem;
+  }
+
+  .fieldGroup {
+    gap: 0.36rem;
+    min-width: 0;
+  }
+
+  .label {
+    font-size: 0.5rem;
+    letter-spacing: 0.04em;
+  }
+
+  .input,
+  .textarea {
+    font-size: 0.7rem;
+    padding: 0.45rem 0.5rem;
+  }
+
+  .textarea {
+    min-height: 7rem;
+  }
+
+  .select :global(.ant-select-selector) {
+    min-height: 32px;
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+  }
+
+  .inputWithSuffix {
+    height: 32px;
+  }
+
+  .numberInput :global(.ant-input-number-input) {
+    font-size: 0.7rem;
+    padding-top: 2px;
+    padding-bottom: 2px;
+  }
+
+  .suffix {
+    padding: 0 0.45rem;
+    font-size: 0.5rem;
+  }
+
+  .footer {
+    margin-top: 0.5rem;
+    padding: 0.56rem;
+    border-radius: 10px;
+    flex-direction: column;
+  }
+
+  .footerRight {
+    width: 100%;
+  }
+
+  .backButton,
+  .nextButton {
+    width: 100%;
+    justify-content: center;
+    font-size: 0.66rem;
+    padding: 0.42rem 0.45rem;
+  }
 }

@@ -7,6 +7,7 @@ import './styles/design-tokens.css'
 import './index.css'
 import App from './App.jsx'
 import { initializePwaInstallLifecycle } from './service/pwaService'
+import { startLocationHeartbeat } from './service/locationHeartbeatService'
 
 const isLocalhost =
   window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
@@ -20,6 +21,7 @@ if ((import.meta.env.PROD || isLocalhost) && 'serviceWorker' in navigator) {
 }
 
 initializePwaInstallLifecycle()
+startLocationHeartbeat()
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

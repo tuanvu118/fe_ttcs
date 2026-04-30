@@ -207,7 +207,7 @@ export default function QRModalPublicEvent({ open, onClose, eventId }) {
 
         {sessionData ? (
           <Modal
-            title="QR điểm danh đang hoạt động"
+            title="QR điểm danh"
             open={open && Boolean(sessionData)}
             footer={null}
             onCancel={() => setSessionData(null)}

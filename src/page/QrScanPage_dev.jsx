@@ -1,26 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Typography, message } from 'antd'
+import { Button, Input, InputNumber, Typography, message } from 'antd'
 import { getCurrentCoordinates } from '../utils/geolocation'
 import { scanAttendanceQr } from '../service/apiStudentEvent'
-import { LOCATION_STORAGE_KEY } from '../service/locationHeartbeatService'
-import { readStorage } from '../utils/storage'
 import DownloadModal from './DownloadModal'
 
-const { Text } = Typography
-
-function getCoordinatesFromStorage() {
-  const stored = readStorage(LOCATION_STORAGE_KEY)
-  const latitude = Number(stored?.latitude)
-  const longitude = Number(stored?.longitude)
-  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
-    return null
-  }
-  return { latitude, longitude }
-}
+const { TextArea } = Input
+const { Paragraph, Text } = Typography
 
 function QrScanPage() {
-  const navigate = useNavigate()
   const [accessReady, setAccessReady] = useState(false)
   const [checkingAccess, setCheckingAccess] = useState(true)
   const [gateMessage, setGateMessage] = useState('')
@@ -41,7 +28,6 @@ function QrScanPage() {
   const detectorRef = useRef(null)
   const scanTimeoutRef = useRef(null)
   const cameraActiveRef = useRef(false)
-  const handlingScanRef = useRef(false)
 
   function toDateTimeLocalInput(value) {
     if (!value) return ''
@@ -51,24 +37,19 @@ function QrScanPage() {
     return localDate.toISOString().slice(0, 16)
   }
 
-  function parseScannedPayload(rawValue) {
+  function applyScannedPayload(rawValue) {
     if (!rawValue) return
     try {
       const parsed = JSON.parse(rawValue)
       const parsedQr = parsed?.qr_value ?? parsed?.qrValue ?? rawValue
       const parsedFrom = parsed?.valid_from ?? parsed?.validFrom ?? ''
       const parsedUntil = parsed?.valid_until ?? parsed?.validUntil ?? ''
-      return {
-        qrValue: String(parsedQr),
-        validFrom: parsedFrom ? toDateTimeLocalInput(parsedFrom) : '',
-        validUntil: parsedUntil ? toDateTimeLocalInput(parsedUntil) : '',
-      }
+
+      setQrValue(String(parsedQr))
+      if (parsedFrom) setValidFrom(toDateTimeLocalInput(parsedFrom))
+      if (parsedUntil) setValidUntil(toDateTimeLocalInput(parsedUntil))
     } catch {
-      return {
-        qrValue: rawValue,
-        validFrom: '',
-        validUntil: '',
-      }
+      setQrValue(rawValue)
     }
   }
 
@@ -110,7 +91,9 @@ function QrScanPage() {
           const qrRawValue = codes[0]?.rawValue || ''
           if (qrRawValue) {
             setScanError('')
-            void handleDetectedQr(qrRawValue)
+            applyScannedPayload(qrRawValue)
+            message.success('Đã quét QR từ camera.')
+            stopCamera()
             return
           }
         }
@@ -170,82 +153,8 @@ function QrScanPage() {
       }, 12000)
       scanFrameRef.current = requestAnimationFrame(scanLoop)
     } catch (error) {
-      if (
-        String(error?.message || '').includes('Barcode Detection API') ||
-        String(error?.message || '').includes('qr_code')
-      ) {
-        message.error(error?.message || 'Thiết bị/trình duyệt chưa hỗ trợ Barcode Detection API.')
-        navigate('/')
-        return
-      }
       setScanError(error?.message || 'Không thể mở camera để quét QR.')
       stopCamera()
-    }
-  }
-
-  async function handleDetectedQr(rawValue) {
-    if (handlingScanRef.current) {
-      return
-    }
-    handlingScanRef.current = true
-    stopCamera()
-    setSubmitting(true)
-
-    try {
-      const parsedPayload = parseScannedPayload(rawValue)
-      const scannedQrValue = parsedPayload?.qrValue?.trim() || ''
-      const scannedValidFrom = parsedPayload?.validFrom || ''
-      const scannedValidUntil = parsedPayload?.validUntil || ''
-
-      setQrValue(scannedQrValue)
-      setValidFrom(scannedValidFrom)
-      setValidUntil(scannedValidUntil)
-
-      if (!scannedQrValue) {
-        message.error('QR không hợp lệ.')
-        return
-      }
-
-      if (!scannedValidFrom || !scannedValidUntil) {
-        message.error('QR không có đầy đủ thời gian hiệu lực.')
-        return
-      }
-
-      const fromMs = new Date(scannedValidFrom).getTime()
-      const untilMs = new Date(scannedValidUntil).getTime()
-      const nowMs = Date.now()
-
-      if (!Number.isFinite(fromMs) || !Number.isFinite(untilMs) || untilMs < fromMs) {
-        message.error('Khoảng thời gian hợp lệ không đúng định dạng.')
-        return
-      }
-
-      if (nowMs < fromMs || nowMs > untilMs) {
-        message.error('QR không hợp lệ.')
-        return
-      }
-
-      const storedCoords = getCoordinatesFromStorage()
-      if (!storedCoords) {
-        message.error('Không có tọa độ trong localStorage để gửi điểm danh.')
-        return
-      }
-
-      setCoordinates(storedCoords)
-
-      await scanAttendanceQr({
-        qrValue: scannedQrValue,
-        latitude: storedCoords.latitude,
-        longitude: storedCoords.longitude,
-      })
-
-      message.success('Quét QR điểm danh thành công.')
-      navigate('/')
-    } catch (error) {
-      message.error(error?.message || 'Quét QR thất bại.')
-    } finally {
-      setSubmitting(false)
-      handlingScanRef.current = false
     }
   }
 
@@ -328,13 +237,6 @@ function QrScanPage() {
   }, [])
 
   useEffect(() => {
-    if (!accessReady || cameraActiveRef.current || submitting) {
-      return
-    }
-    void startCameraScan()
-  }, [accessReady, submitting])
-
-  useEffect(() => {
     if (!accessReady) {
       return undefined
     }
@@ -342,15 +244,9 @@ function QrScanPage() {
     async function loadCoordinates() {
       setLoadingLocation(true)
       try {
-        let current = getCoordinatesFromStorage()
-        if (!current) {
-          current = await getCurrentCoordinates()
-        }
+        const { latitude, longitude } = await getCurrentCoordinates()
         if (!cancelled) {
-          setCoordinates({
-            latitude: current.latitude,
-            longitude: current.longitude,
-          })
+          setCoordinates({ latitude, longitude })
         }
       } catch (error) {
         if (!cancelled) {
@@ -367,6 +263,54 @@ function QrScanPage() {
       cancelled = true
     }
   }, [accessReady])
+
+  const handleScan = async () => {
+    if (!qrValue.trim()) {
+      message.warning('Vui lòng nhập qr_value.')
+      return
+    }
+    if (!validFrom || !validUntil) {
+      message.warning('Vui lòng nhập đầy đủ thời gian hợp lệ từ và hợp lệ đến.')
+      return
+    }
+
+    const fromMs = new Date(validFrom).getTime()
+    const untilMs = new Date(validUntil).getTime()
+    const nowMs = Date.now()
+    if (!Number.isFinite(fromMs) || !Number.isFinite(untilMs) || untilMs < fromMs) {
+      message.error('Khoảng thời gian hợp lệ không đúng định dạng.')
+      return
+    }
+    if (nowMs < fromMs || nowMs > untilMs) {
+      message.error('QR không hợp lệ.')
+      return
+    }
+
+    setSubmitting(true)
+    try {
+      let latitude = coordinates.latitude
+      let longitude = coordinates.longitude
+
+      if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+        const current = await getCurrentCoordinates()
+        latitude = current.latitude
+        longitude = current.longitude
+        setCoordinates(current)
+      }
+
+      const result = await scanAttendanceQr({
+        qrValue: qrValue.trim(),
+        latitude,
+        longitude,
+      })
+      setScanResult(result)
+      message.success('Quét QR điểm danh thành công.')
+    } catch (error) {
+      message.error(error?.message || 'Quét QR thất bại.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
 
   if (!accessReady) {
     return (
@@ -394,39 +338,127 @@ function QrScanPage() {
   }
 
   return (
-    <section
-      className="page-card"
-      style={{
-        minHeight: 'calc(100vh - 120px)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '1rem',
-      }}
-    >
-      <div style={{ display: 'grid', gap: 10, justifyItems: 'center' }}>
+    <section className="page-card" style={{ display: 'grid', gap: 16 }}>
+      <h1>Quét QR điểm danh</h1>
+
+      <div style={{ display: 'grid', gap: 8 }}>
+        <Text strong>Quét QR bằng camera</Text>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <Button onClick={startCameraScan} disabled={cameraActive}>Mở camera quét QR</Button>
+          <Button onClick={stopCamera} disabled={!cameraActive}>Tắt camera</Button>
+        </div>
+        {scanError ? <Text type="danger">{scanError}</Text> : null}
         <video
           ref={videoRef}
           muted
           playsInline
           style={{
-            width: '90vw',
-            height: '50vh',
-            maxWidth: 560,
-            maxHeight: 560,
-            minWidth: 280,
-            minHeight: 280,
-            borderRadius: 16,
+            width: '100%',
+            maxWidth: 420,
+            borderRadius: 10,
             border: '1px solid #e2e8f0',
             background: '#000',
-            objectFit: 'cover',
             display: cameraActive ? 'block' : 'none',
           }}
         />
-        {submitting ? <Text type="secondary">Đang gửi điểm danh...</Text> : null}
-        {!cameraActive && !submitting ? <Text type="secondary">Đang khởi động camera...</Text> : null}
-        {scanError ? <Text type="danger">{scanError}</Text> : null}
+        <Text type="secondary">
+          Sau khi quét thành công, hệ thống sẽ tự điền qr_value và thời gian hiệu lực.
+          Bạn kiểm tra lại rồi bấm Gửi điểm danh.
+        </Text>
+        {cameraActive ? <Text type="secondary">Camera đang hoạt động, vui lòng đưa mã QR vào khung hình.</Text> : null}
       </div>
+
+      <div style={{ display: 'grid', gap: 8 }}>
+        <Text strong>qr_value</Text>
+        <TextArea
+          rows={6}
+          placeholder="Dán hoặc nhập qr_value tại đây"
+          value={qrValue}
+          onChange={(event) => setQrValue(event.target.value)}
+        />
+      </div>
+
+      <div style={{ display: 'grid', gap: 4 }}>
+        <Text strong>Tọa độ</Text>
+        <div style={{ display: 'grid', gap: 8, gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))' }}>
+          <div style={{ display: 'grid', gap: 4 }}>
+            <Text type="secondary">Vĩ độ</Text>
+            <InputNumber
+              value={coordinates.latitude}
+              onChange={(value) =>
+                setCoordinates((prev) => ({
+                  ...prev,
+                  latitude: typeof value === 'number' ? value : null,
+                }))
+              }
+              placeholder={loadingLocation ? 'Đang lấy...' : 'Nhập vĩ độ'}
+              step={0.000001}
+              style={{ width: '100%' }}
+            />
+          </div>
+          <div style={{ display: 'grid', gap: 4 }}>
+            <Text type="secondary">Kinh độ</Text>
+            <InputNumber
+              value={coordinates.longitude}
+              onChange={(value) =>
+                setCoordinates((prev) => ({
+                  ...prev,
+                  longitude: typeof value === 'number' ? value : null,
+                }))
+              }
+              placeholder={loadingLocation ? 'Đang lấy...' : 'Nhập kinh độ'}
+              step={0.000001}
+              style={{ width: '100%' }}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div style={{ display: 'grid', gap: 8 }}>
+        <Text strong>Thời gian hiệu lực</Text>
+        <div style={{ display: 'grid', gap: 8, gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))' }}>
+          <div style={{ display: 'grid', gap: 4 }}>
+            <Text type="secondary">Hợp lệ từ</Text>
+            <Input
+              type="datetime-local"
+              value={validFrom}
+              onChange={(event) => setValidFrom(event.target.value)}
+            />
+          </div>
+          <div style={{ display: 'grid', gap: 4 }}>
+            <Text type="secondary">Hợp lệ đến</Text>
+            <Input
+              type="datetime-local"
+              value={validUntil}
+              onChange={(event) => setValidUntil(event.target.value)}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <Button type="primary" onClick={handleScan} loading={submitting} disabled={loadingLocation}>
+          Gửi điểm danh
+        </Button>
+      </div>
+
+      {scanResult ? (
+        <div>
+          <Text strong>Kết quả:</Text>
+          <Paragraph
+            style={{
+              marginTop: 8,
+              whiteSpace: 'pre-wrap',
+              wordBreak: 'break-word',
+              border: '1px solid rgba(0,0,0,0.1)',
+              borderRadius: 8,
+              padding: 12,
+            }}
+          >
+            {JSON.stringify(scanResult, null, 2)}
+          </Paragraph>
+        </div>
+      ) : null}
     </section>
   )
 }

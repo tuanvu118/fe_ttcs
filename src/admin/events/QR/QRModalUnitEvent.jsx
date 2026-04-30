@@ -3,6 +3,7 @@ import { Button, Form, InputNumber, Modal, Typography, message } from 'antd'
 import { createUnitEventAttendanceSession } from '../../../service/apiAdminEvent'
 import { getCurrentCoordinates } from '../../../utils/geolocation'
 import QRRender from './QR_render'
+import QRRenderDev from './QR_render_dev'
 import styles from './QRModalUnitEvent.module.css'
 
 const { Text } = Typography
@@ -207,7 +208,7 @@ export default function QRModalUnitEvent({ open, onClose, eventId }) {
 
         {sessionData ? (
           <Modal
-            title="QR điểm danh đang hoạt động"
+            title="QR điểm danh"
             open={open && Boolean(sessionData)}
             footer={null}
             onCancel={() => setSessionData(null)}

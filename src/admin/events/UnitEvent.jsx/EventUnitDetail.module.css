@@ -53,6 +53,9 @@
   color: var(--ds-text);
   line-height: 1.2;
   letter-spacing: -0.02em;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .actions {
@@ -499,5 +502,207 @@
 .markBtn:hover {
   background-color: #4f46e5;
   transform: translateY(-1px);
+}
+
+@media (max-width: 1024px) {
+  .detailRoot {
+    margin-top: 0.9rem;
+    gap: 0.85rem;
+  }
+
+  .header {
+    gap: 0.62rem;
+  }
+
+  .title {
+    font-size: 1.18rem;
+    line-height: 1.28;
+  }
+
+  .actions {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  .actionBtn {
+    flex: 1 1 180px;
+    justify-content: center;
+    min-width: 0;
+    padding: 0.48rem 0.62rem;
+    font-size: 0.76rem;
+  }
+
+  .cardHeader,
+  .cardBody {
+    padding: 0.8rem;
+  }
+
+  .cardTitle {
+    font-size: 0.82rem;
+  }
+
+  .infoGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+    padding: 0.72rem;
+  }
+
+  .infoValue {
+    font-size: 0.84rem;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .descriptionText {
+    font-size: 0.82rem;
+    line-height: 1.5;
+  }
+
+  .coopTableWrap {
+    overflow-x: hidden;
+  }
+
+  .coopTable {
+    table-layout: fixed;
+  }
+
+  .coopTable th:nth-child(3),
+  .coopTable td:nth-child(3) {
+    display: none;
+  }
+
+  .coopTable th,
+  .coopTable td {
+    padding: 0.5rem 0.46rem;
+    font-size: 0.72rem;
+    word-break: break-word;
+  }
+
+  .coopActionCell {
+    width: auto;
+  }
+
+  .coopDetailBtn {
+    font-size: 0.68rem;
+    padding: 0.3rem 0.52rem;
+  }
+}
+
+@media (max-width: 780px) {
+  .detailRoot {
+    margin-top: 0.62rem;
+    gap: 0.62rem;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.45rem;
+  }
+
+  .headerLeft {
+    gap: 0.45rem;
+  }
+
+  .title {
+    font-size: 0.95rem;
+    line-height: 1.32;
+  }
+
+  .backLink {
+    font-size: 0.62rem;
+    gap: 0.3rem;
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.35rem;
+  }
+
+  .actionBtn {
+    width: 100%;
+    flex: 1 1 auto;
+    padding: 0.42rem 0.5rem;
+    font-size: 0.68rem;
+    gap: 0.35rem;
+  }
+
+  .cardHeader,
+  .cardBody {
+    padding: 0.58rem;
+  }
+
+  .cardTitle {
+    font-size: 0.72rem;
+  }
+
+  .infoGrid {
+    grid-template-columns: 1fr;
+    gap: 0.45rem;
+    padding: 0.56rem;
+    margin-bottom: 0.7rem;
+  }
+
+  .infoLabel {
+    font-size: 0.6rem;
+  }
+
+  .infoValue {
+    font-size: 0.72rem;
+  }
+
+  .descriptionText,
+  .sectionDesc {
+    font-size: 0.72rem;
+    line-height: 1.4;
+  }
+
+  .timePoint {
+    gap: 0.45rem;
+  }
+
+  .timeIcon {
+    width: 1.6rem;
+    height: 1.6rem;
+  }
+
+  .timeTitle {
+    font-size: 0.56rem;
+  }
+
+  .timeValue {
+    font-size: 0.68rem;
+  }
+
+  .coopTable th:nth-child(2),
+  .coopTable td:nth-child(2) {
+    display: none;
+  }
+
+  .coopTable th,
+  .coopTable td {
+    padding: 0.4rem 0.35rem;
+    font-size: 0.64rem;
+  }
+
+  .statusBadge {
+    padding: 0.2rem 0.42rem;
+    font-size: 0.58rem;
+  }
+
+  .coopDetailBtn {
+    font-size: 0.62rem;
+    padding: 0.24rem 0.38rem;
+    border-radius: 6px;
+  }
+
+  .markBtn {
+    font-size: 0.6rem;
+    padding: 0.24rem 0.42rem;
+    border-radius: 5px;
+  }
 }
 

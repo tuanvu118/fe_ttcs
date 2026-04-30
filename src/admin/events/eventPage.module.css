@@ -177,6 +177,9 @@
   font-size: 1rem;
   font-weight: 700;
   color: #1e293b;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .typeCell {
@@ -291,4 +294,263 @@
   padding: 4rem 2rem;
   text-align: center;
   color: #64748b;
+}
+
+@media (max-width: 1024px) {
+  .container {
+    gap: 0.45rem;
+    padding: 0 0.9rem 0.6rem;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.55rem;
+    padding-bottom: 0.45rem;
+  }
+
+  .titleArea h1 {
+    font-size: 1.55rem;
+  }
+
+  .createBtn {
+    width: 100%;
+    justify-content: center;
+    padding: 0.55rem 0.85rem;
+    font-size: 0.78rem;
+    border-radius: 8px;
+  }
+
+  .filterBar {
+    padding: 0.55rem 0.7rem;
+    border-radius: 10px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.55rem;
+  }
+
+  .filterGroup {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .filterSelect {
+    flex: 1 1 220px;
+    min-width: 0;
+    height: 36px;
+    padding: 0 0.62rem;
+  }
+
+  .filterSelect select {
+    min-width: 0;
+    width: 100%;
+    font-size: 0.78rem;
+  }
+
+  .filterSummary {
+    width: 100%;
+    font-size: 0.74rem;
+  }
+
+  .tableWrapper {
+    border-radius: 12px;
+    overflow-x: hidden;
+  }
+
+  .tableHeader {
+    display: none;
+  }
+
+  .eventRow {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.45rem 0.65rem;
+    padding: 0.56rem 0.62rem;
+    align-items: start;
+  }
+
+  .eventRow > div {
+    min-width: 0;
+  }
+
+  .nameCell {
+    grid-column: 1 / 2;
+  }
+
+  .nameCell strong {
+    font-size: 0.82rem;
+    line-height: 1.35;
+  }
+
+  .typeCell {
+    grid-column: 1 / 2;
+    font-size: 0.74rem;
+  }
+
+  .semesterCell {
+    grid-column: 1 / 2;
+    text-align: left;
+    font-size: 0.72rem;
+  }
+
+  .locationCell {
+    display: none;
+  }
+
+  .pointCell {
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
+    justify-content: flex-end;
+    font-size: 0.78rem;
+  }
+
+  .actionsCell {
+    grid-column: 2 / 3;
+    grid-row: 2 / 4;
+    justify-content: flex-end;
+    align-self: stretch;
+    gap: 0.4rem;
+  }
+
+  .actionBtn {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+  }
+
+  .tableFooter {
+    margin-top: 0.35rem;
+    padding: 0.56rem 0.65rem;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+
+  .paginationInfo {
+    font-size: 0.72rem;
+  }
+
+  .pageButton {
+    padding: 0.34rem 0.6rem;
+    font-size: 0.72rem;
+    gap: 0.25rem;
+  }
+
+  .emptyState {
+    padding: 2rem 0.8rem;
+    font-size: 0.82rem;
+  }
+}
+
+@media (max-width: 780px) {
+  .container {
+    padding: 0 0.45rem 0.45rem;
+    gap: 0.36rem;
+  }
+
+  .titleArea h1 {
+    font-size: 1.15rem;
+  }
+
+  .createBtn {
+    padding: 0.45rem 0.55rem;
+    font-size: 0.68rem;
+    gap: 0.35rem;
+  }
+
+  .filterBar {
+    padding: 0.42rem 0.5rem;
+    border-radius: 8px;
+    gap: 0.4rem;
+  }
+
+  .filterGroup {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.38rem;
+  }
+
+  .filterSelect {
+    width: 100%;
+    min-width: 0;
+    flex: 1 1 auto;
+    height: 33px;
+    padding: 0 0.5rem;
+    gap: 0.35rem;
+  }
+
+  .filterSelect select {
+    font-size: 0.7rem;
+  }
+
+  .filterSummary {
+    font-size: 0.68rem;
+  }
+
+  .tableWrapper {
+    border-radius: 10px;
+  }
+
+  .eventRow {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.38rem;
+    padding: 0.45rem 0.45rem;
+  }
+
+  .nameCell,
+  .typeCell,
+  .pointCell,
+  .actionsCell {
+    grid-column: 1 / -1;
+    grid-row: auto;
+  }
+
+  .nameCell strong {
+    font-size: 0.74rem;
+    line-height: 1.3;
+  }
+
+  .typeCell,
+  .pointCell {
+    justify-content: flex-start;
+    text-align: left;
+    font-size: 0.66rem;
+  }
+
+  .semesterCell {
+    display: none;
+  }
+
+  .actionsCell {
+    justify-content: flex-start;
+    gap: 0.35rem;
+  }
+
+  .actionBtn {
+    width: 24px;
+    height: 24px;
+  }
+
+  .tableFooter {
+    padding: 0.45rem;
+    gap: 0.35rem;
+    justify-content: center;
+  }
+
+  .paginationInfo {
+    width: 100%;
+    justify-content: center;
+    font-size: 0.64rem;
+  }
+
+  .pageButton {
+    min-width: 0;
+    padding: 0.28rem 0.42rem;
+    font-size: 0.64rem;
+  }
+
+  .emptyState {
+    padding: 1.25rem 0.55rem;
+    font-size: 0.74rem;
+  }
 }

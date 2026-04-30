@@ -1,73 +1,73 @@
 .root {
-  display: grid;
-  gap: 12px;
-}
-
-.meta {
-  display: grid;
-  gap: 4px;
-}
-
-.sessionId {
-  color: #0f172a;
-}
-
-.subText {
-  color: #64748b;
-}
-
-.qrValue {
-  margin: 0;
-  padding: 12px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  background: #f8fafc;
-  word-break: break-all;
-  color: #0f172a;
-}
-
-.actions {
   display: flex;
-  justify-content: flex-start;
-}
-
-.qrPreviewSection {
-  display: grid;
-  gap: 10px;
-  justify-items: start;
-  padding: 12px;
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: 10px;
-  background: #ffffff;
-}
-
-.qrPreviewTitle {
-  color: #0f172a;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .qrPreviewCanvasWrap {
-  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(90vw, 420px);
+  max-width: 100%;
+  padding: 12px;
   border: 1px solid #e2e8f0;
-  border-radius: 8px;
+  border-radius: 12px;
   background: #ffffff;
+  box-sizing: border-box;
+}
+
+.qrPreviewCanvasWrap canvas {
+  display: block;
+  width: min(84vw, 360px) !important;
+  height: auto !important;
+  max-width: 100%;
 }
 
 .empty {
   margin: 0;
   color: #64748b;
+  text-align: center;
 }
 
-@media (max-width: 420px) {
-  .root {
-    gap: 10px;
+@media (max-width: 1024px) {
+  .qrPreviewCanvasWrap {
+    width: min(92vw, 380px);
+    padding: 10px;
   }
 
-  .qrValue {
-    padding: 10px;
-    font-size: 13px;
+  .qrPreviewCanvasWrap canvas {
+    width: min(86vw, 320px) !important;
+  }
+}
+
+@media (max-width: 780px) {
+  .qrPreviewCanvasWrap {
+    width: min(94vw, 340px);
+    padding: 8px;
+    border-radius: 10px;
+  }
+
+  .qrPreviewCanvasWrap canvas {
+    width: min(88vw, 300px) !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .root {
+    width: 100%;
   }
 
   .qrPreviewCanvasWrap {
+    width: min(96vw, 300px);
     padding: 6px;
+    border-radius: 8px;
+  }
+
+  .qrPreviewCanvasWrap canvas {
+    width: min(92vw, 270px) !important;
   }
 }
