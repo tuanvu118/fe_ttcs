@@ -366,3 +366,322 @@
   gap: 1.5rem;
 }
 
+@media (max-width: 768px) {
+  .container {
+    padding: 0 0.7rem 0.8rem;
+    gap: 0.55rem;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.55rem;
+  }
+
+  .titleArea h1 {
+    font-size: 1.35rem;
+    line-height: 1.25;
+    word-break: break-word;
+  }
+
+  .createBtn {
+    width: 100%;
+    justify-content: center;
+    padding: 0.62rem 0.8rem;
+    font-size: 0.82rem;
+  }
+
+  .filterBar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.55rem;
+    padding: 0.55rem 0.7rem;
+  }
+
+  .filterGroup {
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+
+  .filterSelect {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .filterSelect input,
+  .filterSelect select {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .filterSummary {
+    font-size: 0.8rem;
+  }
+
+  .tableWrapper {
+    border-radius: 12px;
+  }
+
+  .tableHeader {
+    display: none;
+  }
+
+  .unitRow {
+    grid-template-columns: 38px minmax(0, 1fr);
+    gap: 0.45rem 0.6rem;
+    padding: 0.62rem 0.7rem;
+    align-items: start;
+  }
+
+  .logoCell {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    width: 38px;
+    min-width: 38px;
+    max-width: 38px;
+    justify-content: center;
+  }
+
+  .logoCell :global(.unit-logo) {
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    min-height: 34px !important;
+    border-radius: 9px;
+  }
+
+  .nameCell {
+    grid-column: 2;
+    grid-row: 1;
+    min-width: 0;
+  }
+
+  .nameCell strong {
+    display: block;
+    font-size: 0.86rem;
+    line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .typeCell {
+    grid-column: 2;
+    grid-row: 2;
+    min-width: 0;
+  }
+
+  .membersCell {
+    grid-column: 2;
+    grid-row: 3;
+    justify-content: flex-start;
+    font-size: 0.78rem;
+  }
+
+  .membersCell::before {
+    content: 'Thành viên: ';
+    color: #64748b;
+    font-weight: 600;
+    margin-right: 0.2rem;
+  }
+
+  .actionsCell {
+    grid-column: 2;
+    grid-row: 4;
+    justify-content: flex-start;
+    gap: 0.4rem;
+  }
+
+  .actionBtn {
+    width: 30px;
+    height: 30px;
+    border-radius: 7px;
+  }
+
+  .tableFooter {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.45rem;
+    padding: 0.6rem;
+  }
+
+  .paginationInfo {
+    width: 100%;
+    justify-content: center;
+    font-size: 0.78rem;
+  }
+
+  .pageButton {
+    flex: 1 1 0;
+    min-width: 0;
+    justify-content: center;
+    font-size: 0.78rem;
+    padding: 0 0.5rem;
+    height: 30px;
+  }
+
+  .detailModalBackdrop {
+    padding: 0.6rem;
+  }
+
+  .detailModal {
+    max-height: calc(100dvh - 1.2rem);
+    border-radius: 12px;
+  }
+
+  .detailModalHeader {
+    padding: 0.8rem 0.95rem;
+  }
+
+  .detailModalHeader h2 {
+    font-size: 1rem;
+    line-height: 1.25;
+  }
+
+  .detailModalBody {
+    padding: 0.9rem;
+    gap: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 0.45rem 0.65rem;
+  }
+
+  .titleArea h1 {
+    font-size: 1.1rem;
+  }
+
+  .createBtn {
+    font-size: 0.78rem;
+  }
+
+  .filterBar {
+    padding: 0.5rem 0.55rem;
+  }
+
+  .filterSelect {
+    padding: 0 0.62rem;
+    height: 36px;
+    gap: 0.4rem;
+  }
+
+  .filterSelect input,
+  .filterSelect select {
+    font-size: 0.8rem;
+  }
+
+  .unitRow {
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 0.4rem 0.52rem;
+    padding: 0.54rem 0.55rem;
+  }
+
+  .logoCell {
+    width: 34px;
+    min-width: 34px;
+    max-width: 34px;
+  }
+
+  .logoCell :global(.unit-logo) {
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+    min-height: 30px !important;
+    border-radius: 8px;
+  }
+
+  .nameCell strong {
+    font-size: 0.81rem;
+  }
+
+  .membersCell {
+    font-size: 0.74rem;
+  }
+
+  .actionBtn {
+    width: 28px;
+    height: 28px;
+  }
+
+  .pageButton {
+    font-size: 0.74rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .container {
+    padding: 0 0.32rem 0.55rem;
+  }
+
+  .titleArea h1 {
+    font-size: 1rem;
+  }
+
+  .createBtn {
+    padding: 0.55rem 0.62rem;
+    font-size: 0.74rem;
+  }
+
+  .filterSelect {
+    height: 34px;
+    padding: 0 0.5rem;
+  }
+
+  .filterSummary {
+    font-size: 0.74rem;
+  }
+
+  .unitRow {
+    grid-template-columns: 30px minmax(0, 1fr);
+    gap: 0.34rem 0.45rem;
+    padding: 0.5rem;
+  }
+
+  .logoCell {
+    width: 30px;
+    min-width: 30px;
+    max-width: 30px;
+  }
+
+  .logoCell :global(.unit-logo) {
+    width: 26px !important;
+    height: 26px !important;
+    min-width: 26px !important;
+    min-height: 26px !important;
+    border-radius: 7px;
+  }
+
+  .nameCell strong {
+    font-size: 0.76rem;
+  }
+
+  .membersCell {
+    font-size: 0.7rem;
+  }
+
+  .membersCell::before {
+    margin-right: 0.16rem;
+  }
+
+  .actionsCell {
+    gap: 0.3rem;
+  }
+
+  .actionBtn {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+  }
+
+  .paginationInfo {
+    font-size: 0.72rem;
+  }
+
+  .pageButton {
+    font-size: 0.7rem;
+    height: 28px;
+  }
+}
+

@@ -466,3 +466,419 @@
 .ts_cho_duyet {
   color: #f59e0b; /* Orange/Yellow */
 }
+
+@media (max-width: 1024px) {
+  .pageContainer {
+    padding: 1rem;
+    gap: 1.1rem;
+  }
+
+  .pageHeader {
+    padding: 0.82rem 1rem;
+  }
+
+  .modal,
+  .standalonePage,
+  .modalContent {
+    gap: 1.1rem;
+  }
+
+  .modalHeader {
+    padding: 1rem 1.2rem;
+    flex-wrap: wrap;
+    gap: 0.62rem;
+  }
+
+  .headerActions {
+    flex-wrap: wrap;
+    gap: 0.52rem;
+  }
+
+  .actionBtn {
+    padding: 0.46rem 0.68rem;
+    font-size: 0.74rem;
+  }
+
+  .submitBtn {
+    padding: 0.62rem 1rem;
+    font-size: 0.8rem;
+  }
+
+  .reportTitle h2 {
+    font-size: 1.06rem;
+    line-height: 1.3;
+  }
+
+  .badge {
+    font-size: 0.72rem;
+    padding: 0.28rem 0.58rem;
+  }
+
+  .compactStats {
+    font-size: 0.78rem;
+  }
+
+  .statsCardGrid {
+    flex-wrap: wrap;
+    gap: 0.62rem;
+  }
+
+  .miniStat {
+    min-width: 220px;
+    padding: 0.66rem 0.8rem;
+  }
+
+  .miniValue {
+    font-size: 1.05rem;
+  }
+
+  .sectionHeader {
+    padding: 0.9rem 1.1rem;
+  }
+
+  .sectionHeader h3 {
+    font-size: 1rem;
+  }
+
+  .addBtn {
+    padding: 0.5rem 0.9rem;
+    font-size: 0.78rem;
+  }
+
+  .activityTable th,
+  .activityTable td {
+    padding: 0.86rem 1rem;
+    font-size: 0.82rem;
+  }
+
+  .formBody {
+    padding: 1rem 1.1rem;
+  }
+
+  .modalActions {
+    padding: 0.9rem 1.1rem;
+  }
+
+  .cancelBtn,
+  .saveBtn {
+    font-size: 0.8rem;
+    padding: 0.6rem 0.9rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .pageContainer {
+    padding: 0.7rem;
+    gap: 0.9rem;
+  }
+
+  .pageHeader {
+    padding: 0.7rem 0.8rem;
+    border-radius: 10px;
+  }
+
+  .headerLogo {
+    width: 34px;
+    height: 34px;
+  }
+
+  .unitBadge {
+    font-size: 0.56rem;
+    padding: 0.12rem 0.38rem;
+  }
+
+  .modal,
+  .standalonePage,
+  .modalContent {
+    gap: 0.9rem;
+  }
+
+  .modalHeader {
+    padding: 0.8rem 0.9rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+  }
+
+  .headerActions {
+    gap: 0.45rem;
+    flex-wrap: wrap;
+  }
+
+  .actionBtn {
+    flex: 1 1 0;
+    min-width: 0;
+    justify-content: center;
+    padding: 0.42rem 0.45rem;
+    font-size: 0.7rem;
+  }
+
+  .submitBtn {
+    width: 100%;
+    justify-content: center;
+    padding: 0.56rem 0.65rem;
+    font-size: 0.74rem;
+  }
+
+  .unitMeta {
+    font-size: 0.66rem;
+  }
+
+  .reportTitle h2 {
+    font-size: 1rem;
+    line-height: 1.25;
+    word-break: break-word;
+  }
+
+  .subMeta {
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  .badge {
+    font-size: 0.7rem;
+    padding: 0.28rem 0.54rem;
+  }
+
+  .unitInfo {
+    font-size: 0.76rem;
+  }
+
+  .compactStats {
+    font-size: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .statsCardGrid {
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+
+  .miniStat {
+    padding: 0.62rem 0.72rem;
+    gap: 0.62rem;
+  }
+
+  .statIconBox {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+  }
+
+  .miniLabel {
+    font-size: 0.58rem;
+  }
+
+  .miniValue {
+    font-size: 1rem;
+  }
+
+  .sectionHeader {
+    padding: 0.82rem 0.95rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.45rem;
+  }
+
+  .sectionHeader h3 {
+    font-size: 0.96rem;
+  }
+
+  .addBtn {
+    width: 100%;
+    justify-content: center;
+    padding: 0.48rem 0.55rem;
+    font-size: 0.74rem;
+  }
+
+  .activityTable {
+    min-width: 620px;
+  }
+
+  .activityTable th,
+  .activityTable td {
+    padding: 0.75rem 0.85rem;
+    font-size: 0.78rem;
+  }
+
+  .evidenceLink {
+    font-size: 0.74rem;
+  }
+
+  .rowActions {
+    gap: 0.6rem;
+  }
+
+  .overlay {
+    padding: 0.7rem;
+  }
+
+  .compactModal {
+    width: min(94vw, 520px) !important;
+  }
+
+  .formBody {
+    padding: 0.9rem;
+    gap: 0.8rem;
+  }
+
+  .formGrid {
+    grid-template-columns: 1fr;
+    gap: 0.72rem;
+  }
+
+  .formInput {
+    font-size: 0.82rem;
+    padding: 0.56rem 0.65rem;
+  }
+
+  .modalActions {
+    padding: 0.85rem 0.9rem;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .cancelBtn,
+  .saveBtn {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0.55rem 0.52rem;
+    font-size: 0.74rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .pageContainer {
+    padding: 0.45rem;
+    gap: 0.72rem;
+  }
+
+  .pageHeader {
+    padding: 0.6rem 0.62rem;
+  }
+
+  .headerLogo {
+    width: 30px;
+    height: 30px;
+  }
+
+  .modalHeader {
+    padding: 0.68rem 0.72rem;
+  }
+
+  .actionBtn {
+    font-size: 0.64rem;
+    padding: 0.38rem 0.42rem;
+  }
+
+  .reportTitle h2 {
+    font-size: 0.88rem;
+  }
+
+  .badge {
+    font-size: 0.62rem;
+    padding: 0.22rem 0.42rem;
+  }
+
+  .unitInfo,
+  .compactStats {
+    font-size: 0.68rem;
+  }
+
+  .miniValue {
+    font-size: 0.9rem;
+  }
+
+  .sectionHeader,
+  .formBody,
+  .modalActions {
+    padding-left: 0.7rem;
+    padding-right: 0.7rem;
+  }
+
+  .sectionHeader h3 {
+    font-size: 0.86rem;
+  }
+
+  .activityTable {
+    min-width: 560px;
+  }
+
+  .activityTable th,
+  .activityTable td {
+    padding: 0.62rem 0.72rem;
+    font-size: 0.72rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .pageContainer {
+    padding: 0.32rem;
+  }
+
+  .pageHeader {
+    padding: 0.52rem 0.55rem;
+  }
+
+  .headerLogo {
+    width: 26px;
+    height: 26px;
+  }
+
+  .unitBadge {
+    font-size: 0.52rem;
+    padding: 0.1rem 0.3rem;
+  }
+
+  .actionBtn {
+    font-size: 0.58rem;
+    padding: 0.34rem 0.34rem;
+  }
+
+  .submitBtn {
+    font-size: 0.66rem;
+    padding: 0.48rem 0.5rem;
+  }
+
+  .reportTitle h2 {
+    font-size: 0.8rem;
+  }
+
+  .badge {
+    font-size: 0.56rem;
+    padding: 0.18rem 0.3rem;
+  }
+
+  .compactStats {
+    font-size: 0.62rem;
+  }
+
+  .miniLabel {
+    font-size: 0.52rem;
+  }
+
+  .miniValue {
+    font-size: 0.82rem;
+  }
+
+  .addBtn {
+    font-size: 0.66rem;
+    padding: 0.42rem 0.45rem;
+  }
+
+  .activityTable {
+    min-width: 520px;
+  }
+
+  .activityTable th,
+  .activityTable td {
+    padding: 0.56rem 0.62rem;
+    font-size: 0.67rem;
+  }
+
+  .formInput,
+  .cancelBtn,
+  .saveBtn {
+    font-size: 0.68rem;
+  }
+}

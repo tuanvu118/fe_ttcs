@@ -402,3 +402,352 @@
   border-color: #cbd5e1;
 }
 
+@media (max-width: 900px) {
+  .container {
+    padding: 0 1rem 0.7rem;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+  }
+
+  .titleArea h1 {
+    font-size: 1.6rem;
+    line-height: 1.25;
+  }
+
+  .createBtn {
+    width: 100%;
+    justify-content: center;
+    padding: 0.66rem 0.95rem;
+    font-size: 0.84rem;
+  }
+
+  .tableHeader,
+  .semesterRow {
+    grid-template-columns: 1.8fr 1fr 1.2fr;
+    padding-left: 0.9rem;
+    padding-right: 0.9rem;
+  }
+
+  .tableHeader span:nth-child(3),
+  .tableHeader span:nth-child(4),
+  .semesterRow > div:nth-child(3),
+  .semesterRow > div:nth-child(4) {
+    display: none;
+  }
+
+  .tableHeader span:last-child,
+  .semesterRow > div:last-child {
+    justify-self: end;
+  }
+
+  .semesterName {
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 0 0.7rem 0.65rem;
+    gap: 0.45rem;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.55rem;
+  }
+
+  .titleArea h1 {
+    font-size: 1.35rem;
+    line-height: 1.25;
+    word-break: break-word;
+  }
+
+  .createBtn {
+    width: 100%;
+    justify-content: center;
+    padding: 0.62rem 0.8rem;
+    font-size: 0.82rem;
+  }
+
+  .tableWrapper {
+    margin-top: 0.6rem;
+    border-radius: 12px;
+  }
+
+  .tableHeader {
+    display: none;
+  }
+
+  .semesterRow {
+    grid-template-columns: 1fr auto;
+    gap: 0.38rem 0.55rem;
+    padding: 0.62rem 0.7rem;
+    align-items: center;
+  }
+
+  .semesterName {
+    grid-column: 1;
+    grid-row: 1;
+    font-size: 0.9rem;
+    line-height: 1.25;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+
+  .yearValue {
+    grid-column: 1;
+    grid-row: 2;
+    font-size: 0.78rem;
+  }
+
+  .yearValue::before {
+    content: 'Năm học: ';
+    color: #64748b;
+    font-weight: 600;
+  }
+
+  .dateValue:nth-of-type(3) {
+    grid-column: 1;
+    grid-row: 3;
+    font-size: 0.76rem;
+  }
+
+  .dateValue:nth-of-type(4) {
+    grid-column: 1;
+    grid-row: 4;
+    font-size: 0.76rem;
+  }
+
+  .dateValue:nth-of-type(3)::before {
+    content: 'Bắt đầu: ';
+    color: #64748b;
+    font-weight: 600;
+  }
+
+  .dateValue:nth-of-type(4)::before {
+    content: 'Kết thúc: ';
+    color: #64748b;
+    font-weight: 600;
+  }
+
+  .actions {
+    grid-column: 2;
+    grid-row: 1 / span 4;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 0.35rem;
+    min-width: 0;
+  }
+
+  .statusPill {
+    padding: 0.28rem 0.52rem;
+    font-size: 0.68rem;
+    border-radius: 999px;
+    max-width: 100%;
+    white-space: nowrap;
+  }
+
+  .actionBtn {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border-radius: 7px;
+  }
+
+  .tableFooter {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.45rem;
+    padding: 0.62rem;
+  }
+
+  .paginationInfo {
+    width: 100%;
+    justify-content: center;
+    font-size: 0.78rem;
+  }
+
+  .pageButton {
+    flex: 1 1 0;
+    min-width: 0;
+    font-size: 0.78rem;
+    padding: 0.42rem 0.55rem;
+  }
+
+  .modalOverlay {
+    padding: 0.7rem;
+  }
+
+  .modalContent {
+    max-width: min(100%, calc(100vw - 1.4rem));
+    border-radius: 14px;
+  }
+
+  .modalHeader {
+    padding: 0.95rem 1rem;
+  }
+
+  .modalTitle {
+    font-size: 1.05rem;
+  }
+
+  .modalSubtitle {
+    font-size: 0.8rem;
+  }
+
+  .modalBody {
+    padding: 1rem;
+  }
+
+  .formGrid {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+
+  .formActions {
+    flex-wrap: wrap;
+    justify-content: stretch;
+    gap: 0.55rem;
+  }
+
+  .primaryBtn,
+  .secondaryBtn {
+    width: 100%;
+    font-size: 0.84rem;
+    padding: 0.62rem 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0 0.45rem 0.55rem;
+  }
+
+  .titleArea h1 {
+    font-size: 1.1rem;
+  }
+
+  .createBtn {
+    font-size: 0.78rem;
+  }
+
+  .semesterRow {
+    padding: 0.55rem 0.55rem;
+    gap: 0.32rem 0.5rem;
+  }
+
+  .semesterName {
+    font-size: 0.84rem;
+  }
+
+  .yearValue,
+  .dateValue:nth-of-type(3),
+  .dateValue:nth-of-type(4) {
+    font-size: 0.72rem;
+  }
+
+  .statusPill {
+    font-size: 0.62rem;
+    padding: 0.24rem 0.44rem;
+  }
+
+  .actionBtn {
+    width: 28px;
+    height: 28px;
+  }
+
+  .emptyState {
+    padding: 1.6rem 0.8rem;
+    font-size: 0.82rem;
+  }
+
+  .modalOverlay {
+    padding: 0.45rem;
+  }
+
+  .modalContent {
+    border-radius: 12px;
+  }
+
+  .modalHeader {
+    padding: 0.8rem 0.82rem;
+  }
+
+  .modalBody {
+    padding: 0.82rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .container {
+    padding: 0 0.3rem 0.5rem;
+  }
+
+  .titleArea h1 {
+    font-size: 1rem;
+  }
+
+  .createBtn {
+    padding: 0.55rem 0.62rem;
+    font-size: 0.74rem;
+  }
+
+  .semesterRow {
+    padding: 0.5rem;
+    gap: 0.28rem 0.42rem;
+  }
+
+  .semesterName {
+    font-size: 0.76rem;
+  }
+
+  .yearValue,
+  .dateValue:nth-of-type(3),
+  .dateValue:nth-of-type(4) {
+    font-size: 0.68rem;
+  }
+
+  .statusPill {
+    font-size: 0.58rem;
+    padding: 0.2rem 0.36rem;
+  }
+
+  .actions {
+    gap: 0.28rem;
+  }
+
+  .actionBtn {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+  }
+
+  .paginationInfo {
+    font-size: 0.72rem;
+  }
+
+  .pageButton {
+    font-size: 0.7rem;
+    padding: 0.38rem 0.42rem;
+  }
+
+  .modalTitle {
+    font-size: 0.94rem;
+  }
+
+  .modalSubtitle {
+    font-size: 0.74rem;
+  }
+}
+

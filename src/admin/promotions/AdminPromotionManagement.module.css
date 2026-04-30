@@ -518,3 +518,319 @@
     padding: 0.75rem 1rem;
   }
 }
+
+@media (max-width: 768px) {
+  .pageContainer {
+    padding: 0 0.7rem 0.85rem;
+    gap: 0.6rem;
+  }
+
+  .header {
+    padding-bottom: 0.45rem;
+    margin-bottom: 0;
+  }
+
+  .titleArea h1 {
+    font-size: 1.3rem;
+    line-height: 1.25;
+    word-break: break-word;
+  }
+
+  .filterBar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.55rem;
+    padding: 0.55rem 0.7rem;
+  }
+
+  .filterGroup {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.55rem;
+  }
+
+  .filterSelect {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .filterSelect input,
+  .filterSelect select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .filterSummary {
+    font-size: 0.8rem;
+  }
+
+  .tableWrapper {
+    border-radius: 12px;
+  }
+
+  .tableHeader {
+    display: none;
+  }
+
+  .tableRow {
+    grid-template-columns: 72px minmax(0, 1fr) auto;
+    gap: 0.42rem 0.58rem;
+    padding: 0.62rem 0.7rem;
+    align-items: start;
+  }
+
+  .bannerCell {
+    grid-column: 1;
+    grid-row: 1 / span 3;
+  }
+
+  .bannerCell img {
+    width: 68px;
+    height: 44px;
+    border-radius: 7px;
+  }
+
+  .titleCell {
+    grid-column: 2;
+    grid-row: 1;
+    min-width: 0;
+  }
+
+  .titleCell strong {
+    font-size: 0.84rem;
+    line-height: 1.3;
+    padding-right: 0;
+  }
+
+  .unitCell {
+    grid-column: 2;
+    grid-row: 2;
+    min-width: 0;
+    font-size: 0.75rem;
+  }
+
+  .semesterCell {
+    grid-column: 2;
+    grid-row: 3;
+    font-size: 0.74rem;
+  }
+
+  .semesterCell::before {
+    content: 'Học kỳ: ';
+    color: #64748b;
+    font-weight: 600;
+    margin-right: 0.18rem;
+  }
+
+  .statusCell {
+    grid-column: 3;
+    grid-row: 1;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .dateCell {
+    grid-column: 3;
+    grid-row: 2;
+    justify-content: flex-end;
+    font-size: 0.72rem;
+    text-align: right;
+    line-height: 1.25;
+  }
+
+  .actionCell {
+    grid-column: 3;
+    grid-row: 3;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .statusBadge {
+    padding: 0.2rem 0.52rem;
+    font-size: 0.64rem;
+  }
+
+  .viewBtn {
+    gap: 0.35rem;
+    padding: 0.35rem 0.58rem;
+    font-size: 0.72rem;
+    border-radius: 7px;
+  }
+
+  .tableFooter {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.45rem;
+    padding: 0.62rem;
+  }
+
+  .paginationInfo {
+    width: 100%;
+    justify-content: center;
+    font-size: 0.78rem;
+  }
+
+  .pageButton {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 0.4rem 0.48rem;
+    font-size: 0.76rem;
+  }
+
+  .detailModal :global(.ant-modal) {
+    margin: 0.45rem auto;
+    max-width: calc(100vw - 0.9rem);
+  }
+
+  .detailModal :global(.ant-modal-content) {
+    border-radius: 14px;
+  }
+
+  .modalHeader,
+  .modalBody,
+  .modalFooter {
+    padding-left: 0.9rem;
+    padding-right: 0.9rem;
+  }
+
+  .modalHeader h1 {
+    font-size: 1rem;
+  }
+
+  .modalMeta {
+    gap: 0.6rem;
+    font-size: 0.74rem;
+  }
+
+  .modalBanner {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .richText {
+    font-size: 0.84rem;
+    line-height: 1.6;
+  }
+
+  .footerBtns {
+    width: 100%;
+    gap: 0.5rem;
+  }
+
+  .modalRejectBtn,
+  .modalApproveBtn {
+    flex: 1 1 0;
+    justify-content: center;
+    padding: 0.45rem 0.62rem;
+    font-size: 0.74rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .pageContainer {
+    padding: 0 0.45rem 0.7rem;
+  }
+
+  .titleArea h1 {
+    font-size: 1.08rem;
+  }
+
+  .filterBar {
+    padding: 0.5rem 0.55rem;
+  }
+
+  .filterSelect {
+    padding: 0 0.62rem;
+    height: 36px;
+    gap: 0.4rem;
+  }
+
+  .tableRow {
+    grid-template-columns: 58px minmax(0, 1fr) auto;
+    gap: 0.35rem 0.5rem;
+    padding: 0.55rem;
+  }
+
+  .bannerCell img {
+    width: 54px;
+    height: 36px;
+    border-radius: 6px;
+  }
+
+  .titleCell strong {
+    font-size: 0.78rem;
+  }
+
+  .unitCell,
+  .semesterCell,
+  .dateCell {
+    font-size: 0.68rem;
+  }
+
+  .statusBadge {
+    font-size: 0.58rem;
+    padding: 0.18rem 0.4rem;
+  }
+
+  .viewBtn {
+    font-size: 0.66rem;
+    padding: 0.3rem 0.46rem;
+  }
+
+  .modalHeader,
+  .modalBody,
+  .modalFooter {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+
+  .modalHeader h1 {
+    font-size: 0.92rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .pageContainer {
+    padding: 0 0.32rem 0.58rem;
+  }
+
+  .titleArea h1 {
+    font-size: 0.96rem;
+  }
+
+  .filterSummary {
+    font-size: 0.72rem;
+  }
+
+  .tableRow {
+    grid-template-columns: 52px minmax(0, 1fr) auto;
+    gap: 0.3rem 0.45rem;
+    padding: 0.5rem;
+  }
+
+  .bannerCell img {
+    width: 48px;
+    height: 32px;
+  }
+
+  .titleCell strong {
+    font-size: 0.72rem;
+  }
+
+  .statusBadge {
+    font-size: 0.54rem;
+  }
+
+  .viewBtn {
+    font-size: 0.62rem;
+    padding: 0.26rem 0.38rem;
+  }
+
+  .paginationInfo {
+    font-size: 0.71rem;
+  }
+
+  .pageButton {
+    font-size: 0.69rem;
+  }
+}
