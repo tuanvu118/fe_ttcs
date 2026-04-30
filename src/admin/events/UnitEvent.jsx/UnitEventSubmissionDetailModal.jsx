@@ -168,7 +168,7 @@ export default function UnitEventSubmissionDetailModal({ open, onClose, row, onA
                   disabled={statusSaving || normalizedStatus === 'APPROVED'}
                   onClick={() => handleSetStatus('APPROVED')}
                 >
-                  Đã duyệt
+                  Duyệt
                 </Button>
                 <Button
                   danger

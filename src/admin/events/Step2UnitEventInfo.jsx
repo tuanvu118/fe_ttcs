@@ -3,6 +3,7 @@ import {
   ArrowLeft,
   ArrowRight,
 } from '@phosphor-icons/react'
+import dayjs from 'dayjs'
 import { DatePicker, Select, InputNumber, Switch, message } from 'antd'
 import { getUnits } from '../../service/unitService'
 import SemesterField from '../../components/semesters/SemesterField'
@@ -14,6 +15,7 @@ export default function Step2UnitEventInfo({ type, data, setData, isSubmitting, 
   const [units, setUnits] = useState([])
   const [isLoadingUnits, setIsLoadingUnits] = useState(false)
   const [semesters, setSemesters] = useState([])
+  const filteredUnits = units.filter((unitItem) => String(unitItem?.name || '').trim().toUpperCase() !== 'DEFAULT')
 
   useEffect(() => {
     loadUnits()
@@ -32,16 +34,33 @@ export default function Step2UnitEventInfo({ type, data, setData, isSubmitting, 
     }
   }
 
-
   const isFormValid = data.title && data.description && data.listUnitId?.length > 0 && data.semesterId &&
-    data.registrationPeriod?.[0] && data.registrationPeriod?.[1] &&
-    data.eventPeriod?.[0] && data.eventPeriod?.[1]
+    (
+      // HTTT bỏ yêu cầu nhập thời gian để được bấm "Tạo yêu cầu".
+      type === 'HTTT' ||
+      (data.registrationPeriod?.[0] && data.registrationPeriod?.[1] &&
+        data.eventPeriod?.[0] && data.eventPeriod?.[1])
+    )
 
   const handleNext = () => {
     if ((data.point ?? 0) > 10) {
       message.warning('Điểm thưởng không được vượt quá 10.')
       return
     }
+
+    if (type === 'HTTT') {
+      const now = dayjs()
+      const registrationPeriod = [now, now.add(1, 'day')]
+      const eventPeriod = [now.add(2, 'day'), now.add(3, 'day')]
+
+      // HTTT không dùng thời gian biểu trên UI, nhưng vẫn gửi đủ 4 mốc thời gian cho request.
+      setData((prev) => ({
+        ...prev,
+        registrationPeriod,
+        eventPeriod,
+      }))
+    }
+
     onNext()
   }
 
@@ -122,14 +141,14 @@ export default function Step2UnitEventInfo({ type, data, setData, isSubmitting, 
                 loading={isLoadingUnits}
                 value={data.listUnitId}
                 onChange={val => setData(prev => ({ ...prev, listUnitId: val }))}
-                options={units.map(u => ({ value: u.id, label: u.name }))}
+                options={filteredUnits.map(u => ({ value: u.id, label: u.name }))}
                 filterOption={(input, option) =>
                   (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                 }
               />
             </div>
             <div className={styles.fieldGroup} style={{ flex: 1 }}>
-              <label className={styles.label}>ĐIỂM THƯỞNG (NẾU CÓ)</label>
+              <label className={styles.label}>ĐIỂM</label>
               <div className={styles.inputWithSuffix}>
                 <InputNumber 
                   className={styles.numberInput}
@@ -187,38 +206,40 @@ export default function Step2UnitEventInfo({ type, data, setData, isSubmitting, 
         </div>
       </section>
 
-      <section className={styles.section}>
-        <div className={styles.sectionHeader}>
-          <div className={styles.sectionTitleGroup}>
-            <h3 className={styles.sectionTitle}>Thời gian biểu</h3>
-            <p className={styles.sectionDesc}>Các mốc thời gian bắt buộc cho yêu cầu hỗ trợ.</p>
-          </div>
-        </div>
-        <div className={styles.sectionContent}>
-          <div className={styles.row}>
-            <div className={styles.fieldGroup}>
-              <label className={styles.label}>THỜI GIAN ĐĂNG KÝ</label>
-              <RangePicker
-                showTime
-                className={styles.rangePicker}
-                format="DD/MM/YYYY, HH:mm"
-                value={data.registrationPeriod}
-                onChange={(vals) => setData((prev) => ({ ...prev, registrationPeriod: vals || [null, null] }))}
-              />
-            </div>
-            <div className={styles.fieldGroup}>
-              <label className={styles.label}>THỜI GIAN DIỄN RA</label>
-              <RangePicker
-                showTime
-                className={styles.rangePicker}
-                format="DD/MM/YYYY, HH:mm"
-                value={data.eventPeriod}
-                onChange={(vals) => setData((prev) => ({ ...prev, eventPeriod: vals || [null, null] }))}
-              />
+      {type !== 'HTTT' && (
+        <section className={styles.section}>
+          <div className={styles.sectionHeader}>
+            <div className={styles.sectionTitleGroup}>
+              <h3 className={styles.sectionTitle}>Thời gian biểu</h3>
+              <p className={styles.sectionDesc}>Các mốc thời gian bắt buộc cho yêu cầu hỗ trợ.</p>
             </div>
           </div>
-        </div>
-      </section>
+          <div className={styles.sectionContent}>
+            <div className={styles.row}>
+              <div className={styles.fieldGroup}>
+                <label className={styles.label}>THỜI GIAN ĐĂNG KÝ</label>
+                <RangePicker
+                  showTime
+                  className={styles.rangePicker}
+                  format="DD/MM/YYYY, HH:mm"
+                  value={data.registrationPeriod}
+                  onChange={(vals) => setData((prev) => ({ ...prev, registrationPeriod: vals || [null, null] }))}
+                />
+              </div>
+              <div className={styles.fieldGroup}>
+                <label className={styles.label}>THỜI GIAN DIỄN RA</label>
+                <RangePicker
+                  showTime
+                  className={styles.rangePicker}
+                  format="DD/MM/YYYY, HH:mm"
+                  value={data.eventPeriod}
+                  onChange={(vals) => setData((prev) => ({ ...prev, eventPeriod: vals || [null, null] }))}
+                />
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* FOOTER */}
       <footer className={styles.footer}>

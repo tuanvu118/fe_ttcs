@@ -123,6 +123,12 @@
   font-size: 0.95rem;
   line-height: 1.6;
   color: #475569;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  max-height: 240px;
+  overflow-y: auto;
+  padding-right: 0.25rem;
 }
 
 .cardHeaderBar {

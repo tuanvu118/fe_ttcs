@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { CheckCircle, ArrowRight } from '@phosphor-icons/react'
+import dayjs from 'dayjs'
 import { PATHS } from '../../utils/routes'
 import { createPublicEvent, createUnitEvent } from '../../service/apiAdminEvent'
 import Step1ChooseType from './Step1ChooseType'
@@ -72,17 +73,32 @@ export default function CreateEventPage() {
         await createPublicEvent(formData)
       } else {
         // Unit Event (HTTT/HTSK) specific
+        const isMissingTimeRanges =
+          !eventData.registrationPeriod?.[0] ||
+          !eventData.registrationPeriod?.[1] ||
+          !eventData.eventPeriod?.[0] ||
+          !eventData.eventPeriod?.[1]
+        const fallbackNow = dayjs()
+        const registrationPeriod =
+          selectedType === 'HTTT' && isMissingTimeRanges
+            ? [fallbackNow, fallbackNow.add(1, 'day')]
+            : eventData.registrationPeriod
+        const eventPeriod =
+          selectedType === 'HTTT' && isMissingTimeRanges
+            ? [fallbackNow.add(2, 'day'), fallbackNow.add(3, 'day')]
+            : eventData.eventPeriod
+
         formData.append('type', selectedType)
         if (eventData.semesterId) {
           formData.append('semester_id', eventData.semesterId)
         }
-        if (eventData.registrationPeriod[0] && eventData.registrationPeriod[1]) {
-          formData.append('registration_start', eventData.registrationPeriod[0].toISOString())
-          formData.append('registration_end', eventData.registrationPeriod[1].toISOString())
+        if (registrationPeriod[0] && registrationPeriod[1]) {
+          formData.append('registration_start', registrationPeriod[0].toISOString())
+          formData.append('registration_end', registrationPeriod[1].toISOString())
         }
-        if (eventData.eventPeriod[0] && eventData.eventPeriod[1]) {
-          formData.append('event_start', eventData.eventPeriod[0].toISOString())
-          formData.append('event_end', eventData.eventPeriod[1].toISOString())
+        if (eventPeriod[0] && eventPeriod[1]) {
+          formData.append('event_start', eventPeriod[0].toISOString())
+          formData.append('event_end', eventPeriod[1].toISOString())
         }
         formData.append('is_student_registration', String(Boolean(eventData.is_student_registration)))
         if (selectedType === 'HTSK' && eventData.is_student_registration) {

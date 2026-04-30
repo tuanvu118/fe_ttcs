@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { message } from 'antd'
-import { Trophy, Users, NotePencil, Clock, CheckCircle, Warning, CaretLeft, CaretRight, Plus } from '@phosphor-icons/react'
+import { Users, NotePencil, Clock, CheckCircle, Warning, CaretLeft, CaretRight, Plus } from '@phosphor-icons/react'
 import { ApiError } from '../../service/apiClient'
 import {
   fetchAllUnitMembersRosterForHtsk,
@@ -348,7 +348,7 @@ export default function DetailHTSK({ data, unitId, taskId, semesterId, semesterD
             </div>
             <div className={u.infoItem}>
               <span className={u.infoLabel}>Điểm</span>
-              <span className={u.infoValue}><Trophy size={18} color="#eab308" weight="fill" /> {data?.point ?? 0}</span>
+              <span className={u.infoValue}>{data?.point ?? 0}</span>
             </div>
             <div className={u.infoItem}>
               <span className={u.infoLabel}>Thời gian diễn ra</span>

@@ -9,7 +9,6 @@ import {
   PencilSimple,
   QrCode,
   Trash,
-  Trophy,
 } from '@phosphor-icons/react'
 import { Popconfirm, message, Modal } from 'antd'
 
@@ -208,10 +207,7 @@ export default function EUDetailHTSK({ data, unitId, eventId }) {
                 </div>
                 <div className={styles.infoItem}>
                   <span className={styles.infoLabel}>ĐIỂM THƯỞNG</span>
-                  <span className={styles.infoValue}>
-                    <Trophy size={16} weight="fill" color="#eab308" style={{ marginRight: '0.25rem' }} />
-                    {data.point || 0} ĐIỂM
-                  </span>
+                  <span className={styles.infoValue}>{data.point || 0} ĐIỂM</span>
                 </div>
                 <div className={styles.infoItem}>
                   <span className={styles.infoLabel}>THỜI GIAN TẠO</span>

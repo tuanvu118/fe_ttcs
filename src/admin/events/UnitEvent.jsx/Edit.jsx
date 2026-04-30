@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, FloppyDiskBack, Trophy, WarningCircle } from '@phosphor-icons/react'
+import { ArrowLeft, FloppyDiskBack, WarningCircle } from '@phosphor-icons/react'
 import { DatePicker, InputNumber, message, Select, Spin, Switch } from 'antd'
 import dayjs from 'dayjs'
 import { getUnitEventById, updateUnitEvent } from '../../../service/apiAdminEvent'
@@ -248,9 +248,7 @@ export default function UnitEventEditPage() {
                     value={formData.point}
                     onChange={handlePointChange}
                   />
-                  <span className={styles.suffix}>
-                    <Trophy size={14} weight="fill" /> ĐIỂM
-                  </span>
+                  <span className={styles.suffix}>ĐIỂM</span>
                 </div>
               </div>
             </div>

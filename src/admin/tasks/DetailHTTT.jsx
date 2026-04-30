@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Trophy, Clock, CheckCircle, NotePencil, Link as LinkIcon, FileText } from '@phosphor-icons/react'
+import { Clock, CheckCircle, NotePencil, Link as LinkIcon, FileText } from '@phosphor-icons/react'
 import { message } from 'antd'
 import {
   createUnitEventSubmission,
@@ -121,19 +121,24 @@ export default function DetailHTTT({ data, unitId, taskId, semesterDisplay }) {
       message.warning('Phản hồi đã được duyệt, không thể chỉnh sửa.')
       return
     }
+    const normalizedEvidenceUrl = String(editEvidenceUrl || '').trim()
+    if (normalizedEvidenceUrl && !looksLikeHttpUrl(normalizedEvidenceUrl)) {
+      message.warning('Minh chứng đính kèm phải bắt đầu bằng http:// hoặc https://')
+      return
+    }
 
     setIsSaving(true)
     try {
       const updated = isCreateMode
         ? await createUnitEventSubmission(taskId, unitId, {
             content: editContent,
-            evidenceUrl: editEvidenceUrl,
+            evidenceUrl: normalizedEvidenceUrl,
           })
         : await updateUnitEventSubmissionByEventId(taskId, unitId, {
             content: editContent,
-            evidenceUrl: editEvidenceUrl,
+            evidenceUrl: normalizedEvidenceUrl,
           })
-      setSubmission(updated || { ...submission, content: editContent, evidenceUrl: editEvidenceUrl })
+      setSubmission(updated || { ...submission, content: editContent, evidenceUrl: normalizedEvidenceUrl })
       setIsCreateMode(false)
       setIsEditing(false)
       message.success(isCreateMode ? 'Gửi phản hồi thành công.' : 'Cập nhật phản hồi thành công.')
@@ -192,10 +197,7 @@ export default function DetailHTTT({ data, unitId, taskId, semesterDisplay }) {
             </div>
             <div className={u.infoItem}>
               <span className={u.infoLabel}>Điểm</span>
-              <span className={u.infoValue}>
-                <Trophy size={18} weight="fill" color="#ca8a04" aria-hidden />
-                {data?.point ?? 0}
-              </span>
+              <span className={u.infoValue}>{data?.point ?? 0}</span>
             </div>
             <div className={u.infoItem}>
               <span className={u.infoLabel}>Học kỳ</span>
