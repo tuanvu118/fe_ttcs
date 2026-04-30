@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { List } from '@phosphor-icons/react'
 import { getManagedUnits, getUnitById } from '../service/unitService'
 import { MANAGE_ADMIN_PANELS, PATHS, USER_ROLES, getManageOptionsFromUser, getManageRoleForUnit } from '../utils/routes'
 import AdminSideNav from './AdminSideNav'
@@ -8,6 +9,9 @@ import styles from './adminShell.module.css'
 const FETCH_LIMIT = 100
 
 export default function AdminLayout({ currentPath, navigate, user, accessToken, children }) {
+  const initialMobileLayout = typeof window !== 'undefined'
+    ? window.matchMedia('(max-width: 768px)').matches
+    : false
   const [manageableUnits, setManageableUnits] = useState([])
   const [isLoadingUnits, setIsLoadingUnits] = useState(false)
   const [unitLogoById, setUnitLogoById] = useState({})
@@ -28,6 +32,10 @@ export default function AdminLayout({ currentPath, navigate, user, accessToken, 
     selectedPanelRaw || (isStaffContext ? 'members' : MANAGE_ADMIN_PANELS.users)
   const selectedUnit = manageableUnits.find((unitItem) => unitItem.id === selectedUnitId)
   const [urlOnlyUnit, setUrlOnlyUnit] = useState(null)
+  const [isMobileLayout, setIsMobileLayout] = useState(initialMobileLayout)
+  const [mobilePanel, setMobilePanel] = useState(
+    initialMobileLayout && currentPath !== PATHS.admin ? 'content' : 'sidebar',
+  )
 
   useEffect(() => {
     if (!selectedUnitId || !accessToken) {
@@ -64,6 +72,30 @@ export default function AdminLayout({ currentPath, navigate, user, accessToken, 
   const selectedUnitForNav = selectedUnit || urlOnlyUnit
   const canRenderSidebar = Boolean(selectedUnitId && selectedUnitRole)
   const isStaffSelected = isStaffContext
+
+  useEffect(() => {
+    function syncMobileLayout() {
+      setIsMobileLayout(window.matchMedia('(max-width: 768px)').matches)
+    }
+
+    syncMobileLayout()
+    window.addEventListener('resize', syncMobileLayout)
+    return () => window.removeEventListener('resize', syncMobileLayout)
+  }, [])
+
+  useEffect(() => {
+    if (!isMobileLayout) {
+      setMobilePanel('sidebar')
+      return
+    }
+
+    if (currentPath === PATHS.admin) {
+      setMobilePanel('sidebar')
+      return
+    }
+
+    setMobilePanel('content')
+  }, [currentPath, isMobileLayout])
 
   useEffect(() => {
     if (!accessToken) {
@@ -192,31 +224,65 @@ export default function AdminLayout({ currentPath, navigate, user, accessToken, 
       navigate(buildAdminPath(optionItem.unitId, MANAGE_ADMIN_PANELS.users))
     }
     setIsDropdownOpen(false)
+    if (isMobileLayout) {
+      setMobilePanel('content')
+    }
   }
 
+  function handleMobileNavigate(path) {
+    navigate(path)
+    if (isMobileLayout) {
+      setMobilePanel('content')
+    }
+  }
+
+  const mobilePanelClass =
+    isMobileLayout && mobilePanel === 'sidebar'
+      ? styles.mobileSidebarOnly
+      : isMobileLayout
+        ? styles.mobileContentOnly
+        : ''
+
   return (
-    <section className={styles.shell}>
-      <AdminSideNav
-        currentPath={currentPath}
-        navigate={navigate}
-        unitSelectorRef={unitSelectorRef}
-        isDropdownOpen={isDropdownOpen}
-        setIsDropdownOpen={setIsDropdownOpen}
-        selectedUnitId={selectedUnitId}
-        selectedUnit={selectedUnitForNav}
-        selectedUnitRole={selectedUnitRole}
-        selectedPanel={selectedPanel}
-        manageableUnits={manageableUnits}
-        manageOptions={manageOptions}
-        isLoadingUnits={isLoadingUnits}
-        unitLogoById={unitLogoById}
-        canRenderSidebar={canRenderSidebar}
-        isStaffSelected={isStaffSelected}
-        handleSelectUnit={handleSelectUnit}
-      />
+    <section className={`${styles.shell} ${isMobileLayout ? styles.mobileShell : ''} ${mobilePanelClass}`}>
+      {!isMobileLayout || mobilePanel === 'sidebar' ? (
+        <AdminSideNav
+          currentPath={currentPath}
+          navigate={handleMobileNavigate}
+          isMobileLayout={isMobileLayout}
+          unitSelectorRef={unitSelectorRef}
+          isDropdownOpen={isDropdownOpen}
+          setIsDropdownOpen={setIsDropdownOpen}
+          selectedUnitId={selectedUnitId}
+          selectedUnit={selectedUnitForNav}
+          selectedUnitRole={selectedUnitRole}
+          selectedPanel={selectedPanel}
+          manageableUnits={manageableUnits}
+          manageOptions={manageOptions}
+          isLoadingUnits={isLoadingUnits}
+          unitLogoById={unitLogoById}
+          canRenderSidebar={canRenderSidebar}
+          isStaffSelected={isStaffSelected}
+          handleSelectUnit={handleSelectUnit}
+        />
+      ) : null}
+      {!isMobileLayout || mobilePanel === 'content' ? (
       <div className={styles.content}>
+        {isMobileLayout ? (
+          <div className={styles.mobileToolbar}>
+            <button
+              type="button"
+              className={styles.mobileSwitchButton}
+              onClick={() => setMobilePanel('sidebar')}
+              aria-label="Mở menu"
+            >
+              <List size={18} weight="regular" aria-hidden />
+            </button>
+          </div>
+        ) : null}
         <main className={styles.main}>{children}</main>
       </div>
+      ) : null}
     </section>
   )
 }

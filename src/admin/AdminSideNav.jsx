@@ -4,6 +4,7 @@ import {
   CalendarDots,
   CaretDown,
   ChartBar,
+  HouseSimple,
   Megaphone,
   Users,
   UsersThree,
@@ -64,6 +65,7 @@ const adminActions = [
 export default function AdminSideNav({
   currentPath,
   navigate,
+  isMobileLayout,
   unitSelectorRef,
   isDropdownOpen,
   setIsDropdownOpen,
@@ -218,6 +220,15 @@ export default function AdminSideNav({
             })}
         </nav>
       )}
+
+      {isMobileLayout ? (
+        <div className={styles.sidebarFooter}>
+          <button type="button" className={styles.homeButton} onClick={() => navigate(PATHS.home)}>
+            <HouseSimple size={18} weight="regular" aria-hidden />
+            <span>Trở về trang chủ</span>
+          </button>
+        </div>
+      ) : null}
     </aside>
   )
 }

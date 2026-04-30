@@ -15,8 +15,8 @@
   grid-area: sidebar;
   position: relative;
   z-index: 2;
-  display: grid;
-  align-content: start;
+  display: flex;
+  flex-direction: column;
   gap: 1.15rem;
   padding: 1.1rem;
   min-height: 0;
@@ -313,6 +313,40 @@
   color: inherit;
 }
 
+.sidebarFooter {
+  margin-top: auto;
+  padding-top: 0.4rem;
+}
+
+.homeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 2.9rem;
+  border: 1px solid var(--ds-deep-navy);
+  border-radius: 12px;
+  background: #ffffff;
+  color: var(--ds-deep-navy);
+  font-size: 0.86rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(22, 37, 108, 0.12);
+  transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
+}
+
+.homeButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(22, 37, 108, 0.18);
+  filter: brightness(0.99);
+}
+
+.homeButton:active {
+  transform: translateY(0);
+}
+
 .content {
   grid-area: content;
   display: flex;
@@ -361,21 +395,66 @@
   background: #eef2f8;
 }
 
+.mobileToolbar {
+  display: none;
+}
+
+.mobileSwitchButton {
+  border: 1px solid rgba(29, 78, 216, 0.26);
+  background: #ffffff;
+  color: #1d4ed8;
+  border-radius: 10px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.45rem 0.75rem;
+}
+
 @media (max-width: 768px) {
   .shell {
-    grid-template-areas:
-      'sidebar'
-      'content';
     grid-template-columns: 1fr;
-    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
+    height: 100dvh;
+    max-height: 100dvh;
+    min-height: 100dvh;
+    overflow: hidden;
+  }
+
+  .mobileShell {
+    grid-template-areas: 'content';
+  }
+
+  .mobileSidebarOnly {
+    grid-template-areas: 'sidebar';
+  }
+
+  .mobileContentOnly {
+    grid-template-areas: 'content';
   }
 
   .sidebar {
+    height: 100dvh;
+    max-height: 100dvh;
+    min-height: 100dvh;
     padding-left: 1rem;
     padding-right: 1rem;
+    border-right: 0;
+    box-shadow: none;
+  }
+
+  .content {
+    height: 100dvh;
+    max-height: 100dvh;
+    min-height: 100dvh;
+  }
+
+  .mobileToolbar {
+    display: flex;
+    justify-content: flex-start;
+    padding: 0.75rem 1rem 0.25rem;
+    background: #f8fafc;
   }
 
   .main {
-    padding: 0.75rem 1rem;
+    padding: 0.5rem 1rem 0.9rem;
   }
 }
