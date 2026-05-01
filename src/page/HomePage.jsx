@@ -191,7 +191,7 @@ export default function HomePage() {
         <div className="home-hero-content">
           <span className="home-hero-badge">SỰ KIỆN NỔI BẬT</span>
           <h1 className="home-hero-title">
-            {featuredEvent?.title || 'Chào mừng đến với Cổng thông tin Sinh viên'}
+            {featuredEvent?.title || 'Chào mừng đến với Cổng thông tin Sinh viên v11'}
           </h1>
           <div className="home-hero-btns">
             {featuredEvent && (
