@@ -109,7 +109,7 @@ function ProfilePage({
   }
 
   return (
-    <div className="user-profile-page">
+    <div className={`user-profile-page ${activeTab === 'history' ? 'tab-history' : ''}`}>
       <NotificationPopup
         isOpen={Boolean(notice?.message)}
         title={notice?.title}
@@ -175,7 +175,7 @@ function ProfilePage({
               <button className={`tab-btn ${activeTab === 'history' ? 'active' : ''}`} onClick={() => setActiveTab('history')}>Lịch sử</button>
             </nav>
 
-            <div className="semester-selector">
+            <div className="semester-selector desktop-only">
               <SemesterSelector 
                 variant="filter" 
                 showLabel={false} 
@@ -213,6 +213,15 @@ function ProfilePage({
                     <span className="stat-label">Sự kiện đã tham gia</span>
                     <span className="stat-value">{stats?.participated_events?.filter(ev => ev.checked_in).length || 0}</span>
                   </div>
+                </div>
+
+                <div className="semester-selector mobile-only">
+                  <SemesterSelector 
+                    variant="filter" 
+                    showLabel={false} 
+                    allowAll={true} 
+                    getPopupContainer={(trigger) => trigger.parentNode} 
+                  />
                 </div>
 
                 {isStatsLoading ? (

@@ -499,25 +499,31 @@
   }
 
   .tableFooter {
-    flex-wrap: wrap;
+    flex-direction: row;
+    align-items: center;
     justify-content: center;
-    gap: 0.45rem;
-    padding: 0.6rem;
-  }
-
-  .paginationInfo {
-    width: 100%;
-    justify-content: center;
-    font-size: 0.78rem;
+    gap: 0.75rem;
+    padding: 0.65rem 0.75rem;
+    flex-wrap: nowrap;
+    background: white;
+    border-radius: 8px;
+    border-top: 1px solid #e8eef6;
+    margin-top: 0.25rem;
   }
 
   .pageButton {
-    flex: 1 1 0;
+    flex: none;
     min-width: 0;
+    padding: 0.35rem 0.7rem;
+    font-size: 0.75rem;
+    height: auto;
+  }
+
+  .paginationInfo {
+    width: auto;
     justify-content: center;
-    font-size: 0.78rem;
-    padding: 0 0.5rem;
-    height: 30px;
+    font-size: 0.72rem;
+    margin-bottom: 0;
   }
 
   .detailModalBackdrop {

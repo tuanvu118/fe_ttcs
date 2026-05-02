@@ -208,7 +208,7 @@ export default function EventPublicDetail({ data, semester }) {
         {/* DANH SÁCH ĐĂNG KÝ */}
         <div className={styles.card} style={{ marginTop: '1.5rem' }}>
           <div className={styles.cardHeader} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 className={styles.cardTitle}>DANH SÁCH NGƯỜI ĐĂNG KÝ ({registrations.length})</h3>
+            <h3 className={styles.cardTitle}>DANH SÁCH ({registrations.length})</h3>
             <button 
               className={styles.exportBtn}
               onClick={() => downloadPublicEventExcel({ 

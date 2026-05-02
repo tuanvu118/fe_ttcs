@@ -181,6 +181,12 @@ function ClubPage({ navigate, search = '' }) {
         onClose={() => setNotice(null)}
       />
 
+      <section className="club-page-hero club-catalog-hero">
+        <div className="club-page-copy">
+          <h1 className="premium-title">Khám phá Câu lạc bộ & Liên chi đoàn</h1>
+        </div>
+      </section>
+
       <div className="club-layout">
         <aside className="club-sidebar">
           <div className="club-sidebar-card">
@@ -218,12 +224,6 @@ function ClubPage({ navigate, search = '' }) {
         </aside>
 
         <div className="club-main">
-          <section className="club-page-hero club-catalog-hero">
-            <div className="club-page-copy">
-              <h1 className="premium-title">Khám phá Câu lạc bộ & Liên chi đoàn</h1>
-            </div>
-          </section>
-
           {isLoading ? (
             <section className="club-empty-state">
               <h2>Đang tải danh sách đơn vị...</h2>
@@ -232,7 +232,12 @@ function ClubPage({ navigate, search = '' }) {
             <>
               <section className="club-grid club-grid-catalog">
                 {units.map((unit) => (
-                  <article key={unit.id} className="club-card club-card-catalog">
+                  <article 
+                    key={unit.id} 
+                    className="club-card club-card-catalog"
+                    onClick={() => navigate(buildClubDetailPath(unit.id))}
+                    style={{ cursor: 'pointer' }}
+                  >
                     <ClubPreviewMedia unit={unit} />
 
                     <div className="club-card-body">
@@ -241,16 +246,6 @@ function ClubPage({ navigate, search = '' }) {
                       </div>
                       <h2>{unit.name || 'Chưa cập nhật'}</h2>
                       <p>{buildSummaryText(unit)}</p>
-                    </div>
-
-                    <div className="club-card-footer">
-                      <button
-                        type="button"
-                        className="club-link-button club-link-button-filled"
-                        onClick={() => navigate(buildClubDetailPath(unit.id))}
-                      >
-                        Xem chi tiết
-                      </button>
                     </div>
                   </article>
                 ))}

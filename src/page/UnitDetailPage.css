@@ -117,9 +117,12 @@
   line-height: 1.6;
   color: #334155;
   background: #f8fafc;
-  padding: 1rem; /* Tighter padding */
+  padding: 1rem;
   border-radius: 12px;
   border: 1px solid #f1f5f9;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .unit-sidebar-column {
@@ -253,8 +256,56 @@
   overflow: hidden;
 }
 
+@media (max-width: 1024px) {
+  .unit-hero-banner {
+    border-radius: 0;
+  }
+  
+  .unit-content-layout {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+    gap: 2rem;
+  }
+}
+
 @media (max-width: 768px) {
+  .unit-header-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 1.25rem;
+    padding: 1rem;
+  }
+
+  .unit-logo-wrapper {
+    margin-top: -3rem; /* Lift logo over banner slightly on mobile */
+    z-index: 5;
+  }
+
+  .unit-logo-wrapper :first-child {
+    width: 100px !important;
+    height: 100px !important;
+  }
+
+  .unit-name-title {
+    font-size: 1.5rem;
+  }
+
   .unit-promo-grid {
     grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .unit-sidebar-column {
+    order: 2; /* Move sidebar below main content */
+  }
+
+  .unit-main-column {
+    order: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .unit-hero-banner {
+    aspect-ratio: 16/9;
   }
 }

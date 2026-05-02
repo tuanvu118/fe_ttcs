@@ -145,7 +145,7 @@ export default function EventsPage({ navigate }) {
         <div className="filter-group">
           <h3>Thời gian diễn ra</h3>
           <div className="category-list">
-            <label className="checkbox-label">
+            <label className={`checkbox-label ${timeFilter === TIME_FILTERS.THIS_WEEK ? 'active' : ''}`}>
               <input 
                 type="radio" 
                 name="time" 
@@ -154,7 +154,7 @@ export default function EventsPage({ navigate }) {
               />
               Tuần này
             </label>
-            <label className="checkbox-label">
+            <label className={`checkbox-label ${timeFilter === TIME_FILTERS.THIS_MONTH ? 'active' : ''}`}>
               <input 
                 type="radio" 
                 name="time"
@@ -163,7 +163,7 @@ export default function EventsPage({ navigate }) {
               />
               Tháng này
             </label>
-            <label className="checkbox-label">
+            <label className={`checkbox-label ${timeFilter === TIME_FILTERS.UPCOMING ? 'active' : ''}`}>
               <input 
                 type="radio" 
                 name="time"
@@ -172,7 +172,7 @@ export default function EventsPage({ navigate }) {
               />
               Sắp tới
             </label>
-            <label className="checkbox-label" style={{ opacity: 0.6 }}>
+            <label className={`checkbox-label ${timeFilter === '' ? 'active' : ''}`} style={{ opacity: 0.8 }}>
               <input 
                 type="radio" 
                 name="time"
@@ -212,8 +212,8 @@ export default function EventsPage({ navigate }) {
                 padding: '0.6rem 1rem 0.6rem 2.25rem',
                 borderRadius: '8px',
                 border: '1px solid #e2e8f0',
-                width: '240px',
-                fontSize: '0.9rem',
+                width: '100%',
+                fontSize: '16px',
                 outline: 'none',
                 transition: 'all 0.2s ease',
               }}
