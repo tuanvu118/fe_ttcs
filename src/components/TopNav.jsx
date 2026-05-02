@@ -1,4 +1,4 @@
-import { GearSix, QrCode, UserCircle } from '@phosphor-icons/react'
+import { QrCode, UserCircle } from '@phosphor-icons/react'
 import { PATHS, primaryNavigation } from '../utils/routes'
 import styles from './TopNav.module.css'
 
@@ -107,7 +107,7 @@ function TopNav({ currentPath, isAuthenticated, dashboardPath, navigate }) {
                 aria-label="Khu vực quản trị"
                 onClick={() => navigate(dashboardPath)}
               >
-                <GearSix size={navIconSize} weight="regular" aria-hidden />
+                <img src="/shield-user.svg" alt="" aria-hidden width={navIconSize} height={navIconSize} />
               </button>
             )}
 
