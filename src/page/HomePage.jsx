@@ -194,20 +194,22 @@ export default function HomePage() {
             {featuredEvent?.title || 'Chào mừng đến với Cổng thông tin Sinh viên v16'}
           </h1>
           <div className="home-hero-btns">
+            <div className="home-hero-btns-group">
+              <Link to={PATHS.event} className="home-btn-outline">
+                Sự kiện
+              </Link>
+              <Link to={PATHS.units} className="home-btn-outline">
+                Đơn vị
+              </Link>
+              <Link to={PATHS.about} className="home-btn-outline">
+                Tin tức
+              </Link>
+            </div>
             {featuredEvent && (
               <Link to={`${PATHS.event}/${featuredEvent.id}`} className="home-btn-primary">
                 Tham gia ngay
               </Link>
             )}
-            <Link to={PATHS.event} className="home-btn-outline">
-              Sự kiện
-            </Link>
-            <Link to={PATHS.units} className="home-btn-outline">
-              Đơn vị
-            </Link>
-            <Link to={PATHS.about} className="home-btn-outline">
-              Tin tức
-            </Link>
           </div>
         </div>
         <div className="home-hero-indicators">
@@ -258,9 +260,15 @@ export default function HomePage() {
                         <div className="home-event-body">
                           <p className="home-event-date">{formatDateShort(event.event_start).toUpperCase()}</p>
                           <h3 className="home-event-title">{event.title}</h3>
-                          <div className="home-event-location">
-                            <span className="material-symbols-outlined">location_on</span>
-                            <span>{event.location || 'PTIT'}</span>
+                          <div className="home-event-meta">
+                            <div className="home-event-location">
+                              <span className="material-symbols-outlined">location_on</span>
+                              <span>{event.location || 'PTIT'}</span>
+                            </div>
+                            <div className="home-event-points">
+                              <span className="material-symbols-outlined">stars</span>
+                              <span>+{event.point} điểm</span>
+                            </div>
                           </div>
                         </div>
                       </Link>
@@ -283,7 +291,7 @@ export default function HomePage() {
               <div className="home-clb-scroll">
                 {loading ? (
                   <p className="home-loading">Đang tải...</p>
-                ) : units.length > 0 ? units.map((unit, idx) => (
+                ) : units.length > 0 ? units.slice(0, 6).map((unit, idx) => (
                   <Link key={unit.id} to={`${PATHS.club}/${unit.id}`} className="home-clb-card">
                     <div className="home-clb-icon">
                       {unit.logo ? (

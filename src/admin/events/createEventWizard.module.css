@@ -30,6 +30,7 @@
   letter-spacing: -0.03em;
   background: linear-gradient(135deg, #0c1f45 0%, #2563eb 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
@@ -171,4 +172,70 @@
   transform: translateY(-1px);
   box-shadow: 0 6px 16px rgba(12, 31, 69, 0.2);
   filter: brightness(1.1);
+}
+
+@media (max-width: 768px) {
+  .wizardHeader {
+    padding: 0.75rem 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .wizardTitle {
+    font-size: 1.25rem;
+  }
+
+  .wizardSubtitle {
+    font-size: 0.7rem;
+  }
+
+  .stepperContainer {
+    padding: 0 1rem;
+  }
+
+  .stepper {
+    gap: 0.75rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .stepper::-webkit-scrollbar {
+    display: none;
+  }
+
+  .step {
+    min-width: 140px;
+    padding: 0.4rem 0;
+  }
+
+  .stepName {
+    font-size: 0.55rem;
+    white-space: nowrap;
+  }
+
+  .wizardContent {
+    padding: 1rem;
+  }
+
+  .successView {
+    padding: 2.5rem 1rem;
+    gap: 1rem;
+  }
+
+  .successView h2 {
+    font-size: 1.25rem;
+  }
+
+  .successView p {
+    font-size: 0.85rem;
+  }
+
+  .finishBtn {
+    width: 100%;
+    justify-content: center;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+  }
 }

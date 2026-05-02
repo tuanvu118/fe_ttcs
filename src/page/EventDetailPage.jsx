@@ -210,15 +210,23 @@ export default function EventDetailPage({ eventId }) {
           
           <h1 className="event-hero-title-premium">{eventData.title}</h1>
           
-          <div className="event-meta-horizontal">
-            <div className="meta-item-inline">
-              <CalendarBlank size={20} weight="fill" />
-              <span>{startDate.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })}</span>
+          <div className="event-hero-footer">
+            <div className="event-meta-horizontal">
+              <div className="meta-item-inline">
+                <CalendarBlank size={20} weight="fill" />
+                <span>{startDate.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })}</span>
+              </div>
+              <div className="meta-item-inline">
+                <MapPin size={20} weight="fill" />
+                <span>{eventData.location || 'Địa điểm xem bên dưới'}</span>
+              </div>
             </div>
-            <div className="meta-item-inline">
-              <MapPin size={20} weight="fill" />
-              <span>{eventData.location || 'Địa điểm xem chi tiết bên dưới'}</span>
-            </div>
+
+            {!isRegistered && canRegister && (
+              <button className="hero-quick-reg-btn" onClick={handleRegister}>
+                Đăng ký ngay
+              </button>
+            )}
           </div>
         </div>
       </section>
@@ -257,7 +265,6 @@ export default function EventDetailPage({ eventId }) {
           {eventData.form_fields?.length > 0 && (
             <div className="detail-section">
               <h2 className="detail-section-title">Nội dung đăng ký</h2>
-              <p style={{ color: '#64748b' }}>Sự kiện này yêu cầu cung cấp thêm thông tin khi đăng ký.</p>
               {/* Form implementation for later */}
             </div>
           )}

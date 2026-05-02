@@ -135,6 +135,14 @@
   gap: 1rem;
 }
 
+.mobile-only {
+  display: none !important;
+}
+
+.desktop-only {
+  display: flex !important;
+}
+
 .profile-tabs-content {
   padding: 2rem;
   flex: 1;
@@ -243,6 +251,202 @@
 
 /* ── RESPONSIVE ── */
 @media (max-width: 900px) {
-  .profile-container { grid-template-columns: 1fr; }
-  .profile-sidebar { position: static; }
+  .profile-container { 
+    grid-template-columns: 1fr; 
+    gap: 1rem;
+  }
+  .profile-sidebar { 
+    position: static; 
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+@media (max-width: 768px) {
+  .user-profile-page {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* CRITICAL: Hide profile info when in History tab on mobile */
+  .user-profile-page.tab-history .profile-sidebar {
+    display: none;
+  }
+
+  .profile-container {
+    gap: 0;
+  }
+
+  .profile-main {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    box-shadow: none;
+    min-height: calc(100vh - 60px);
+    padding-bottom: 5rem;
+  }
+
+  .profile-tabs-header {
+    display: none !important;
+  }
+
+  .tabs-nav {
+    display: none !important;
+  }
+
+  .desktop-only {
+    display: none !important;
+  }
+
+  .mobile-only {
+    display: flex !important;
+  }
+
+  .tab-pane-stats .semester-selector.mobile-only {
+    position: static !important;
+    margin: 0 0 1.25rem !important;
+    padding: 0 !important;
+    width: 100% !important;
+    display: flex !important;
+    justify-content: center !important;
+  }
+
+  .tab-pane-stats .semester-selector.mobile-only :global(.semester-filter-btn) {
+    width: 100% !important;
+    justify-content: center !important;
+    padding: 0.6rem 1rem !important;
+    font-size: 0.85rem !important;
+    border-radius: 10px !important;
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    height: auto !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02) !important;
+  }
+
+  .tab-pane-stats .semester-selector.mobile-only :global(.semester-filter-btn svg) {
+    width: 18px !important;
+    height: 18px !important;
+    margin-right: 0.5rem !important;
+  }
+
+  .tab-pane-stats .semester-selector.mobile-only :global(.semester-filter-btn .ant-scroll-number) {
+    margin-left: 0.5rem;
+  }
+
+
+
+  /* Desktop-only selector stays as is in header */
+  .desktop-only {
+    display: none !important;
+  }
+
+  .profile-tabs-content {
+    padding: 1.25rem 1rem;
+  }
+
+  .event-item-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.85rem 1rem;
+    background: #ffffff;
+    border: none;
+    border-left: 4px solid #2563eb;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  }
+
+  .event-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .event-info h4 {
+    font-size: 0.85rem;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #1e293b;
+  }
+
+  .event-info span {
+    font-size: 0.7rem;
+    color: #94a3b8;
+  }
+
+  .event-meta {
+    width: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.2rem;
+    border-top: none;
+    padding-top: 0;
+    margin-top: 0;
+  }
+
+  .status-tag {
+    background: transparent !important;
+    padding: 0;
+    font-size: 0.65rem;
+    color: #10b981 !important;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+  }
+
+  .point-badge {
+    font-size: 0.95rem;
+    font-weight: 900;
+    color: #2563eb;
+    line-height: 1;
+  }
+
+  .stats-overview {
+    margin-bottom: 1rem;
+  }
+
+  .stat-card {
+    padding: 0.6rem 0.85rem;
+  }
+
+  .stat-label {
+    font-size: 0.6rem;
+  }
+
+  .stat-value {
+    font-size: 0.95rem;
+  }
+
+  .events-history h3 {
+    display: none !important; /* Hide 'Lịch sử tham gia sự kiện' heading on mobile */
+  }
+
+  .stat-card {
+    padding: 0.6rem 0.8rem;
+    min-height: 60px;
+    justify-content: center;
+  }
+
+  .stat-label {
+    font-size: 0.6rem;
+    margin-bottom: 0.1rem;
+  }
+
+  .stat-value {
+    font-size: 1.1rem;
+  }
+
+  .profile-sidebar {
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+    box-shadow: none;
+    padding: 2rem 1.5rem;
+  }
 }

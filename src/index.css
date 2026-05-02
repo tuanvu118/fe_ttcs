@@ -307,7 +307,6 @@ select:disabled {
   gap: 1.25rem;
 }
 
-.club-page-hero,
 .club-detail-card {
   padding: 1.5rem;
   border: 1px solid rgba(214, 226, 245, 0.95);
@@ -466,22 +465,11 @@ select:disabled {
 }
 
 .club-catalog-hero {
-  position: relative;
-  overflow: hidden;
-  display: grid;
-  gap: 0.85rem;
-  min-height: 0;
-  padding-block: 1.8rem;
+  padding-block: 1rem 0.5rem;
+  text-align: left;
 }
 
-.club-catalog-hero::before {
-  content: '';
-  position: absolute;
-  inset: auto -10% -38% 40%;
-  height: 240px;
-  background: radial-gradient(circle, rgba(37, 99, 235, 0.14), transparent 68%);
-  pointer-events: none;
-}
+/* Removed background gradient effect for cleaner look */
 
 .club-toolbar {
   display: grid;
@@ -515,12 +503,12 @@ select:disabled {
 
 .club-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 1.25rem;
 }
 
 .club-grid-catalog {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 1.25rem;
 }
 
@@ -530,12 +518,12 @@ select:disabled {
 
 .club-card {
   display: grid;
-  gap: 0.95rem;
-  padding: 1.2rem;
+  gap: 0.65rem;
+  padding: 0.85rem;
   border: 1px solid rgba(223, 233, 247, 0.95);
-  border-radius: 26px;
-  background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
-  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.07);
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.03);
 }
 
 .club-card-top {
@@ -553,14 +541,18 @@ select:disabled {
 .club-card-body h2 {
   margin: 0;
   color: #0f172a;
-  font-size: clamp(1.35rem, 2vw, 1.65rem);
-  line-height: 1.35;
+  font-size: 1.05rem;
+  line-height: 1.25;
+  font-weight: 800;
 }
 
 .club-card-body p {
   margin: 0;
   color: #667085;
-  line-height: 1.75;
+  line-height: 1.5;
+  font-size: 0.8rem;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .club-link-button {
@@ -573,27 +565,25 @@ select:disabled {
 }
 
 .club-card-catalog {
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto 1fr; /* Removed footer row */
   min-height: 100%;
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease,
-    border-color 0.2s ease;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .club-card-catalog:hover {
-  transform: translateY(-4px);
-  border-color: rgba(37, 99, 235, 0.18);
-  box-shadow: 0 24px 48px rgba(15, 23, 42, 0.1);
+  transform: translateY(-5px) scale(1.02);
+  border-color: rgba(37, 99, 235, 0.25);
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
 }
 
 .club-card-media {
   position: relative;
   overflow: hidden;
-  aspect-ratio: 16 / 10;
-  border-radius: 20px;
-  background: linear-gradient(135deg, #e7efff 0%, #d2e2ff 100%);
-  border: 1px solid #dbe7fb;
+  aspect-ratio: 1 / 1;
+  border-radius: 14px;
+  background: #f8fbff;
+  border: 1px solid #f1f5f9;
 }
 
 .club-card-media-image {
@@ -1910,40 +1900,124 @@ select:disabled {
     grid-template-columns: 1fr;
   }
 
-  .club-layout,
-  .club-toolbar,
-  .club-grid,
-  .club-grid-catalog {
+  .club-layout {
     grid-template-columns: 1fr;
+    gap: 1rem;
+    padding-inline: 0.75rem;
   }
 
   .club-sidebar {
     position: static;
+    margin-top: -0.75rem; /* Pull up to overlap with hero slightly */
+    z-index: 10;
   }
 
-  .club-page-hero,
-  .club-detail-card,
-  .club-sidebar-card,
-  .club-card {
-    border-radius: 22px;
+  .club-sidebar-card {
+    background: transparent;
+    padding: 0;
+    border: none;
+    box-shadow: none;
   }
 
-  .club-toolbar-catalog {
-    padding: 1rem;
+  .club-sidebar-label,
+  .club-sidebar-field span {
+    display: none;
   }
 
-  .club-card-catalog .club-card-body p {
-    min-height: 0;
-    -webkit-line-clamp: 3;
-    line-clamp: 3;
+  .club-sidebar-search {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
   }
 
-  .club-card-footer {
-    justify-content: stretch;
+  .club-sidebar-field input,
+  .club-sidebar-field select {
+    height: 42px;
+    border-radius: 10px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    font-size: 0.9rem;
+    padding: 0 1rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
   }
 
-  .club-link-button-filled {
+  .club-sidebar-submit {
+    height: 42px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, #0c1f45 0%, #2563eb 100%) !important;
+    color: white !important;
+    border: none !important;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    margin-top: 0.25rem;
+  }
+
+  .club-grid-catalog {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    padding-bottom: 2rem;
+  }
+
+  .club-card-catalog {
+    padding: 0;
+    border-radius: 14px;
+    background: #ffffff;
+    border: 1px solid #f1f5f9;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  }
+
+  .club-card-media {
     width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 0;
+  }
+
+  .club-card-body {
+    padding: 0.75rem 0.5rem;
+    gap: 0.2rem;
+  }
+
+  .club-card-body h2 {
+    font-size: 0.85rem;
+    font-weight: 850;
+    color: #0f172a;
+    min-height: 2rem;
+  }
+
+  .club-card-body p {
+    font-size: 0.65rem;
+    color: #64748b;
+  }
+
+  .club-catalog-hero {
+    padding: 2.5rem 1.5rem 2rem;
+    background: linear-gradient(180deg, #f8fbff 0%, #f1f5f9 100%);
+    border-bottom: 1px solid #e2e8f0;
+    text-align: left;
+    margin-bottom: 0;
+  }
+
+  .premium-title {
+    font-size: 1.5rem;
+    font-weight: 900;
+    line-height: 1.2;
+    background: linear-gradient(135deg, #0c1f45 0%, #2563eb 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: inline-block;
+  }
+
+  .premium-title::before {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 4px;
+    background: #2563eb;
+    border-radius: 2px;
+    margin-bottom: 0.75rem;
   }
 
   .register-footer {
@@ -2052,13 +2126,13 @@ select:disabled {
 
 }
 
-@media (min-width: 769px) and (max-width: 1180px) {
+@media (min-width: 769px) and (max-width: 1400px) {
   .club-layout {
     grid-template-columns: 240px minmax(0, 1fr);
   }
 
   .club-grid-catalog {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 

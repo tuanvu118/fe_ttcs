@@ -74,27 +74,18 @@ export default function NewsPortalPage() {
     <div className={styles.container}>
       <header className={styles.header}>
         <h1 className={styles.mainTitle}>Tin tức mới nhất</h1>
-        <div className={styles.tabs}>
-          <span 
-            className={`${styles.tabItem} ${activeTab === 'latest' ? styles.tabActive : ''}`} 
-            onClick={() => setActiveTab('latest')}
-          >
-            Mới nhất
-          </span>
-          <span 
-            className={`${styles.tabItem} ${activeTab === 'popular' ? styles.tabActive : ''}`} 
-            onClick={() => setActiveTab('popular')}
-          >
-            Phổ biến
-          </span>
-        </div>
+
       </header>
 
       <div className={styles.contentLayout}>
         {/* ARTICLES LIST */}
         <div className={styles.mainFeed}>
           {sortedNews.map((item) => (
-            <article key={item.id} className={styles.newsCard}>
+            <Link 
+              key={item.id} 
+              to={`/news/${item.id}`} 
+              className={styles.newsCard}
+            >
               <div className={styles.cardCover}>
                 <img src={item.image_url || '/placeholder-news.jpg'} alt={item.title} />
               </div>
@@ -117,12 +108,12 @@ export default function NewsPortalPage() {
                     </div>
                     <span>{item.organization?.name || 'Ban Truyền thông'}</span>
                   </div>
-                  <Link to={`/news/${item.id}`} className={styles.readMore}>
+                  <span className={styles.readMore}>
                     Đọc thêm <ArrowRight size={14} weight="bold" />
-                  </Link>
+                  </span>
                 </div>
               </div>
-            </article>
+            </Link>
           ))}
           {sortedNews.length === 0 && <div className={styles.empty}>Chưa có bài viết nào được đăng.</div>}
 
