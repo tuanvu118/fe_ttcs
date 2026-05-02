@@ -1,0 +1,64 @@
+.page {
+  min-height: calc(100vh - 72px);
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+  background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+}
+
+.card {
+  width: min(100%, 760px);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+  padding: 24px;
+  display: grid;
+  gap: 14px;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.countdown {
+  margin: 0;
+  color: #1e293b;
+  font-size: 0.95rem;
+}
+
+.message {
+  margin: 0;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.stateBox {
+  display: grid;
+  gap: 12px;
+}
+
+@media (max-width: 780px) {
+  .page {
+    padding: 12px;
+  }
+
+  .card {
+    border-radius: 12px;
+    padding: 14px;
+    gap: 10px;
+  }
+
+  .title {
+    font-size: 1.05rem;
+  }
+
+  .countdown,
+  .message {
+    font-size: 0.88rem;
+  }
+}
+

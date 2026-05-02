@@ -1,34 +1,20 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Button, Form, InputNumber, Modal, Typography, message } from 'antd'
+import { useEffect, useState } from 'react'
+import { Button, Form, InputNumber, Modal, message } from 'antd'
 import { createPublicEventAttendanceSession } from '../../../service/apiAdminEvent'
 import { getCurrentCoordinates } from '../../../utils/geolocation'
-import QRRender from './QR_render'
+import { setLatestQrSession } from './qrStorage'
 import styles from './QRModalUnitEvent.module.css'
-
-const { Text } = Typography
-
-function findActiveWindow(windows, nowMs) {
-  if (!Array.isArray(windows) || windows.length === 0) {
-    return null
-  }
-  return windows.find((window) => {
-    const fromMs = new Date(window.valid_from).getTime()
-    const untilMs = new Date(window.valid_until).getTime()
-    return Number.isFinite(fromMs) && Number.isFinite(untilMs) && nowMs >= fromMs && nowMs < untilMs
-  }) || null
-}
 
 export default function QRModalPublicEvent({ open, onClose, eventId }) {
   const [form] = Form.useForm()
   const [submitting, setSubmitting] = useState(false)
   const [loadingLocation, setLoadingLocation] = useState(false)
-  const [sessionData, setSessionData] = useState(null)
-  const [nowMs, setNowMs] = useState(Date.now())
+  const [qrCreated, setQrCreated] = useState(false)
   const [coordinates, setCoordinates] = useState({ latitude: null, longitude: null })
 
   useEffect(() => {
     if (!open) {
-      setSessionData(null)
+      setQrCreated(false)
       setCoordinates({ latitude: null, longitude: null })
       return
     }
@@ -63,35 +49,6 @@ export default function QRModalPublicEvent({ open, onClose, eventId }) {
       cancelled = true
     }
   }, [open, form])
-
-  useEffect(() => {
-    if (!open || !sessionData) {
-      return undefined
-    }
-    const timer = window.setInterval(() => setNowMs(Date.now()), 1000)
-    return () => window.clearInterval(timer)
-  }, [open, sessionData])
-
-  const activeWindow = useMemo(
-    () => findActiveWindow(sessionData?.windows, nowMs),
-    [sessionData?.windows, nowMs],
-  )
-
-  const remainingSeconds = useMemo(() => {
-    if (!activeWindow) return 0
-    const untilMs = new Date(activeWindow.valid_until).getTime()
-    if (!Number.isFinite(untilMs)) return 0
-    return Math.ceil((untilMs - nowMs) / 1000)
-  }, [activeWindow, nowMs])
-
-  const sessionEnded = useMemo(() => {
-    if (!sessionData?.windows?.length) {
-      return false
-    }
-    const lastWindow = sessionData.windows[sessionData.windows.length - 1]
-    const lastUntilMs = new Date(lastWindow?.valid_until).getTime()
-    return Number.isFinite(lastUntilMs) && nowMs >= lastUntilMs
-  }, [sessionData, nowMs])
 
   const fetchLocation = async () => {
     setLoadingLocation(true)
@@ -138,14 +95,20 @@ export default function QRModalPublicEvent({ open, onClose, eventId }) {
         radius_meters: Number(values.radiusMeters),
       }
       const response = await createPublicEventAttendanceSession(eventId, payload)
-      setSessionData(response)
-      setNowMs(Date.now())
+      setLatestQrSession(response)
+      setQrCreated(true)
       message.success('Đã tạo phiên điểm danh QR.')
     } catch (error) {
       message.error(error?.message || 'Không thể tạo phiên điểm danh.')
     } finally {
       setSubmitting(false)
     }
+  }
+
+  const handleOpenQrTab = (event) => {
+    event?.preventDefault()
+    event?.stopPropagation()
+    window.open('/qr', '_blank', 'noopener,noreferrer')
   }
 
   return (
@@ -202,39 +165,13 @@ export default function QRModalPublicEvent({ open, onClose, eventId }) {
             <Button type="primary" htmlType="submit" loading={submitting} disabled={loadingLocation}>
               Tạo phiên điểm danh
             </Button>
+            {qrCreated ? (
+              <Button htmlType="button" onClick={handleOpenQrTab}>
+                Mở QR
+              </Button>
+            ) : null}
           </div>
         </Form>
-
-        {sessionData ? (
-          <Modal
-            title="QR điểm danh"
-            open={open && Boolean(sessionData)}
-            footer={null}
-            onCancel={() => setSessionData(null)}
-            width="min(720px, calc(100vw - 24px))"
-            maskStyle={{
-              backdropFilter: 'blur(12px)',
-              WebkitBackdropFilter: 'blur(12px)',
-              background: 'rgba(15, 23, 42, 0.48)',
-            }}
-            destroyOnClose
-          >
-            {sessionEnded ? (
-              <div className={styles.endSessionBox}>
-                <Text className={styles.endSessionText}>Phiên điểm danh đã kết thúc.</Text>
-                <Button onClick={() => setSessionData(null)}>Quay lại</Button>
-              </div>
-            ) : (
-              <QRRender
-                sessionData={sessionData}
-                currentWindow={activeWindow}
-                remainingSeconds={remainingSeconds}
-              />
-            )}
-          </Modal>
-        ) : (
-          <Text className={styles.emptyText}>Tạo phiên để bắt đầu hiển thị QR value theo từng cửa sổ hiệu lực.</Text>
-        )}
       </div>
     </Modal>
   )

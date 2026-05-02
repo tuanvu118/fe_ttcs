@@ -19,6 +19,7 @@ import LogoutPage from './page/LogoutPage'
 import NotFoundPage from './page/NotFoundPage'
 import ProfilePage from './page/ProfilePage'
 import QrScanPage from './page/QrScanPage'
+import QRViewerPage from './admin/events/QR/QRViewerPage'
 import { handleTaskRouteAuthView } from './utils/taskRouteHandler'
 import { PATHS, getClubUnitIdFromPath } from './utils/routes'
 
@@ -81,6 +82,8 @@ function App() {
     page = <section className="page-card">Đang tải thông tin người dùng...</section>
   } else if (pathname === PATHS.home) {
     page = <HomePage />
+  } else if (pathname === PATHS.qr) {
+    page = <QRViewerPage />
   } else if (pathname === PATHS.event) {
     page = <EventsPage navigate={navigate} />
   } else if (unitStudentEventMatch) {

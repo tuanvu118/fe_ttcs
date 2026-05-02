@@ -1,5 +1,6 @@
 export const PATHS = {
   home: '/',
+  qr: '/qr',
   event: '/events',
   units: '/units',
   qrScan: '/qr-scan',
@@ -66,6 +67,7 @@ export const primaryNavigation = [
 
 const routeMeta = {
   [PATHS.home]: { title: 'Trang chủ' },
+  [PATHS.qr]: { title: 'QR Điểm danh' },
   [PATHS.event]: { title: 'Sự kiện' },
   [PATHS.qrScan]: { title: 'Quét QR', requiresAuth: true },
   [PATHS.about]: { title: 'Bảng tin' },
