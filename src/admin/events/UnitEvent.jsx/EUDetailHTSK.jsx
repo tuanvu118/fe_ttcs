@@ -24,6 +24,7 @@ export default function EUDetailHTSK({ data, unitId, eventId }) {
   const [registrations, setRegistrations] = useState([])
   const [registrationsLoading, setRegistrationsLoading] = useState(false)
   const [registrationsError, setRegistrationsError] = useState('')
+  const [selectedRegistration, setSelectedRegistration] = useState(null)
   const [isQrModalOpen, setIsQrModalOpen] = useState(false)
   const currentSemester = getStoredCurrentSemester()
   const semesterObj =
@@ -332,7 +333,11 @@ export default function EUDetailHTSK({ data, unitId, eventId }) {
                       const user = item?.user || {}
                       const checkedIn = Boolean(item?.checkIn)
                       return (
-                        <tr key={`${user?.student_id || 'user'}-${idx}`}>
+                        <tr
+                          key={`${user?.student_id || 'user'}-${idx}`}
+                          className={styles.coopRowClickable}
+                          onClick={() => setSelectedRegistration(item)}
+                        >
                           <td>{idx + 1}</td>
                           <td>{user?.student_id || '—'}</td>
                           <td>{user?.full_name || '—'}</td>
@@ -350,7 +355,10 @@ export default function EUDetailHTSK({ data, unitId, eventId }) {
                             {!checkedIn && (
                               <button 
                                 className={styles.markBtn}
-                                onClick={() => handleMarkAttendance(item)}
+                                onClick={(event) => {
+                                  event.stopPropagation()
+                                  handleMarkAttendance(item)
+                                }}
                               >
                                 Điểm danh
                               </button>
@@ -373,6 +381,26 @@ export default function EUDetailHTSK({ data, unitId, eventId }) {
         </div>
 
       </div>
+
+      <Modal
+        title="Chi tiết sinh viên đăng ký"
+        open={Boolean(selectedRegistration)}
+        onCancel={() => setSelectedRegistration(null)}
+        footer={null}
+        centered
+      >
+        <div className={styles.registrationDetailModal}>
+          <p><strong>Họ tên:</strong> {selectedRegistration?.user?.full_name || '—'}</p>
+          <p><strong>MSV:</strong> {selectedRegistration?.user?.student_id || '—'}</p>
+          <p><strong>Lớp:</strong> {selectedRegistration?.user?.class_name || '—'}</p>
+          <p><strong>Email:</strong> {selectedRegistration?.user?.email || '—'}</p>
+          <p><strong>Đơn vị nộp:</strong> {selectedRegistration?.unit_name || '—'}</p>
+          <p>
+            <strong>Trạng thái:</strong>{' '}
+            {selectedRegistration?.checkIn ? 'Đã điểm danh' : 'Chưa điểm danh'}
+          </p>
+        </div>
+      </Modal>
     </div>
   )
 }

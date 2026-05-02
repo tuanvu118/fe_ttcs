@@ -374,6 +374,17 @@
   border-bottom: 1px solid var(--ds-divider);
 }
 
+.coopTable th:first-child,
+.coopTable td:first-child {
+  width: 44px;
+  min-width: 44px;
+  max-width: 44px;
+  text-align: center;
+  white-space: nowrap;
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
 .coopTable th {
   font-size: 0.72rem;
   font-weight: 800;
@@ -394,6 +405,11 @@
   padding-right: 2.5rem;
 }
 
+.coopTable th:nth-child(3),
+.coopTable td:nth-child(3) {
+  text-align: left;
+}
+
 @media (max-width: 768px) {
   .cardHeader,
   .cardBody {
@@ -412,6 +428,14 @@
 
 .coopTable tbody tr:last-child td {
   border-bottom: none;
+}
+
+.coopRowClickable {
+  cursor: pointer;
+}
+
+.coopRowClickable:hover td {
+  background: #f8fafc;
 }
 
 .coopUnitCell {
@@ -504,6 +528,15 @@
   transform: translateY(-1px);
 }
 
+.registrationDetailModal p {
+  margin: 0 0 0.5rem;
+  color: var(--ds-text);
+}
+
+.registrationDetailModal p:last-child {
+  margin-bottom: 0;
+}
+
 @media (max-width: 1024px) {
   .detailRoot {
     margin-top: 0.9rem;
@@ -568,16 +601,25 @@
     table-layout: fixed;
   }
 
-  .coopTable th:nth-child(3),
-  .coopTable td:nth-child(3) {
-    display: none;
-  }
-
   .coopTable th,
   .coopTable td {
     padding: 0.5rem 0.46rem;
     font-size: 0.72rem;
     word-break: break-word;
+  }
+
+  .coopTable th:first-child,
+  .coopTable td:first-child {
+    width: 38px;
+    min-width: 38px;
+    max-width: 38px;
+    padding-left: 0.3rem;
+    padding-right: 0.3rem;
+  }
+
+  .coopTable th:nth-child(3),
+  .coopTable td:nth-child(3) {
+    min-width: 140px;
   }
 
   .coopActionCell {
@@ -678,7 +720,13 @@
   }
 
   .coopTable th:nth-child(2),
-  .coopTable td:nth-child(2) {
+  .coopTable td:nth-child(2),
+  .coopTable th:nth-child(4),
+  .coopTable td:nth-child(4),
+  .coopTable th:nth-child(5),
+  .coopTable td:nth-child(5),
+  .coopTable th:nth-child(6),
+  .coopTable td:nth-child(6) {
     display: none;
   }
 
@@ -686,6 +734,20 @@
   .coopTable td {
     padding: 0.4rem 0.35rem;
     font-size: 0.64rem;
+  }
+
+  .coopTable th:first-child,
+  .coopTable td:first-child {
+    width: 34px;
+    min-width: 34px;
+    max-width: 34px;
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+  }
+
+  .coopTable th:nth-child(3),
+  .coopTable td:nth-child(3) {
+    min-width: 120px;
   }
 
   .statusBadge {
