@@ -99,7 +99,15 @@ export default function StaffUnitsWorkspace({
       await addUnitMember(selectedUnitId, form, accessToken)
       setIsAddMemberOpen(false)
       setMemberQuery(p => ({ ...p, skip: 0 }))
-    } catch (error) { handleApiError(error, 'Thêm thành viên thất bại.') }
+    } catch (error) {
+      if (error?.status === 404) {
+        setNotice({ title: 'Có lỗi', message: 'Sinh viên không tồn tại.' })
+      } else if (error?.status === 400) {
+        setNotice({ title: 'Có lỗi', message: 'Sinh viên đã thuộc đơn vị.' })
+      } else {
+        handleApiError(error, 'Thêm thành viên thất bại.')
+      }
+    }
     finally { setIsSubmitting(false) }
   }
 
