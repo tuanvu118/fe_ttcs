@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Modal, Form, Input, InputNumber, Upload } from 'antd'
+import { Modal, Form, Input, InputNumber, Upload, message } from 'antd'
 import { 
   UploadSimple, 
   PencilSimple,
@@ -8,6 +8,8 @@ import {
 } from '@phosphor-icons/react'
 
 const { TextArea } = Input
+const MAX_IMAGE_SIZE_MB = 10
+const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024
 
 export default function UnitEditModal({ isOpen, unit, isAdmin, isSubmitting, onClose, onSubmit }) {
   const [form] = Form.useForm()
@@ -71,6 +73,14 @@ export default function UnitEditModal({ isOpen, unit, isAdmin, isSubmitting, onC
     setCoverFileList(newFileList.slice(-1))
   }
 
+  const validateImageSize = (file, label) => {
+    if (file.size > MAX_IMAGE_SIZE_BYTES) {
+      message.error(`${label} phải nhỏ hơn ${MAX_IMAGE_SIZE_MB}MB.`)
+      return Upload.LIST_IGNORE
+    }
+    return false
+  }
+
   return (
     <Modal
       title={
@@ -106,7 +116,7 @@ export default function UnitEditModal({ isOpen, unit, isAdmin, isSubmitting, onC
               fileList={coverFileList}
               className="cover-uploader"
               onChange={handleCoverChange}
-              beforeUpload={() => false}
+              beforeUpload={(file) => validateImageSize(file, 'Ảnh bìa')}
             >
               {coverFileList.length < 1 && (
                 <div style={{ color: '#64748b', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
@@ -125,7 +135,7 @@ export default function UnitEditModal({ isOpen, unit, isAdmin, isSubmitting, onC
               listType="picture-card"
               fileList={logoFileList}
               onChange={handleLogoChange}
-              beforeUpload={() => false}
+              beforeUpload={(file) => validateImageSize(file, 'Logo')}
             >
               {logoFileList.length < 1 && (
                 <div style={{ color: '#64748b', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
