@@ -111,8 +111,8 @@ select:disabled {
   align-items: center;
   gap: 1.5rem;
   padding: 1.1rem 1.5rem;
-  background: linear-gradient(180deg, #0f4d93 0%, #0e4a8a 100%);
-  box-shadow: 0 12px 28px rgba(15, 48, 102, 0.22);
+  background: #0a2965;
+  box-shadow: 0 12px 28px rgba(10, 41, 101, 0.18);
 }
 
 .nav-group {

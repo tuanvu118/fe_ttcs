@@ -176,6 +176,9 @@
 .unit-info-link {
   color: #2563eb;
   text-decoration: none;
+  word-break: break-all;
+  display: inline-block;
+  max-width: 100%;
 }
 
 .unit-info-link:hover {

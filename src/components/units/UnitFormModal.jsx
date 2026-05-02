@@ -7,6 +7,9 @@ const initialFormState = {
   name: '',
   type: '',
   introduction: '',
+  email: '',
+  established_year: '',
+  fb_url: '',
   logo: null,
 }
 
@@ -15,6 +18,9 @@ function buildFormState(initialValues) {
     name: initialValues?.name || '',
     type: initialValues?.type || '',
     introduction: initialValues?.introduction || '',
+    email: initialValues?.email || '',
+    established_year: initialValues?.established_year || '',
+    fb_url: initialValues?.fb_url || '',
     logo: null,
   }
 }
@@ -58,6 +64,9 @@ function UnitFormModal({
       name: form.name.trim(),
       type: form.type,
       introduction: form.introduction.trim() || null,
+      email: form.email.trim() || null,
+      established_year: form.established_year || null,
+      fb_url: form.fb_url.trim() || null,
       logo: form.logo,
     })
   }
@@ -152,6 +161,51 @@ function UnitFormModal({
                 value={form.introduction}
                 onChange={handleChange}
                 placeholder="Mô tả ngắn về đơn vị..."
+              />
+            </div>
+          </label>
+
+          {/* Email liên hệ */}
+          <label className="field field-full">
+            <span>Email liên hệ</span>
+            <div className="input-with-icon">
+              <Buildings size={18} />
+              <input
+                name="email"
+                type="email"
+                value={form.email}
+                onChange={handleChange}
+                placeholder="Ví dụ: clb@hcmute.edu.vn"
+              />
+            </div>
+          </label>
+
+          {/* Năm thành lập */}
+          <label className="field field-full">
+            <span>Năm thành lập</span>
+            <div className="input-with-icon">
+              <Buildings size={18} />
+              <input
+                name="established_year"
+                type="number"
+                value={form.established_year}
+                onChange={handleChange}
+                placeholder="Ví dụ: 2020"
+              />
+            </div>
+          </label>
+
+          {/* Facebook URL */}
+          <label className="field field-full">
+            <span>Facebook URL</span>
+            <div className="input-with-icon">
+              <Tag size={18} />
+              <input
+                name="fb_url"
+                type="text"
+                value={form.fb_url}
+                onChange={handleChange}
+                placeholder="Ví dụ: https://fb.com/clb.tinhoc"
               />
             </div>
           </label>

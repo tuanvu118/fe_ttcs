@@ -591,15 +591,14 @@ function UnitDetailPage({
                 <div className="unit-info-content">
                   <p>Mạng xã hội</p>
                   <p>
-                    <a href="#" className="unit-info-link">fb.com/official.unit</a>
+                    {unit.fb_url ? (
+                      <a href={unit.fb_url} target="_blank" rel="noopener noreferrer" className="unit-info-link">
+                        {unit.fb_url.replace(/^https?:\/\/(www\.)?/, '')}
+                      </a>
+                    ) : (
+                      'Chưa cập nhật'
+                    )}
                   </p>
-                </div>
-              </li>
-              <li className="unit-info-item">
-                <User size={24} className="unit-info-icon" />
-                <div className="unit-info-content">
-                  <p>Người phụ trách</p>
-                  <p>Ban Quản lý Đơn vị</p>
                 </div>
               </li>
             </ul>

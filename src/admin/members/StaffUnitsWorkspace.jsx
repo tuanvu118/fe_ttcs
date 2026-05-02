@@ -182,6 +182,14 @@ export default function StaffUnitsWorkspace({
                       <span className={styles.statItem}>
                         <EnvelopeSimple size={16} weight="bold" /> {unitDetail.email || 'Chưa có email'}
                       </span>
+                      {unitDetail.fb_url && (
+                        <span className={styles.statItem}>
+                          <Info size={16} weight="bold" /> 
+                          <a href={unitDetail.fb_url} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>
+                            {unitDetail.fb_url.replace(/^https?:\/\/(www\.)?/, '')}
+                          </a>
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>

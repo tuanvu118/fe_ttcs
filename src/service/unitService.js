@@ -68,11 +68,16 @@ import { apiRequest } from './apiClient'
  */
 
 function appendOptionalFormField(formData, key, value) {
-  if (value === undefined || value === null || value === '') {
+  if (value === undefined || value === null) {
+    return
+  }
+  
+  const stringValue = String(value).trim()
+  if (stringValue === '') {
     return
   }
 
-  formData.append(key, value)
+  formData.append(key, stringValue)
 }
 
 function buildUnitFormData(form) {
@@ -84,6 +89,7 @@ function buildUnitFormData(form) {
   appendOptionalFormField(formData, 'established_year', form.established_year)
   appendOptionalFormField(formData, 'member_count', form.member_count)
   appendOptionalFormField(formData, 'email', form.email?.trim())
+  appendOptionalFormField(formData, 'fb_url', form.fb_url?.trim())
 
   if (form.logo instanceof File) {
     formData.append('logo', form.logo)
@@ -121,7 +127,8 @@ function mapUnit(data) {
     type: data?.type || null,
     established_year: data?.established_year || null,
     member_count: data?.member_count || 0,
-    email: data?.email || ''
+    email: data?.email || '',
+    fb_url: data?.fb_url || null
   }
 }
 
@@ -226,7 +233,10 @@ export async function updateUnit(unitId, form, authToken) {
     authToken,
   })
 
-  return mapUnit(response)
+  const result = mapUnit(response)
+  // Update both caches
+  unitDetailCache.set(unitId, { data: result, time: Date.now() })
+  return result
 }
 
 export async function deleteUnit(unitId, authToken) {

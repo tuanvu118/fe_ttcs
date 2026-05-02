@@ -21,7 +21,8 @@ export default function UnitEditModal({ isOpen, unit, isAdmin, isSubmitting, onC
         type: unit.type,
         introduction: unit.introduction,
         established_year: unit.established_year,
-        email: unit.email
+        email: unit.email,
+        fb_url: unit.fb_url
       })
       
       if (unit.logo) {
@@ -164,6 +165,18 @@ export default function UnitEditModal({ isOpen, unit, isAdmin, isSubmitting, onC
             />
           </Form.Item>
         </div>
+
+        <Form.Item
+          name="fb_url"
+          label={<strong>Facebook URL</strong>}
+          style={{ marginBottom: '1rem' }}
+        >
+          <Input 
+            prefix={<CalendarBlank size={18} color="#94a3b8" />}
+            placeholder="https://fb.com/clb.abc" 
+            style={{ height: '40px', borderRadius: '8px' }}
+          />
+        </Form.Item>
 
         <Form.Item
           name="introduction"
