@@ -13,6 +13,16 @@ function findActiveWindow(windows, nowMs) {
   }) || null
 }
 
+function formatManualCode(code) {
+  if (!code) return ''
+  const str = String(code)
+  if (str.length > 4) {
+    const half = Math.ceil(str.length / 2)
+    return str.slice(0, half) + ' ' + str.slice(half)
+  }
+  return str
+}
+
 export default function QRViewerPage() {
   const [sessionData, setSessionData] = useState(() => getLatestQrSession())
   const [nowMs, setNowMs] = useState(Date.now())
@@ -56,48 +66,71 @@ export default function QRViewerPage() {
 
   if (!sessionData) {
     return (
-      <section className={styles.page}>
-        <div className={styles.card}>
-          <h1 className={styles.title}>Không có dữ liệu QR</h1>
-          <p className={styles.message}>
-            Chưa có phiên QR mới trong trình duyệt này. Hãy quay lại trang quản trị và bấm Tạo QR.
-          </p>
-          <Button onClick={handleReload}>Tải lại dữ liệu</Button>
+      <div className={styles.pageWrap}>
+        <div className={styles.fullscreen}>
+          <div className={styles.header}>
+            <h1 className={styles.title}>Không có dữ liệu QR</h1>
+          </div>
+          <div className={styles.stateBox}>
+            <p className={styles.message}>
+              Chưa có phiên QR mới trong trình duyệt này. Hãy quay lại trang quản trị và bấm Tạo QR.
+            </p>
+            <Button onClick={handleReload} size="large" type="primary">Tải lại dữ liệu</Button>
+          </div>
         </div>
-      </section>
+      </div>
     )
   }
 
   return (
-    <section className={styles.page}>
-      <div className={styles.card}>
-        <h1 className={styles.title}>QR Điểm danh</h1>
+    // <div className={styles.pageWrap}>
+      <div className={styles.fullscreen}>
         {sessionEnded ? (
-          <div className={styles.stateBox}>
-            <p className={styles.message}>Phiên QR đã hết hạn và không còn hiệu lực.</p>
-            <Button onClick={handleReload}>Kiểm tra phiên mới nhất</Button>
-          </div>
+          <>
+            <div className={styles.header}>
+              <h1 className={styles.title}>QR Điểm danh</h1>
+            </div>
+            <div className={styles.stateBox}>
+              <p className={styles.message}>Phiên QR đã hết hạn và không còn hiệu lực.</p>
+              <Button onClick={handleReload} size="large" type="primary">Kiểm tra phiên mới nhất</Button>
+            </div>
+          </>
         ) : activeWindow ? (
           <>
-            <p className={styles.countdown}>
-              QR hiện tại còn <strong>{remainingSeconds}s</strong>
-            </p>
-            <QRRender
-              sessionData={sessionData}
-              currentWindow={activeWindow}
-              remainingSeconds={remainingSeconds}
-            />
+            <div className={styles.header}>
+              <h1 className={styles.title}>QR Điểm danh</h1>
+              <p className={styles.countdown}>
+                QR hiện tại còn <strong>{remainingSeconds}s</strong>
+              </p>
+            </div>
+            <div className={styles.qrContainer}>
+              <QRRender
+                sessionData={sessionData}
+                currentWindow={activeWindow}
+                remainingSeconds={remainingSeconds}
+              />
+            </div>
+            {activeWindow.manual_code && (
+              <div className={styles.manualCodeBox}>
+                <span className={styles.manualCodeLabel}>Hoặc nhập mã điểm danh thủ công:</span>
+                <p className={styles.manualCodeValue}>{formatManualCode(activeWindow.manual_code)}</p>
+              </div>
+            )}
           </>
         ) : (
-          <div className={styles.stateBox}>
-            <p className={styles.message}>
-              Chưa tới cửa sổ QR hiệu lực hoặc dữ liệu không hợp lệ.
-            </p>
-            <Button onClick={handleReload}>Tải lại dữ liệu</Button>
-          </div>
+          <>
+            <div className={styles.header}>
+              <h1 className={styles.title}>QR Điểm danh</h1>
+            </div>
+            <div className={styles.stateBox}>
+              <p className={styles.message}>
+                Chưa tới cửa sổ QR hiệu lực hoặc dữ liệu không hợp lệ.
+              </p>
+              <Button onClick={handleReload} size="large" type="primary">Tải lại dữ liệu</Button>
+            </div>
+          </>
         )}
       </div>
-    </section>
+    // </div>
   )
 }
-

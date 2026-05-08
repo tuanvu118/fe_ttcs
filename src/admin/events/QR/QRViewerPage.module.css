@@ -1,64 +1,102 @@
-.page {
-  min-height: calc(100vh - 72px);
-  display: grid;
-  place-items: center;
-  padding: 24px 16px;
-  background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
+.pageWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: var(--ds-surface-warm);
+  padding: 16px;
+  box-sizing: border-box;
 }
 
-.card {
-  width: min(100%, 760px);
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
-  padding: 24px;
-  display: grid;
-  gap: 14px;
+.fullscreen {
+  height: 90vh;
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--ds-surface);
+  padding: clamp(16px, 4vh, 48px);
+  box-sizing: border-box;
+  border: 1px solid var(--ds-border);
+  border-radius: var(--ds-radius-card);
+  box-shadow: var(--ds-shadow-card);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(4px, 1vh, 8px);
+  flex-shrink: 0;
 }
 
 .title {
   margin: 0;
-  font-size: 1.25rem;
-  font-weight: 800;
-  color: #0f172a;
+  font-size: clamp(1.75rem, 4vw, 3rem);
+  font-weight: 700;
+  color: var(--ds-text);
+  letter-spacing: -0.02em;
 }
 
 .countdown {
   margin: 0;
-  color: #1e293b;
-  font-size: 0.95rem;
+  color: var(--ds-text-secondary);
+  font-size: clamp(1.1rem, 2vw, 1.5rem);
+}
+
+.qrContainer {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 0; /* allows flex children to shrink */
+  padding: clamp(12px, 3vh, 32px) 0;
+}
+
+.manualCodeBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: clamp(12px, 2vh, 24px) clamp(24px, 4vw, 64px);
+  background-color: var(--ds-surface-warm);
+  border-radius: var(--ds-radius-card);
+  border: 1px dashed var(--ds-border-strong);
+  flex-shrink: 0;
+}
+
+.manualCodeLabel {
+  font-size: clamp(0.9rem, 1.5vw, 1.25rem);
+  color: var(--ds-text-secondary);
+  font-weight: 500;
+  margin-bottom: clamp(4px, 1vh, 8px);
+}
+
+.manualCodeValue {
+  font-size: clamp(3rem, 8vw, 6rem);
+  font-weight: 700;
+  color: var(--ds-text);
+  letter-spacing: clamp(4px, 2vw, 12px);
+  margin: 0;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.stateBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  flex-grow: 1;
+  justify-content: center;
 }
 
 .message {
   margin: 0;
-  color: #475569;
+  color: var(--ds-text-secondary);
   line-height: 1.5;
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  text-align: center;
 }
-
-.stateBox {
-  display: grid;
-  gap: 12px;
-}
-
-@media (max-width: 780px) {
-  .page {
-    padding: 12px;
-  }
-
-  .card {
-    border-radius: 12px;
-    padding: 14px;
-    gap: 10px;
-  }
-
-  .title {
-    font-size: 1.05rem;
-  }
-
-  .countdown,
-  .message {
-    font-size: 0.88rem;
-  }
-}
-

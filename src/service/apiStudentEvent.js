@@ -124,3 +124,23 @@ export async function scanAttendanceQr({ qrValue, latitude, longitude }) {
     ...(accessToken ? { authToken: accessToken } : {}),
   })
 }
+
+/**
+ * Submit manual attendance code with current location
+ */
+export async function submitManualAttendanceCode({ code, latitude, longitude }) {
+  const accessToken = getStoredAuthSession()?.accessToken || ''
+  return apiRequest('/attendance/code', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      code,
+      latitude,
+      longitude,
+    }),
+    ...(accessToken ? { authToken: accessToken } : {}),
+  })
+}
