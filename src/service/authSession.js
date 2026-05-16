@@ -152,8 +152,10 @@ export function clearAuthSession() {
 }
 
 export function subscribeAuthChange(listener) {
-  function handleStorageEvent() {
-    listener(getStoredAuthSession())
+  function handleStorageEvent(event) {
+    if (event.key === AUTH_STORAGE_KEY || event.key === null || event.key === undefined) {
+      listener(getStoredAuthSession())
+    }
   }
 
   window.addEventListener('storage', handleStorageEvent)
@@ -164,5 +166,5 @@ export function subscribeAuthChange(listener) {
 }
 
 function notifyAuthChanged() {
-  window.dispatchEvent(new StorageEvent('storage'))
+  window.dispatchEvent(new StorageEvent('storage', { key: AUTH_STORAGE_KEY }))
 }
