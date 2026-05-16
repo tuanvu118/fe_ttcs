@@ -153,6 +153,23 @@ export default function EUDetailHTSK({ data, unitId, eventId }) {
   }
 
 
+  const handleOpenQrModal = () => {
+    if (!data.event_start || !data.event_end) {
+      setIsQrModalOpen(true)
+      return
+    }
+
+    const now = new Date()
+    const start = new Date(data.event_start)
+    const end = new Date(data.event_end)
+
+    if (now < start || now > end) {
+      message.warning('Chỉ có thể mở QR điểm danh trong thời gian diễn ra sự kiện.')
+      return
+    }
+
+    setIsQrModalOpen(true)
+  }
 
   return (
     <div className={styles.detailRoot}>
@@ -163,7 +180,7 @@ export default function EUDetailHTSK({ data, unitId, eventId }) {
         <div className={styles.actions}>
           <button
             className={`${styles.actionBtn} ${styles.copyBtn}`}
-            onClick={() => setIsQrModalOpen(true)}
+            onClick={handleOpenQrModal}
             title="Mở QR điểm danh"
           >
             <QrCode size={18} />
@@ -273,7 +290,7 @@ export default function EUDetailHTSK({ data, unitId, eventId }) {
                 data.assigned_units.map((unit, idx) => (
                   <div key={unit.id || idx} className={styles.unitItem}>
                     <img
-                      src={unit.logo || 'https://via.placeholder.com/40'}
+                      src={unit.logo || '/HuyHieuDoan.png'}
                       alt={unit.name}
                       className={styles.unitLogo}
                     />

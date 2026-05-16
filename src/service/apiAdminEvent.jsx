@@ -408,7 +408,7 @@ export async function createUnitEventAttendanceSession(eventId, payload) {
     throw new Error('Thiếu mã sự kiện để tạo phiên điểm danh.')
   }
   try {
-    return await apiRequest(`/attendance/unit-events/${encodeURIComponent(eid)}/sessions`, {
+    return await qrRequest(`/attendance/unit-events/${encodeURIComponent(eid)}/sessions`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',

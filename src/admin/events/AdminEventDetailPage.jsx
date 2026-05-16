@@ -73,6 +73,23 @@ export default function AdminEventDetailPage() {
         message.error('Không thể sao chép đường dẫn.')
       })
   }
+  const handleOpenQrModal = () => {
+    if (!data.event_start || !data.event_end) {
+      setIsQrModalOpen(true)
+      return
+    }
+
+    const now = new Date()
+    const start = new Date(data.event_start)
+    const end = new Date(data.event_end)
+
+    if (now < start || now > end) {
+      message.warning('Chỉ có thể mở QR điểm danh trong thời gian diễn ra sự kiện.')
+      return
+    }
+
+    setIsQrModalOpen(true)
+  }
 
 
   if (isLoading) {
@@ -107,7 +124,7 @@ export default function AdminEventDetailPage() {
         <div className={styles.actions}>
           <button
             className={`${styles.actionBtn} ${styles.copyBtn}`}
-            onClick={() => setIsQrModalOpen(true)}
+            onClick={handleOpenQrModal}
             title="Mở QR điểm danh"
           >
             <QrCode size={18} />

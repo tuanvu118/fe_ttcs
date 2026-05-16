@@ -250,7 +250,7 @@ export default function EUDetailHTTT({ data, unitId, eventId }) {
                         <td>
                           <div className={styles.coopUnitCell}>
                             <img
-                              src={row.unit.logo || 'https://via.placeholder.com/40'}
+                              src={row.unit.logo || '/HuyHieuDoan.png'}
                               alt=""
                               className={styles.unitLogo}
                             />
