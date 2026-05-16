@@ -65,11 +65,11 @@ export default function MobileBottomNav({ currentPath, currentSearch, isAuthenti
 
       <button
         type="button"
-        className={currentPath === PATHS.qrScan ? `${styles.fab} ${styles.activeFab}` : styles.fab}
-        onClick={() => navigate(PATHS.qrScan)}
+        className={currentPath === PATHS.scanQR ? `${styles.fab} ${styles.activeFab}` : styles.fab}
+        onClick={() => navigate(PATHS.scanQR)}
         aria-label="Quét QR"
       >
-        <QrCode size={CENTER_ICON_SIZE} weight={currentPath === PATHS.qrScan ? 'fill' : 'regular'} aria-hidden />
+        <QrCode size={CENTER_ICON_SIZE} weight={currentPath === PATHS.scanQR ? 'fill' : 'regular'} aria-hidden />
       </button>
     </nav>
   )

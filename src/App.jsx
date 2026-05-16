@@ -82,7 +82,7 @@ function App() {
     page = <section className="page-card">Đang tải thông tin người dùng...</section>
   } else if (pathname === PATHS.home) {
     page = <HomePage />
-  } else if (pathname === PATHS.qrView) {
+  } else if (pathname === PATHS.viewQR) {
     page = <QRViewerPage />
   } else if (pathname === PATHS.event) {
     page = <EventsPage navigate={navigate} />
@@ -91,7 +91,7 @@ function App() {
   } else if (eventId) {
 
     page = <EventDetailPage eventId={eventId} />
-  } else if (pathname === PATHS.qrScan) {
+  } else if (pathname === PATHS.scanQR) {
     page = <QrScanPage navigate={navigate} />
   } else if (taskId) {
     page = null

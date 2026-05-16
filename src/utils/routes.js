@@ -1,9 +1,9 @@
 export const PATHS = {
   home: '/',
-  qrView: '/qr-view',
+  viewQR: '/view-qr',
   event: '/events',
   units: '/units',
-  qrScan: '/qr-scan',
+  scanQR: '/scan-qr',
   about: '/news',
   club: '/units',
   login: '/login',

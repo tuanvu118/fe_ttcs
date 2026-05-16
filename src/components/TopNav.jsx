@@ -89,9 +89,9 @@ function TopNav({ currentPath, isAuthenticated, dashboardPath, navigate }) {
           <>
             <button
               type="button"
-              className={currentPath === PATHS.qrScan ? 'topnav-icon-button active' : 'topnav-icon-button'}
+              className={currentPath === PATHS.scanQR ? 'topnav-icon-button active' : 'topnav-icon-button'}
               aria-label="Quét QR"
-              onClick={() => navigate(PATHS.qrScan)}
+              onClick={() => navigate(PATHS.scanQR)}
             >
               <QrCode size={navIconSize} weight="regular" aria-hidden />
             </button>
