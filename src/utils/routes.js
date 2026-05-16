@@ -1,6 +1,6 @@
 export const PATHS = {
   home: '/',
-  qr: '/qr',
+  qrView: '/qr-view',
   event: '/events',
   units: '/units',
   qrScan: '/qr-scan',

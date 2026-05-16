@@ -1,5 +1,5 @@
 import { message } from 'antd'
-import { apiRequest, ApiError } from './apiClient'
+import { apiRequest, qrRequest, ApiError } from './apiClient'
 import { getStoredAuthSession } from './authSession'
 
 function notifyPublicEventsError(error) {
@@ -434,7 +434,7 @@ export async function createPublicEventAttendanceSession(eventId, payload) {
     throw new Error('Thiếu mã sự kiện để tạo phiên điểm danh.')
   }
   try {
-    return await apiRequest(`/attendance/events/${encodeURIComponent(eid)}/sessions`, {
+    return await qrRequest(`/attendance/events/${encodeURIComponent(eid)}/sessions`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',

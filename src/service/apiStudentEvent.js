@@ -1,4 +1,4 @@
-import { apiRequest } from './apiClient'
+import { apiRequest, qrRequest } from './apiClient'
 import { getStoredAuthSession } from './authSession'
 
 /**
@@ -110,7 +110,7 @@ export async function cancelRegistration(eventId) {
  */
 export async function scanAttendanceQr({ qrValue, latitude, longitude }) {
   const accessToken = getStoredAuthSession()?.accessToken || ''
-  return apiRequest('/attendance/scan', {
+  return qrRequest('/attendance/scan', {
     method: 'POST',
     headers: {
       Accept: 'application/json',
@@ -130,7 +130,7 @@ export async function scanAttendanceQr({ qrValue, latitude, longitude }) {
  */
 export async function submitManualAttendanceCode({ code, latitude, longitude }) {
   const accessToken = getStoredAuthSession()?.accessToken || ''
-  return apiRequest('/attendance/code', {
+  return qrRequest('/attendance/code', {
     method: 'POST',
     headers: {
       Accept: 'application/json',

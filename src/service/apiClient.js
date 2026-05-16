@@ -17,6 +17,14 @@ export class ApiError extends Error {
 let refreshRequest = null
 
 export async function apiRequest(path, options = {}) {
+  return baseApiRequest(appConfig.apiBaseUrl, path, options)
+}
+
+export async function qrRequest(path, options = {}) {
+  return baseApiRequest('/qr', path, options)
+}
+
+async function baseApiRequest(baseUrl, path, options = {}) {
   const {
     authToken,
     headers,
@@ -30,7 +38,7 @@ export async function apiRequest(path, options = {}) {
       ? activeSession?.accessToken || authToken
       : ''
 
-  const response = await executeRequest(path, requestOptions, headers, requestAuthToken)
+  const response = await executeRequest(baseUrl, path, requestOptions, headers, requestAuthToken)
   const payload = await parseResponse(response)
 
   if (
@@ -43,7 +51,7 @@ export async function apiRequest(path, options = {}) {
       const refreshedSession = await refreshAuthSession()
 
       if (refreshedSession?.accessToken) {
-        return apiRequest(path, {
+        return baseApiRequest(baseUrl, path, {
           ...options,
           authToken: refreshedSession.accessToken,
           retryOnAuthFailure: false,
@@ -61,14 +69,14 @@ export async function apiRequest(path, options = {}) {
   return payload
 }
 
-async function executeRequest(path, requestOptions, headers, authToken) {
+async function executeRequest(baseUrl, path, requestOptions, headers, authToken) {
   const requestHeaders = new Headers(headers || {})
 
   if (authToken) {
     requestHeaders.set('Authorization', `Bearer ${authToken}`)
   }
 
-  return fetch(`${appConfig.apiBaseUrl}${path}`, {
+  return fetch(`${baseUrl}${path}`, {
     ...requestOptions,
     headers: requestHeaders,
   })
@@ -88,6 +96,7 @@ async function refreshAuthSession() {
 
   refreshRequest = (async () => {
     const response = await executeRequest(
+      appConfig.apiBaseUrl,
       '/auth/refresh',
       {
         method: 'POST',

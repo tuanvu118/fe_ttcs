@@ -82,7 +82,7 @@ function App() {
     page = <section className="page-card">Đang tải thông tin người dùng...</section>
   } else if (pathname === PATHS.home) {
     page = <HomePage />
-  } else if (pathname === PATHS.qr) {
+  } else if (pathname === PATHS.qrView) {
     page = <QRViewerPage />
   } else if (pathname === PATHS.event) {
     page = <EventsPage navigate={navigate} />

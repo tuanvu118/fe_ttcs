@@ -108,7 +108,7 @@ export default function QRModalUnitEvent({ open, onClose, eventId }) {
   const handleOpenQrTab = (event) => {
     event?.preventDefault()
     event?.stopPropagation()
-    window.open('/qr', '_blank', 'noopener,noreferrer')
+    window.open('/qr-view', '_blank', 'noopener,noreferrer')
   }
 
   return (
