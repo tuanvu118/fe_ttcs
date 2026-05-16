@@ -234,3 +234,38 @@ export async function logoutUser(options = {}) {
     clearAuthSession()
   }
 }
+
+/**
+ * Gọi /auth/refresh để lấy access token mới (roles được đọc lại từ DB).
+ * Dùng sau khi admin cấp/thu hồi quyền để token cập nhật ngay mà không cần logout.
+ */
+export async function refreshAuthToken() {
+  const authSession = getStoredAuthSession()
+
+  if (!authSession?.refreshToken) {
+    return null
+  }
+
+  try {
+    const token = await apiRequest('/auth/refresh', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refresh_token: authSession.refreshToken }),
+      skipAuthRefresh: true,
+    })
+
+    if (!token?.access_token) {
+      return null
+    }
+
+    return writeAuthSession({
+      accessToken: token.access_token,
+      refreshToken: token.refresh_token || authSession.refreshToken,
+      tokenType: token.token_type || 'bearer',
+    })
+  } catch {
+    // Không throw — nếu refresh thất bại thì giữ nguyên session cũ
+    return null
+  }
+}
+

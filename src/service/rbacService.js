@@ -1,4 +1,6 @@
 import { apiRequest } from './apiClient'
+import { refreshAuthToken } from './authService'
+import { getStoredAuthSession } from './authSession'
 
 /**
  * @typedef {Object} RoleRead
@@ -112,12 +114,27 @@ export async function assignRole(payload, authToken) {
     authToken,
   })
 
+  // Nếu người được cấp quyền chính là người đang đăng nhập → refresh token ngay
+  // để quyền mới có hiệu lực mà không cần logout/login lại.
+  const currentSession = getStoredAuthSession()
+  const currentUserId = currentSession?.tokenClaims?.sub
+  if (currentUserId && payload.target_user_id === currentUserId) {
+    await refreshAuthToken()
+  }
+
   return mapAssignment(response)
 }
 
-export async function removeAssignment(assignmentId, authToken) {
+export async function removeAssignment(assignmentId, authToken, targetUserId) {
   await apiRequest(`/rbac/assignments/${assignmentId}`, {
     method: 'DELETE',
     authToken,
   })
+
+  // Nếu người bị thu hồi quyền chính là người đang đăng nhập → refresh token ngay
+  const currentSession = getStoredAuthSession()
+  const currentUserId = currentSession?.tokenClaims?.sub
+  if (currentUserId && targetUserId && targetUserId === currentUserId) {
+    await refreshAuthToken()
+  }
 }

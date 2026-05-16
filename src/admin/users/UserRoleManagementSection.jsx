@@ -304,7 +304,7 @@ function UserRoleManagementSection({
     setIsSubmitting(true)
 
     try {
-      await removeAssignment(assignmentToRemove.id, accessToken)
+      await removeAssignment(assignmentToRemove.id, accessToken, assignmentToRemove.user_id)
       setAssignmentToRemove(null)
       await loadAssignments()
       onRoleChanged?.()
