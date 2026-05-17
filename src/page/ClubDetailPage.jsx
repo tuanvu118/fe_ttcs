@@ -231,7 +231,10 @@ function ClubDetailPage({ unitId, navigate }) {
                   <p>
                     {unit.fb_url ? (
                       <a href={unit.fb_url} target="_blank" rel="noopener noreferrer" className="unit-info-link">
-                        {unit.fb_url.replace(/^https?:\/\/(www\.)?/, '')}
+                        {(() => {
+                          try { return new URL(unit.fb_url).hostname.replace(/^www\./, '') }
+                          catch { return unit.fb_url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0] }
+                        })()}
                       </a>
                     ) : (
                       'Chưa cập nhật'

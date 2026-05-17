@@ -52,6 +52,7 @@ export default function ReportDetailView({
       setLoading(true)
       const data = await apiRequest(`/reports/${reportId}`, {
         method: 'GET',
+        headers: { 'X-Unit-Id': unitId },
         authToken: accessToken,
       })
       if (data) {
@@ -188,7 +189,10 @@ export default function ReportDetailView({
     try {
       await apiRequest(`/reports/${reportId}/status`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-Unit-Id': unitId 
+        },
         authToken: accessToken,
         body: JSON.stringify({ status, note: reviewNote })
       })
@@ -245,7 +249,7 @@ export default function ReportDetailView({
 
   const handleExport = async () => {
     try {
-      const blob = await exportDetailExcel(reportId, accessToken)
+      const blob = await exportDetailExcel(reportId, unitId, accessToken)
       const url = window.URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url

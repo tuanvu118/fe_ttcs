@@ -266,6 +266,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  gap: 1.5rem;
   padding-bottom: 2rem;
   border-bottom: 1px solid #f1f5f9;
 }
@@ -314,7 +315,34 @@
   padding: 0.35rem 0.75rem;
   border-radius: 8px;
   border: 1px solid #f1f5f9;
-  word-break: break-all;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 260px;
+  text-overflow: ellipsis;
+}
+
+.fbRow {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #64748b;
+  margin-top: 0.25rem;
+}
+
+.fbRow a {
+  color: #2563eb;
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 300px;
+  display: inline-block;
+}
+
+.fbRow a:hover {
+  text-decoration: underline;
 }
 
 .statItem svg {
@@ -334,6 +362,9 @@
   color: #0c1f45;
   cursor: pointer;
   transition: all 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+  align-self: flex-start;
 }
 
 .editUnitBtn:hover {

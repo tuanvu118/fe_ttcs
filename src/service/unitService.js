@@ -229,6 +229,9 @@ export async function createUnit(form, authToken) {
 export async function updateUnit(unitId, form, authToken) {
   const response = await apiRequest(`/units/${unitId}`, {
     method: 'PUT',
+    headers: {
+      'X-Unit-Id': unitId
+    },
     body: buildUnitFormData(form),
     authToken,
   })
@@ -249,6 +252,9 @@ export async function deleteUnit(unitId, authToken) {
 export async function getUnitMembers(unitId, params = {}, authToken) {
   const response = await apiRequest(`/units/${unitId}/members${buildQuery(params)}`, {
     method: 'GET',
+    headers: {
+      'X-Unit-Id': unitId
+    },
     authToken,
   })
 
@@ -260,6 +266,7 @@ export async function addUnitMember(unitId, payload, authToken) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'X-Unit-Id': unitId
     },
     body: JSON.stringify({
       student_id: payload.student_id,
@@ -275,6 +282,9 @@ export async function removeUnitMember(unitId, userId, authToken, semesterId) {
     `/units/${unitId}/members/${userId}${buildQuery({ semester_id: semesterId })}`,
     {
       method: 'DELETE',
+      headers: {
+        'X-Unit-Id': unitId
+      },
       authToken,
     },
   )

@@ -222,9 +222,10 @@
 .reportIden strong {
   display: block;
   color: #0f172a;
-  font-size: 0.84rem;
-  font-weight: 700;
+  font-size: 1rem;
+  font-weight: 800;
   margin-bottom: 2px;
+  letter-spacing: -0.01em;
 }
 
 .activityCount {
@@ -236,16 +237,18 @@
 .statusPill {
   display: inline-flex;
   align-items: center;
-  padding: 0.26rem 0.52rem;
-  border-radius: 12px;
-  font-size: 0.68rem;
+  gap: 0.3rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 8px;
+  font-size: 0.75rem;
   font-weight: 700;
+  letter-spacing: 0.01em;
 }
 
-.p_cho_duyet { background: #fff7ed; color: #f59e0b; border: 1px solid #ffedd5; }
-.p_da_duyet { background: #ecfdf5; color: #10b981; border: 1px solid #d1fae5; }
-.p_yeu_cau_nop_lai, .p_bi_tu_choi { background: #fff1f2; color: #f43f5e; border: 1px solid #ffe4e6; }
-.p_chua_nop { background: #f8fafc; color: #64748b; border: 1px solid #f1f5f9; }
+.p_cho_duyet   { background: #fef3c7; color: #b45309; border: 1.5px solid #f59e0b; }
+.p_da_duyet    { background: #d1fae5; color: #065f46; border: 1.5px solid #10b981; }
+.p_yeu_cau_nop_lai, .p_bi_tu_choi { background: #ffe4e6; color: #9f1239; border: 1.5px solid #f43f5e; }
+.p_chua_nop    { background: #dbeafe; color: #1d4ed8; border: 1.5px solid #3b82f6; }
 
 .updatedAt {
   color: #64748b;

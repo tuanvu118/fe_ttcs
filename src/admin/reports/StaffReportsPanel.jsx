@@ -147,7 +147,6 @@ export default function StaffReportsPanel({ accessToken, unitId, onSessionExpire
           filteredReports.map((report) => (
             <div key={report.id} className={styles.reportRow}>
               <div className={styles.reportIden}>
-                <div className={styles.docIcon}><FileText size={20} weight="fill" /></div>
                 <strong>Tháng {report.month} / {report.year}</strong>
               </div>
               <div className={styles.activityCount}>{report.total_activities || 0} hoạt động</div>

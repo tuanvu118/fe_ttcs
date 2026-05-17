@@ -39,9 +39,10 @@ export const getStaffReports = async (authToken, unitId, month, year, status, sk
   })
 }
 
-export const getReportDetail = async (reportId, authToken) => {
+export const getReportDetail = async (reportId, unitId, authToken) => {
   return await apiRequest(`${BASE_URL}/${reportId}`, {
     method: 'GET',
+    headers: { 'X-Unit-Id': unitId },
     authToken,
   })
 }
@@ -74,15 +75,21 @@ export const exportSummaryExcel = async (authToken, month, year, unitId, status)
   const url = `${appConfig.apiBaseUrl}${BASE_URL}/export/summary${queryString ? `?${queryString}` : ''}`
 
   const response = await fetch(url, {
-    headers: { Authorization: `Bearer ${authToken}` },
+    headers: { 
+      Authorization: `Bearer ${authToken}`,
+      'X-Unit-Id': unitId || ''
+    },
   })
   if (!response.ok) throw new Error('Export failed')
   return await response.blob()
 }
 
-export const exportDetailExcel = async (reportId, authToken) => {
+export const exportDetailExcel = async (reportId, unitId, authToken) => {
   const response = await fetch(`${appConfig.apiBaseUrl}${BASE_URL}/${reportId}/export/detail`, {
-    headers: { Authorization: `Bearer ${authToken}` },
+    headers: { 
+      Authorization: `Bearer ${authToken}`,
+      'X-Unit-Id': unitId
+    },
   })
   if (!response.ok) throw new Error('Export failed')
   return await response.blob()

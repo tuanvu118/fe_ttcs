@@ -192,9 +192,12 @@ export default function StaffUnitsWorkspace({
                       </span>
                       {unitDetail.fb_url && (
                         <span className={styles.statItem}>
-                          <Info size={16} weight="bold" /> 
+                          <Info size={16} weight="bold" />
                           <a href={unitDetail.fb_url} target="_blank" rel="noopener noreferrer" style={{ color: 'inherit', textDecoration: 'none' }}>
-                            {unitDetail.fb_url.replace(/^https?:\/\/(www\.)?/, '')}
+                            {(() => {
+                              try { return new URL(unitDetail.fb_url).hostname.replace(/^www\./, '') }
+                              catch { return unitDetail.fb_url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0] }
+                            })()}
                           </a>
                         </span>
                       )}
