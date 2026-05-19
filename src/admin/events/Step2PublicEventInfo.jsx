@@ -189,7 +189,7 @@ export default function Step2PublicEventInfo({ data, setData, isSubmitting, onBa
       <section className={styles.section}>
         <div className={styles.sectionHeader}>
           <div className={styles.sectionTitleGroup}>
-            <h3 className={styles.sectionTitle}>Nội dung & Điểm số</h3>
+            <h3 className={styles.sectionTitle}>Nội dung</h3>
           </div>
         </div>
 
