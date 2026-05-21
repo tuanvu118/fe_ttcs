@@ -34,6 +34,7 @@ export default function EditPublicEventForm({ eventData, unitId }) {
     title: eventData.title || '',
     description: eventData.description || '',
     point: eventData.point || 0,
+    location: eventData.location || '',
     imageFile: null,
     imagePreview: eventData.image_url || null,
     registrationPeriod: [
@@ -114,6 +115,7 @@ export default function EditPublicEventForm({ eventData, unitId }) {
       fd.append('title', formData.title)
       fd.append('description', formData.description || '')
       fd.append('point', formData.point)
+      fd.append('location', formData.location || '')
       
       if (formData.semester_id) {
           fd.append('semester_id', formData.semester_id)
@@ -234,13 +236,25 @@ export default function EditPublicEventForm({ eventData, unitId }) {
           </div>
 
           <div className={styles.row}>
-            <div className={styles.fieldGroup}>
-              <label className={styles.label}>HỌC KỲ DIỄN RA</label>
+            <div className={styles.fieldGroup} style={{ flex: 2 }}>
+              <label className={styles.label}>ĐỊA ĐIỂM TỔ CHỨC</label>
+              <input 
+                className={styles.input} 
+                placeholder="Ví dụ: Hội trường A, Tầng 2" 
+                value={formData.location}
+                onChange={(e) => handleChange('location', e.target.value)}
+              />
+            </div>
+            <div className={styles.fieldGroup} style={{ flex: 1 }}>
+              <label className={styles.label}>Học kỳ diễn ra</label>
               <SemesterField 
                 value={formData.semester_id}
                 onChange={val => handleChange('semester_id', val)}
               />
             </div>
+          </div>
+
+          <div className={styles.row}>
             <div className={styles.fieldGroup} style={{ maxWidth: '200px' }}>
               <label className={styles.label}>Điểm rèn luyện</label>
               <div className={styles.inputWithSuffix}>
