@@ -5,7 +5,7 @@ import { getUnits } from '../service/unitService'
 import { buildClubDetailPath, PATHS, UNIT_TYPES } from '../utils/routes'
 import { isPublicVisibleUnit } from '../utils/unitUtils'
 
-const DEFAULT_LIMIT = 12
+const DEFAULT_LIMIT = 16
 
 function parsePositiveNumber(value, fallbackValue) {
   const parsedValue = Number(value)
