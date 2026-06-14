@@ -220,14 +220,17 @@
 
 .news-info-org {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.6rem;
   font-size: 1.05rem;
   font-weight: 800;
   color: #0c1f45;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.4;
+}
+
+.news-info-org svg {
+  flex-shrink: 0;
+  margin-top: 2px;
 }
 
 .news-info-divider {
