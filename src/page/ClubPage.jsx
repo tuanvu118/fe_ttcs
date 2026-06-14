@@ -30,17 +30,10 @@ function buildSummaryText(unit) {
 }
 
 function ClubPreviewMedia({ unit }) {
-  if (unit?.logo) {
-    return (
-      <div className="club-card-media">
-        <img src={unit.logo} alt={unit.name || 'Đơn vị'} className="club-card-media-image" />
-      </div>
-    )
-  }
-
+  const logoSrc = unit?.logo || '/HuyHieuDoan.png'
   return (
-    <div className="club-card-media club-card-media-fallback">
-      <span>{String(unit?.name || 'DV').trim().slice(0, 2).toUpperCase()}</span>
+    <div className="club-card-media">
+      <img src={logoSrc} alt={unit.name || 'Đơn vị'} className="club-card-media-image" />
     </div>
   )
 }

@@ -1,13 +1,8 @@
-import { getUnitInitials } from '../../utils/unitUtils'
-
 function UnitLogo({ logo, name, size = 'medium' }) {
   const className = `unit-logo unit-logo-${size}`
+  const logoSrc = logo || '/HuyHieuDoan.png'
 
-  if (logo) {
-    return <img className={className} src={logo} alt={name || 'Logo đơn vị'} />
-  }
-
-  return <span className={`${className} unit-logo-fallback`}>{getUnitInitials(name)}</span>
+  return <img className={className} src={logoSrc} alt={name || 'Logo đơn vị'} />
 }
 
 export default UnitLogo
