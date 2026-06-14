@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Button, Typography, message } from 'antd'
+import { Button, Typography, message, Slider } from 'antd'
+import jsQR from 'jsqr'
 import { scanAttendanceQr } from '../service/apiStudentEvent'
 import { LOCATION_STORAGE_KEY } from '../service/locationHeartbeatService'
 import { readStorage } from '../utils/storage'
@@ -29,6 +30,35 @@ export default function QrScanner({ onCancel }) {
   const scanTimeoutRef = useRef(null)
   const cameraActiveRef = useRef(false)
   const handlingScanRef = useRef(false)
+  const useFallbackRef = useRef(false)
+  const canvasRef = useRef(null)
+  if (!canvasRef.current) {
+    canvasRef.current = document.createElement('canvas')
+  }
+
+  const [zoomSupported, setZoomSupported] = useState(true) // Always true because we support digital zoom
+  const [nativeZoomSupported, setNativeZoomSupported] = useState(false)
+  const nativeZoomSupportedRef = useRef(false)
+  const [zoomRange, setZoomRange] = useState({ min: 1, max: 5, step: 0.1 })
+  const [zoomVal, setZoomVal] = useState(1)
+  const zoomValRef = useRef(1)
+
+  const handleZoomChange = async (value) => {
+    setZoomVal(value)
+    zoomValRef.current = value
+    if (nativeZoomSupportedRef.current && streamRef.current) {
+      const videoTrack = streamRef.current.getVideoTracks()[0]
+      if (videoTrack && typeof videoTrack.applyConstraints === 'function') {
+        try {
+          await videoTrack.applyConstraints({
+            advanced: [{ zoom: value }],
+          })
+        } catch (err) {
+          console.error('Failed to apply native zoom constraint:', err)
+        }
+      }
+    }
+  }
 
   function toDateTimeLocalInput(value) {
     if (!value) return ''
@@ -77,12 +107,15 @@ export default function QrScanner({ onCancel }) {
       videoRef.current.srcObject = null
     }
     setCameraActive(false)
+    setNativeZoomSupported(false)
+    nativeZoomSupportedRef.current = false
+    setZoomVal(1)
+    zoomValRef.current = 1
   }
 
   function scanLoop() {
     const video = videoRef.current
-    const detector = detectorRef.current
-    if (!video || !detector || !cameraActiveRef.current) {
+    if (!video || !cameraActiveRef.current) {
       return
     }
 
@@ -91,40 +124,90 @@ export default function QrScanner({ onCancel }) {
       return
     }
 
-    detector.detect(video)
-      .then((codes) => {
-        if (Array.isArray(codes) && codes.length > 0) {
-          const qrRawValue = codes[0]?.rawValue || ''
-          if (qrRawValue) {
-            setScanError('')
-            void handleDetectedQr(qrRawValue)
-            return
-          }
+    // Capture the frame on the offscreen canvas
+    const canvas = canvasRef.current
+    canvas.width = video.videoWidth
+    canvas.height = video.videoHeight
+    const ctx = canvas.getContext('2d')
+
+    const currentZoom = zoomValRef.current
+    if (!nativeZoomSupportedRef.current && currentZoom > 1) {
+      // Calculate cropped source rectangle for digital zoom
+      const sWidth = video.videoWidth / currentZoom
+      const sHeight = video.videoHeight / currentZoom
+      const sx = (video.videoWidth - sWidth) / 2
+      const sy = (video.videoHeight - sHeight) / 2
+      ctx.drawImage(video, sx, sy, sWidth, sHeight, 0, 0, canvas.width, canvas.height)
+    } else {
+      // Normal or native zoom
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height)
+    }
+
+    if (useFallbackRef.current) {
+      try {
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+        const code = jsQR(imageData.data, imageData.width, imageData.height, {
+          inversionAttempts: 'dontInvert',
+        })
+        if (code && code.data) {
+          setScanError('')
+          void handleDetectedQr(code.data)
+          return
         }
+      } catch (err) {
+        console.error('jsQR error:', err)
+      }
+      scanFrameRef.current = requestAnimationFrame(scanLoop)
+    } else {
+      const detector = detectorRef.current
+      if (!detector) {
+        useFallbackRef.current = true
         scanFrameRef.current = requestAnimationFrame(scanLoop)
-      })
-      .catch(() => {
-        scanFrameRef.current = requestAnimationFrame(scanLoop)
-      })
+        return
+      }
+      // Detect on canvas instead of video to support digital zoom!
+      detector.detect(canvas)
+        .then((codes) => {
+          if (Array.isArray(codes) && codes.length > 0) {
+            const qrRawValue = codes[0]?.rawValue || ''
+            if (qrRawValue) {
+              setScanError('')
+              void handleDetectedQr(qrRawValue)
+              return
+            }
+          }
+          scanFrameRef.current = requestAnimationFrame(scanLoop)
+        })
+        .catch(() => {
+          scanFrameRef.current = requestAnimationFrame(scanLoop)
+        })
+    }
   }
 
   async function ensureQrDetector() {
     if (!('BarcodeDetector' in window)) {
-      throw new Error('Thiết bị/trình duyệt chưa hỗ trợ Barcode Detection API.')
+      useFallbackRef.current = true
+      return null
     }
 
-    if (typeof window.BarcodeDetector.getSupportedFormats === 'function') {
-      const supportedFormats = await window.BarcodeDetector.getSupportedFormats()
-      if (Array.isArray(supportedFormats) && !supportedFormats.includes('qr_code')) {
-        throw new Error('Trình duyệt có BarcodeDetector nhưng không hỗ trợ định dạng qr_code.')
+    try {
+      if (typeof window.BarcodeDetector.getSupportedFormats === 'function') {
+        const supportedFormats = await window.BarcodeDetector.getSupportedFormats()
+        if (Array.isArray(supportedFormats) && !supportedFormats.includes('qr_code')) {
+          useFallbackRef.current = true
+          return null
+        }
       }
-    }
 
-    if (!detectorRef.current) {
-      detectorRef.current = new window.BarcodeDetector({ formats: ['qr_code'] })
+      if (!detectorRef.current) {
+        detectorRef.current = new window.BarcodeDetector({ formats: ['qr_code'] })
+      }
+      useFallbackRef.current = false
+      return detectorRef.current
+    } catch {
+      useFallbackRef.current = true
+      return null
     }
-
-    return detectorRef.current
   }
 
   async function startCameraScan() {
@@ -148,6 +231,37 @@ export default function QrScanner({ onCancel }) {
         await videoRef.current.play()
       }
 
+      // Check camera zoom capabilities
+      const videoTrack = stream.getVideoTracks()[0]
+      if (videoTrack) {
+        if (typeof videoTrack.getCapabilities === 'function') {
+          const caps = videoTrack.getCapabilities()
+          if (caps.zoom) {
+            setNativeZoomSupported(true)
+            nativeZoomSupportedRef.current = true
+            setZoomRange({
+              min: caps.zoom.min || 1,
+              max: caps.zoom.max || 5,
+              step: caps.zoom.step || 0.1,
+            })
+            setZoomVal(caps.zoom.min || 1)
+            zoomValRef.current = caps.zoom.min || 1
+          } else {
+            setNativeZoomSupported(false)
+            nativeZoomSupportedRef.current = false
+            setZoomRange({ min: 1, max: 5, step: 0.1 })
+            setZoomVal(1)
+            zoomValRef.current = 1
+          }
+        } else {
+          setNativeZoomSupported(false)
+          nativeZoomSupportedRef.current = false
+          setZoomRange({ min: 1, max: 5, step: 0.1 })
+          setZoomVal(1)
+          zoomValRef.current = 1
+        }
+      }
+
       cameraActiveRef.current = true
       setCameraActive(true)
       scanTimeoutRef.current = setTimeout(() => {
@@ -157,14 +271,6 @@ export default function QrScanner({ onCancel }) {
       }, 12000)
       scanFrameRef.current = requestAnimationFrame(scanLoop)
     } catch (error) {
-      if (
-        String(error?.message || '').includes('Barcode Detection API') ||
-        String(error?.message || '').includes('qr_code')
-      ) {
-        message.error(error?.message || 'Thiết bị/trình duyệt chưa hỗ trợ Barcode Detection API.')
-        navigate('/')
-        return
-      }
       setScanError(error?.message || 'Không thể mở camera để quét QR.')
       stopCamera()
     }
@@ -245,24 +351,47 @@ export default function QrScanner({ onCancel }) {
 
   return (
     <div style={{ display: 'grid', gap: 10, justifyItems: 'center' }}>
-      <video
-        ref={videoRef}
-        muted
-        playsInline
-        style={{
-          width: '90vw',
-          height: '50vh',
-          maxWidth: 560,
-          maxHeight: 560,
-          minWidth: 280,
-          minHeight: 280,
-          borderRadius: 16,
-          border: '1px solid #e2e8f0',
-          background: '#000',
-          objectFit: 'cover',
-          display: cameraActive ? 'block' : 'none',
-        }}
-      />
+      <div style={{
+        position: 'relative',
+        width: '90vw',
+        height: '50vh',
+        maxWidth: 560,
+        maxHeight: 560,
+        minWidth: 280,
+        minHeight: 280,
+        borderRadius: 16,
+        overflow: 'hidden',
+        border: '1px solid #e2e8f0',
+        background: '#000',
+      }}>
+        <video
+          ref={videoRef}
+          muted
+          playsInline
+          style={{
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            display: cameraActive ? 'block' : 'none',
+            transform: `scale(${!nativeZoomSupported ? zoomVal : 1})`,
+            transition: 'transform 0.1s ease-out',
+            transformOrigin: 'center',
+          }}
+        />
+      </div>
+      {cameraActive && zoomSupported && (
+        <div style={{ width: '80%', maxWidth: 400, margin: '8px 0', textAlign: 'center' }}>
+          <Text style={{ display: 'block', marginBottom: 6 }}>Thu phóng: {zoomVal}x</Text>
+          <Slider
+            min={zoomRange.min}
+            max={zoomRange.max}
+            step={zoomRange.step}
+            value={zoomVal}
+            onChange={handleZoomChange}
+            tooltip={{ formatter: (v) => `${v}x` }}
+          />
+        </div>
+      )}
       {submitting ? <Text type="secondary">Đang gửi điểm danh...</Text> : null}
       {!cameraActive && !submitting ? <Text type="secondary">Đang khởi động camera...</Text> : null}
       {scanError ? <Text type="danger">{scanError}</Text> : null}
